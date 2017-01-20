@@ -1,0 +1,154 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any styles
+ * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
+ * file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+ @import 'bootstrap-sprockets';
+ @import 'bootstrap';
+ @import 'reset';
+
+.tasks-index {
+  margin-top: 20px;
+  background: #FFFFFF;
+  position: relative;
+  padding: 10px 15px;
+  border-radius: 6px;
+  box-shadow: 1px 2px 3px 0px #E6E9EC;
+  color: #5F5F5F;
+  text-align: center;
+
+  h1 {
+    font-size: 20px;
+    color: #2C2F33;
+    letter-spacing: 1.08px;
+    margin-bottom: 10px;
+  }
+
+  a {
+    display: inline-block;
+    // font-family: 'TeachableSansSemiBold';
+    font-size: 12px;
+    padding: 6px 20px;
+    border: solid 1px #5F5F5F;
+    color: #5F5F5F;
+    border-radius: 100px;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .grayed-out {
+    position: absolute;
+    z-index: 100;
+    background-color: gray;
+    opacity: 0.1;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    margin-top: -10px;
+    margin-left: -15px;
+  }
+
+  .spinner {
+    position: absolute;
+    z-index: 101;
+    $spinner-size: 90px;
+    width: $spinner-size;
+    height: $spinner-size;
+    background-color: black;
+    opacity: 0.75;
+    left: calc(50% - (#{$spinner-size} / 2));
+    top: calc(50% - (#{$spinner-size} / 2));
+    background: asset-data-url("ajax-loader.svg") center center no-repeat;
+  }
+
+  .task {
+    margin-top: 10px;
+    background-color: yellow;
+    position: relative;
+    padding: 5px;
+    border-radius: 6px;
+    box-shadow: 1px 2px 3px 0px #E6E9EC;
+    cursor: pointer;
+
+    input.disabled {
+      background-color: rgba(0, 0, 0, 0);
+      border: none;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .controls {
+      display: none;
+      width: 30px;
+      height: calc(100% - 10px);
+      border-radius: 6px;
+      position: absolute;
+      right: 5px;
+
+      a {
+        float: right;
+        border: solid 1px #5F5F5F;
+        border-radius: 100px;
+        padding: 0;
+        margin: 0;
+        width: 13px;
+        height: 13px;
+        margin-left: 2px;
+        margin-bottom: 2px;
+      }
+
+      .done-button {
+        background: asset-data-url("checkmark.png") 45% 40% no-repeat;
+        background-size: 70%;
+      }
+    }
+
+    .plus, .minus, .check {
+      width: 20px;
+      height: 100%;
+      top: 0;
+      position: absolute;
+    }
+
+    .plus {
+      background: asset-data-url("plus.png") center center no-repeat;
+    }
+
+    .minus {
+      background: asset-data-url("minus.png") center center no-repeat;
+    }
+
+    .check {
+      background: asset-data-url("checkmark.png") center center no-repeat;
+      left: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  }
+
+  .task .expandable {
+    background-image: asset-data-url("plus.png");
+  }
+
+  .task:hover .controls {
+    display: block;
+  }
+
+  .subtasks {
+    width: 90%;
+    float: right;
+  }
+}

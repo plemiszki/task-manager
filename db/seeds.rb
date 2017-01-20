@@ -1,0 +1,1 @@
+DatabaseCleaner.clean_with :truncation

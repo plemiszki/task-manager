@@ -1,0 +1,40 @@
+body {
+  // font-family: 'TeachableSansRegular', sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.08px;
+  background-color: #F5F6F7;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  list-style: none;
+}
+
+a, a:hover {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+input {
+  border: 1px solid #E4E9ED;
+  border-radius: 3px;
+  color: #5F5F5F;
+  letter-spacing: inherit;
+  padding: 5px;
+  text-align: center;
+  width: 100%;
+}
+
+.group:after {
+  content: "";
+  display: block;
+  clear: both;
+}
