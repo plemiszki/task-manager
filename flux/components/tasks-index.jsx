@@ -2,6 +2,7 @@ var React = require('react');
 var Common = require('../../app/assets/javascripts/common.jsx');
 var ClientActions = require('../actions/client-actions.js');
 var TasksDayStore = require('../stores/tasks-day-store.js');
+var TasksWeekendStore = require('../stores/tasks-weekend-store.js');
 var TasksMonthStore = require('../stores/tasks-month-store.js');
 var TasksYearStore = require('../stores/tasks-year-store.js');
 var TasksLifeStore = require('../stores/tasks-life-store.js');
@@ -22,6 +23,9 @@ var TasksIndex = React.createClass({
     switch (this.props.timeframe) {
       case "day":
         this.properStore = TasksDayStore;
+        break;
+      case "weekend":
+        this.properStore = TasksWeekendStore;
         break;
       case "month":
         this.properStore = TasksMonthStore;
@@ -93,6 +97,10 @@ var TasksIndex = React.createClass({
       case "day":
         return(
           <h1>Today</h1>
+        )
+      case "weekend":
+        return(
+          <h1>Weekend</h1>
         )
       case "month":
         return(

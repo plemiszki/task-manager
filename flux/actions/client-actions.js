@@ -15,6 +15,9 @@ var ClientActions = {
           case "day":
             ServerActions.receiveDayTasks(response);
             break;
+          case "weekend":
+            ServerActions.receiveWeekendTasks(response);
+            break;
           case "month":
             ServerActions.receiveMonthTasks(response);
             break;
@@ -42,6 +45,9 @@ var ClientActions = {
           case "day":
             ServerActions.receiveDayTasks(response);
             break;
+          case "weekend":
+            ServerActions.receiveWeekendTasks(response);
+            break;
           case "month":
             ServerActions.receiveMonthTasks(response);
             break;
@@ -67,6 +73,9 @@ var ClientActions = {
         switch (task.timeframe) {
           case "day":
             ServerActions.receiveDayTasks(response);
+            break;
+          case "weekend":
+            ServerActions.receiveWeekendTasks(response);
             break;
           case "month":
             ServerActions.receiveMonthTasks(response);
@@ -94,6 +103,9 @@ var ClientActions = {
         switch (task.timeframe) {
           case "day":
             ServerActions.receiveDayTasks(response);
+            break;
+          case "weekend":
+            ServerActions.receiveWeekendTasks(response);
             break;
           case "month":
             ServerActions.receiveMonthTasks(response);

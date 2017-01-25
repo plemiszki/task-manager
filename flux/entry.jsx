@@ -6,6 +6,9 @@ $(document).ready(function() {
   if ($('#tasks-index-day')[0]) {
     ReactDOM.render(<TasksIndex timeframe={"day"} />, document.getElementById("tasks-index-day"));
   }
+  if ($('#tasks-index-weekend')[0]) {
+    ReactDOM.render(<TasksIndex timeframe={"weekend"} />, document.getElementById("tasks-index-weekend"));
+  }
   if ($('#tasks-index-month')[0]) {
     ReactDOM.render(<TasksIndex timeframe={"month"} />, document.getElementById("tasks-index-month"));
   }

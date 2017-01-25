@@ -9,6 +9,13 @@ var ServerActions = {
     });
   },
 
+  receiveWeekendTasks: function(response) {
+    AppDispatcher.dispatch({
+      actionType: "WEEKEND_TASKS_RECEIVED",
+      tasks: response
+    });
+  },
+
   receiveMonthTasks: function(response) {
     AppDispatcher.dispatch({
       actionType: "MONTH_TASKS_RECEIVED",
