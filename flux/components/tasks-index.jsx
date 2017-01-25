@@ -40,6 +40,10 @@ var TasksIndex = React.createClass({
     ClientActions.fetchTasks(this.props.timeframe);
   },
 
+  componentDidUpdate: function() {
+    $('.match-height').matchHeight();
+  },
+
   getTasks: function() {
     this.setState({
       fetching: false,
@@ -75,7 +79,7 @@ var TasksIndex = React.createClass({
 
   render: function() {
     return(
-      <div className="tasks-index">
+      <div className="tasks-index match-height">
         {Common.renderSpinner(this.state.fetching)}
         {Common.renderGrayedOut(this.state.fetching)}
         {this.renderHeader()}

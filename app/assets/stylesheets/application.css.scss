@@ -18,6 +18,17 @@
  @import 'bootstrap';
  @import 'reset';
 
+ @media (min-width: 992px) {
+  .container{
+    width: 90%;
+  }
+}
+ @media (min-width: 1200px) {
+  .container{
+    width: 1300px;
+  }
+}
+
 .tasks-index {
   margin-top: 20px;
   background: #FFFFFF;
