@@ -7,7 +7,7 @@ $(document).ready(function() {
 Common = {
 
   initialize: function() {
-    
+    $.fn.matchHeight._maintainScroll = true;
   },
 
   renderDisabledButtonClass: function(fetching) {
