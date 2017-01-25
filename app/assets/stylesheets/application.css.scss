@@ -124,6 +124,10 @@
         background: asset-data-url("checkmark.png") 45% 40% no-repeat;
         background-size: 70%;
       }
+
+      .delete-button {
+        background: asset-data-url("delete.png") center center no-repeat;
+      }
     }
 
     .plus, .minus, .check {
