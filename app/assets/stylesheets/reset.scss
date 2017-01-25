@@ -1,5 +1,31 @@
+@font-face {
+  font-family: 'TeachableSansRegular';
+  src: url('fonts/TeachableSans-Regular.woff') format('woff'), /* Pretty Modern Browsers */
+       url('fonts/TeachableSans-Regular.ttf')  format('truetype') /* Safari, Android, iOS */
+}
+@font-face {
+  font-family: 'TeachableSansMedium';
+  src: url('fonts/TeachableSans-Medium.woff') format('woff'), /* Pretty Modern Browsers */
+       url('fonts/TeachableSans-Medium.ttf')  format('truetype') /* Safari, Android, iOS */
+}
+@font-face {
+  font-family: 'TeachableSansSemiBold';
+  src: url('fonts/TeachableSans-SemiBold.woff') format('woff'), /* Pretty Modern Browsers */
+       url('fonts/TeachableSans-SemiBold.ttf')  format('truetype') /* Safari, Android, iOS */
+}
+@font-face {
+  font-family: 'TeachableSansBold';
+  src: url('fonts/TeachableSans-Bold.woff') format('woff'), /* Pretty Modern Browsers */
+       url('fonts/TeachableSans-Bold.ttf')  format('truetype') /* Safari, Android, iOS */
+}
+@font-face {
+  font-family: 'TeachableSansExtraBold';
+  src: url('fonts/TeachableSans-ExtraBold.woff') format('woff'), /* Pretty Modern Browsers */
+       url('fonts/TeachableSans-ExtraBold.ttf')  format('truetype') /* Safari, Android, iOS */
+}
+
 body {
-  // font-family: 'TeachableSansRegular', sans-serif;
+  font-family: 'TeachableSansSemiBold', sans-serif;
   font-size: 12px;
   letter-spacing: 1.08px;
   background-color: #F5F6F7;

@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+ruby '2.3.1'
 
 gem 'rails', '4.2.5' # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'pg', '~> 0.15' # Use postgresql as the database for Active Record
@@ -26,5 +27,5 @@ group :development do
 end
 
 group :production do
-  gem 'rails_12factor' #apparently heroku needs this
+  gem 'rails_12factor' # apparently heroku needs this
 end
