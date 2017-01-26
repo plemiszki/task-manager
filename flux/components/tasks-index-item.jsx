@@ -11,6 +11,22 @@ var TaskIndexItem = React.createClass({
     });
   },
 
+  componentDidMount: function() {
+    $('.task').draggable({
+      cursor: '-webkit-grabbing',
+      handle: '.handle',
+      helper: function() { return "<div></div>"; },
+      start: this.dragStartHandler,
+      stop: this.dragEndHandler,
+    });
+    // $('.drop-zone').droppable({
+    //   accept: Admin.canIDrop,
+    //   over: this.dragOverHandler,
+    //   out: this.dragOutHandler,
+    //   drop: this.dropHandler
+    // });
+  },
+
   componentWillReceiveProps: function(nextProps) {
     this.setState({
       task: nextProps.task,
@@ -20,6 +36,7 @@ var TaskIndexItem = React.createClass({
 
   clickText: function(event) {
     event.preventDefault();
+    event.target.classList.remove('handle');
     this.setState({
       editing: true
     });
@@ -35,6 +52,7 @@ var TaskIndexItem = React.createClass({
 
   clickEnter: function(event) {
     if (event.key == 'Enter') {
+      event.target.parentElement.children[0].classList.add('handle');
       this.setState({
         editing: false
       });
@@ -73,6 +91,49 @@ var TaskIndexItem = React.createClass({
     this.props.addSubTask(this.state.task);
   },
 
+  dragStartHandler: function(e) {
+    $('.task').addClass('dragging');
+    $('.task, a, input').addClass('grabbing');
+    e.target.classList.add('dragging-this');
+    // var field = e.target.parentElement.parentElement;
+    // field.classList.add('highlight');
+    // var children = field.parentElement.children;
+    // var bottomDropZone = children[children.length - 1];
+    // bottomDropZone.classList.add('smaller');
+    // if (children.length == 3) {
+    //   var topDropZone = children[0];
+    // } else {
+    //   var fieldIndex = +field.getAttribute('id').split('-')[1];
+    //   var fields = field.parentElement.parentElement.children;
+    //   var topField = fields[fieldIndex + 1];
+    //   var topDropZone = topField.children[topField.children.length - 1];
+    // }
+    // topDropZone.classList.add('smaller');
+  },
+
+  dragOverHandler: function(e) {
+    console.log("drag over");
+    // e.target.classList.add('highlight');
+  },
+
+  dragOutHandler: function(e) {
+    console.log("drag out");
+    // e.target.classList.remove('highlight');
+  },
+
+  dragEndHandler: function(e) {
+    $('.dragging').removeClass('dragging');
+    $('.task, a, input').removeClass('grabbing');
+    $('.dragging-this').removeClass('dragging-this');
+  },
+
+  // dropHandler: function(e, ui) {
+  //   draggedIndex = ui.draggable.attr('id').split('-')[1];
+  //   dropZoneIndex = e.target.dataset.index;
+  //   $('.highlight').removeClass('highlight');
+  //   this.props.rearrangeFields(draggedIndex, dropZoneIndex);
+  // },
+
   render: function() {
     return(
       <div className="group">
@@ -86,6 +147,7 @@ var TaskIndexItem = React.createClass({
           <div className={((this.state.editing) ? "hidden" : (this.state.task.complete ? "check" : (this.state.subtasks == 0 ? "hidden" : (this.state.task.expanded ? "minus" : "plus"))))} onClick={this.clickExpand}>
           </div>
           <div className="click-area" onClick={this.clickText}>
+            <div className="handle"></div>
             <input className={this.state.editing ? "" : "disabled"} disabled={!this.state.editing} value={this.state.task.text} onChange={this.changeText} onKeyPress={this.clickEnter} />
           </div>
         </div>

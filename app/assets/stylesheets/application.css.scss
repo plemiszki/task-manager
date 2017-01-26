@@ -107,6 +107,7 @@
       border-radius: 6px;
       position: absolute;
       right: 5px;
+      z-index: 2;
 
       a {
         float: right;
@@ -141,11 +142,24 @@
       }
     }
 
+    .click-area {
+      position: relative;
+      z-index: 1;
+
+      .handle {
+        position: absolute;
+        z-index: 2;
+        height: 100%;
+        width: 100%;
+      }
+    }
+
     .plus, .minus, .check {
       width: 20px;
       height: 100%;
       top: 0;
       position: absolute;
+      z-index: 2;
     }
 
     .plus {
@@ -174,6 +188,14 @@
     display: block;
   }
 
+  .task.dragging:hover .controls {
+    display: none;
+  }
+
+  .task.dragging-this {
+    border: dashed 2px black;
+  }
+
   .subtasks {
     width: 90%;
     float: right;
@@ -182,4 +204,8 @@
 
 #tasks-index-life {
   margin-bottom: 30px;
+}
+
+.grabbing {
+  cursor: -webkit-grabbing !important;
 }
