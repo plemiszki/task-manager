@@ -85,6 +85,7 @@ var TasksIndex = React.createClass({
         {this.renderHeader()}
         <a href="" onClick={this.clickAddButton}>Add Task</a>
         <hr />
+        <div className="drop-area"></div>
         {this.state.tasks.map(function(task, index) {
           if (!task.parent_id) {
             return(

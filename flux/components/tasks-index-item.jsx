@@ -15,16 +15,17 @@ var TaskIndexItem = React.createClass({
     $('.task').draggable({
       cursor: '-webkit-grabbing',
       handle: '.handle',
-      helper: function() { return "<div></div>"; },
+      helper: function() { return '<div></div>'; },
       start: this.dragStartHandler,
       stop: this.dragEndHandler,
     });
-    // $('.drop-zone').droppable({
-    //   accept: Admin.canIDrop,
-    //   over: this.dragOverHandler,
-    //   out: this.dragOutHandler,
-    //   drop: this.dropHandler
-    // });
+    $('.drop-area').droppable({
+      accept: Common.canIDrop,
+      tolerance: 'pointer',
+      over: this.dragOverHandler,
+      out: this.dragOutHandler,
+      drop: this.dropHandler
+    });
   },
 
   componentWillReceiveProps: function(nextProps) {
@@ -112,13 +113,19 @@ var TaskIndexItem = React.createClass({
   },
 
   dragOverHandler: function(e) {
-    console.log("drag over");
-    // e.target.classList.add('highlight');
+    e.target.classList.add('highlight');
   },
 
   dragOutHandler: function(e) {
-    console.log("drag out");
-    // e.target.classList.remove('highlight');
+    e.target.classList.remove('highlight');
+  },
+
+  dropHandler: function(e, ui) {
+    console.log("drop");
+    // draggedIndex = ui.draggable.attr('id').split('-')[1];
+    // dropZoneIndex = e.target.dataset.index;
+    $('.highlight').removeClass('highlight');
+    // this.props.rearrangeFields(draggedIndex, dropZoneIndex);
   },
 
   dragEndHandler: function(e) {
@@ -126,13 +133,6 @@ var TaskIndexItem = React.createClass({
     $('.task, a, input').removeClass('grabbing');
     $('.dragging-this').removeClass('dragging-this');
   },
-
-  // dropHandler: function(e, ui) {
-  //   draggedIndex = ui.draggable.attr('id').split('-')[1];
-  //   dropZoneIndex = e.target.dataset.index;
-  //   $('.highlight').removeClass('highlight');
-  //   this.props.rearrangeFields(draggedIndex, dropZoneIndex);
-  // },
 
   render: function() {
     return(
@@ -151,6 +151,7 @@ var TaskIndexItem = React.createClass({
             <input className={this.state.editing ? "" : "disabled"} disabled={!this.state.editing} value={this.state.task.text} onChange={this.changeText} onKeyPress={this.clickEnter} />
           </div>
         </div>
+        <div className="drop-area"></div>
         {this.renderSubTasks()}
       </div>
     );

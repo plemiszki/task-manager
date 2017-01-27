@@ -28,6 +28,10 @@ Common = {
         <div className="spinner"></div>
       );
     }
+  },
+
+  canIDrop: function() {
+    return true;
   }
 }
 
