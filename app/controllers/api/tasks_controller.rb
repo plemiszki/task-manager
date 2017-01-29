@@ -5,7 +5,8 @@ class Api::TasksController < ActionController::Base
   end
 
   def create
-    @task = Task.new(timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task")
+    tasks_length = Task.where(timeframe: params[:timeframe]).length
+    @task = Task.new(timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length)
     @task.save!
     # expand parent task if a subtask was just created
     if params[:parent_id]
