@@ -30,7 +30,10 @@ TasksWeekendStore.rootTasks = function() {
     }
   });
   var result = [];
-  Object.keys(hash).sort().forEach(function(index) {
+  var sortedKeys = Object.keys(hash).sort(function(a, b) {
+    return +a - +b;
+  });
+  sortedKeys.forEach(function(index) {
     result.push(hash[index]);
   })
   return result;
@@ -44,7 +47,10 @@ TasksWeekendStore.subTasks = function(id) {
     }
   });
   var result = [];
-  Object.keys(hash).sort().forEach(function(index) {
+  var sortedKeys = Object.keys(hash).sort(function(a, b) {
+    return +a - +b;
+  });
+  sortedKeys.forEach(function(index) {
     result.push(hash[index]);
   })
   return result;
