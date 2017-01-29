@@ -22,6 +22,7 @@ var TaskIndexItem = React.createClass({
     $('#' + this.createDropAreaId()).droppable({
       accept: Common.canIDrop,
       tolerance: 'pointer',
+      over: Common.dragOverHandler,
       out: Common.dragOutHandler,
       drop: this.props.dropHandler
     });

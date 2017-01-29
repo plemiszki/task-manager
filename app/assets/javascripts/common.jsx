@@ -47,19 +47,22 @@ Common = {
       if (draggedParentId == dropZoneParentId) {
         var difference = Math.abs(draggedIndex - dropZoneIndex);
         if (difference >= 2) {
-          event.target.classList.add("highlight-black");
           return true;
         } else if (difference == 1 && draggedIndex < dropZoneIndex) {
-          event.target.classList.add("highlight-black");
           return true;
         }
       } else {
         return false;
       }
     } else {
-      event.target.classList.add("highlight-blue");
-      return true;
+      if (dropZoneParentId == "") {
+        return true;
+      }
     }
+  },
+
+  dragOverHandler: function(e) {
+    e.target.classList.add('highlight-black');
   },
 
   dragOutHandler: function(e) {
