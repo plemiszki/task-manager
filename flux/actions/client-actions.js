@@ -11,6 +11,7 @@ var ClientActions = {
         timeframe: timeframe
       },
       success: function(response) {
+        console.log(response);
         switch (timeframe) {
           case "day":
             ServerActions.receiveDayTasks(response);
