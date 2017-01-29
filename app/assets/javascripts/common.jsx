@@ -30,8 +30,41 @@ Common = {
     }
   },
 
-  canIDrop: function() {
-    return true;
+  canIDrop: function($e) {
+    draggedId = $e[0].getAttribute('id');
+    draggedIdArray = draggedId.split('-');
+    draggedTimeFrame = draggedIdArray[0];
+    draggedParentId = draggedIdArray.length - 2 == 0 ? "" : draggedIdArray.slice(0, -1).join("-");
+    draggedIndex = +draggedIdArray[draggedIdArray.length - 1];
+
+    dropZoneId = this.getAttribute('id');
+    dropZoneIdArray = dropZoneId.split('-');
+    dropZoneTimeFrame = dropZoneIdArray[0];
+    dropZoneParentId = dropZoneIdArray.length - 3 == 0 ? "" : dropZoneIdArray.slice(0, -2).join("-");
+    dropZoneIndex = dropZoneIdArray[dropZoneIdArray.length - 2] == "top" ? -1 : +dropZoneIdArray[dropZoneIdArray.length - 2];
+
+    if (draggedTimeFrame == dropZoneTimeFrame) {
+      if (draggedParentId == dropZoneParentId) {
+        var difference = Math.abs(draggedIndex - dropZoneIndex);
+        if (difference >= 2) {
+          event.target.classList.add("highlight-black");
+          return true;
+        } else if (difference == 1 && draggedIndex < dropZoneIndex) {
+          event.target.classList.add("highlight-black");
+          return true;
+        }
+      } else {
+        return false;
+      }
+    } else {
+      event.target.classList.add("highlight-blue");
+      return true;
+    }
+  },
+
+  dragOutHandler: function(e) {
+    e.target.classList.remove('highlight-black');
+    e.target.classList.remove('highlight-blue');
   }
 }
 

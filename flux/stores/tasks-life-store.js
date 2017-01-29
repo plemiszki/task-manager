@@ -22,13 +22,31 @@ TasksLifeStore.all = function() {
   });
 };
 
-TasksLifeStore.subTasks = function(id) {
-  var result = [];
+TasksLifeStore.rootTasks = function() {
+  var hash = {};
   TasksLifeStore.all().forEach(function(task) {
-    if (task.parent_id == id) {
-      result.push(task);
+    if (!task.parent_id) {
+      hash[task.order] = task;
     }
   });
+  var result = [];
+  Object.keys(hash).sort().forEach(function(index) {
+    result.push(hash[index]);
+  })
+  return result;
+};
+
+TasksLifeStore.subTasks = function(id) {
+  var hash = {};
+  TasksLifeStore.all().forEach(function(task) {
+    if (task.parent_id == id) {
+      hash[task.order] = task;
+    }
+  });
+  var result = [];
+  Object.keys(hash).sort().forEach(function(index) {
+    result.push(hash[index]);
+  })
   return result;
 };
 

@@ -119,6 +119,36 @@ var ClientActions = {
         }
       }
     });
+  },
+
+  rearrangeTasks: function(hash, timeframe) {
+    $.ajax({
+      url: '/api/tasks/rearrange',
+      type: "PATCH",
+      data: {
+        tasks: hash,
+        timeframe: timeframe
+      },
+      success: function(response) {
+        switch (timeframe) {
+          case "day":
+            ServerActions.receiveDayTasks(response);
+            break;
+          case "weekend":
+            ServerActions.receiveWeekendTasks(response);
+            break;
+          case "month":
+            ServerActions.receiveMonthTasks(response);
+            break;
+          case "year":
+            ServerActions.receiveYearTasks(response);
+            break;
+          case "life":
+            ServerActions.receiveLifeTasks(response);
+            break;
+        }
+      }
+    });
   }
 };
 

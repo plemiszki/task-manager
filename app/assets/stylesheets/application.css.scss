@@ -197,6 +197,7 @@
 
   .task.dragging-this {
     border: dashed 2px black;
+    padding: 3px;
   }
 
   .drop-area {
@@ -204,10 +205,18 @@
     height: 10px;
   }
 
-  .drop-area.highlight {
+  .drop-area.highlight-black {
     border: solid 1px black;
     border-top: dashed 2px black;
     border-bottom: dashed 2px black;
+    position: relative;
+    z-index: 4;
+  }
+
+  .drop-area.highlight-blue {
+    border: solid 1px blue;
+    border-top: dashed 2px blue;
+    border-bottom: dashed 2px blue;
     position: relative;
     z-index: 4;
   }

@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     get '/tasks' => '/api/tasks#index'
     post '/tasks' => '/api/tasks#create'
     patch '/tasks' => '/api/tasks#update'
+    patch '/tasks/rearrange' => '/api/tasks#rearrange'
     delete '/tasks' => '/api/tasks#delete'
   end
 

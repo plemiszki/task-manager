@@ -1,7 +1,7 @@
 class Api::TasksController < ActionController::Base
 
   def index
-    render json: Task.where(timeframe: params[:timeframe])
+    render json: Task.where(timeframe: params[:timeframe]).order(:order)
   end
 
   def create
@@ -12,19 +12,28 @@ class Api::TasksController < ActionController::Base
       @parent_task = Task.find(params[:parent_id])
       @parent_task.update(expanded: true)
     end
-    render json: Task.where(timeframe: params[:timeframe])
+    render json: Task.where(timeframe: params[:timeframe]).order(:order)
   end
 
   def update
     @task = Task.find(params[:task][:id])
     @task.update(task_params)
-    render json: Task.where(timeframe: params[:task][:timeframe])
+    render json: Task.where(timeframe: params[:task][:timeframe]).order(:order)
+  end
+
+  def rearrange
+    @tasks = params[:tasks]
+    @tasks.each do |index, id|
+      task = Task.find(id)
+      task.update(order: index)
+    end
+    render json: Task.where(timeframe: params[:timeframe]).order(:order)
   end
 
   def delete
     @task = Task.find(params[:id])
     @task.destroy
-    render json: Task.where(timeframe: params[:timeframe])
+    render json: Task.where(timeframe: params[:timeframe]).order(:order)
   end
 
   private

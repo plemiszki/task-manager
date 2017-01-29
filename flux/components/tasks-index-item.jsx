@@ -12,26 +12,25 @@ var TaskIndexItem = React.createClass({
   },
 
   componentDidMount: function() {
-    $('.task').draggable({
+    $('#' + this.createTaskId()).draggable({
       cursor: '-webkit-grabbing',
       handle: '.handle',
       helper: function() { return '<div></div>'; },
       start: this.dragStartHandler,
-      stop: this.dragEndHandler,
+      stop: this.dragEndHandler
     });
-    $('.drop-area').droppable({
+    $('#' + this.createDropAreaId()).droppable({
       accept: Common.canIDrop,
       tolerance: 'pointer',
-      over: this.dragOverHandler,
-      out: this.dragOutHandler,
-      drop: this.dropHandler
+      out: Common.dragOutHandler,
+      drop: this.props.dropHandler
     });
   },
 
   componentWillReceiveProps: function(nextProps) {
     this.setState({
       task: nextProps.task,
-      subtasks: this.props.store.subTasks(this.props.task.id)
+      subtasks: this.props.store.subTasks(nextProps.task.id)
     });
   },
 
@@ -96,48 +95,30 @@ var TaskIndexItem = React.createClass({
     $('.task').addClass('dragging');
     $('.task, a, input').addClass('grabbing');
     e.target.classList.add('dragging-this');
-    // var field = e.target.parentElement.parentElement;
-    // field.classList.add('highlight');
-    // var children = field.parentElement.children;
-    // var bottomDropZone = children[children.length - 1];
-    // bottomDropZone.classList.add('smaller');
-    // if (children.length == 3) {
-    //   var topDropZone = children[0];
-    // } else {
-    //   var fieldIndex = +field.getAttribute('id').split('-')[1];
-    //   var fields = field.parentElement.parentElement.children;
-    //   var topField = fields[fieldIndex + 1];
-    //   var topDropZone = topField.children[topField.children.length - 1];
-    // }
-    // topDropZone.classList.add('smaller');
-  },
-
-  dragOverHandler: function(e) {
-    e.target.classList.add('highlight');
-  },
-
-  dragOutHandler: function(e) {
-    e.target.classList.remove('highlight');
-  },
-
-  dropHandler: function(e, ui) {
-    console.log("drop");
-    // draggedIndex = ui.draggable.attr('id').split('-')[1];
-    // dropZoneIndex = e.target.dataset.index;
-    $('.highlight').removeClass('highlight');
-    // this.props.rearrangeFields(draggedIndex, dropZoneIndex);
   },
 
   dragEndHandler: function(e) {
     $('.dragging').removeClass('dragging');
     $('.task, a, input').removeClass('grabbing');
     $('.dragging-this').removeClass('dragging-this');
+    $('.highlight-black').removeClass('highlight-black');
+    $('.highlight-blue').removeClass('highlight-blue');
+  },
+
+  createTaskId: function() {
+    var currentId = this.props.parentId || this.props.task.timeframe;
+    return currentId + "-" + this.props.index;
+  },
+
+  createDropAreaId: function() {
+    var currentId = this.props.parentId || this.props.task.timeframe;
+    return currentId + "-" + this.props.index + "-drop";
   },
 
   render: function() {
     return(
       <div className="group">
-        <div className="task">
+        <div id={this.createTaskId()} className="task" data-taskid={this.props.task.id}>
           <div className={"controls" + (this.state.editing ? " hidden" : "")}>
             <a href="" className="delete-button" onClick={this.deleteTask}></a>
             <a href="" className="done-button" onClick={this.finishedTask}></a>
@@ -151,7 +132,7 @@ var TaskIndexItem = React.createClass({
             <input className={this.state.editing ? "" : "disabled"} disabled={!this.state.editing} value={this.state.task.text} onChange={this.changeText} onKeyPress={this.clickEnter} />
           </div>
         </div>
-        <div className="drop-area"></div>
+        <div id={this.createDropAreaId()} className="drop-area"></div>
         {this.renderSubTasks()}
       </div>
     );
@@ -160,10 +141,10 @@ var TaskIndexItem = React.createClass({
   renderSubTasks: function() {
     if (this.state.task.expanded) {
       return(
-        <div className="subtasks">
+        <div id={"subtasks-" + this.createTaskId()} className="subtasks">
           {this.state.subtasks.map(function(task, index) {
             return(
-              <TaskIndexItem key={index} task={task} store={this.props.store} updateTask={this.props.updateTask} addSubTask={this.props.addSubTask} deleteTask={this.props.deleteTask} />
+              <TaskIndexItem key={index} index={index} task={task} parentId={this.createTaskId()} store={this.props.store} updateTask={this.props.updateTask} addSubTask={this.props.addSubTask} deleteTask={this.props.deleteTask} dropHandler={this.props.dropHandler} />
             );
           }.bind(this))}
         </div>

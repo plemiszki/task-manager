@@ -15,11 +15,18 @@ var TasksIndex = React.createClass({
   getInitialState: function() {
     return({
       fetching: true,
+      rootTasks: [],
       tasks: []
     });
   },
 
   componentDidMount: function() {
+    $('#' + this.props.timeframe + '-top-drop').droppable({
+      accept: Common.canIDrop,
+      tolerance: 'pointer',
+      out: Common.dragOutHandler,
+      drop: this.dropHandler
+    });
     switch (this.props.timeframe) {
       case "day":
         this.properStore = TasksDayStore;
@@ -47,6 +54,7 @@ var TasksIndex = React.createClass({
   getTasks: function() {
     this.setState({
       fetching: false,
+      rootTasks: this.properStore.rootTasks(),
       tasks: this.properStore.all()
     });
   },
@@ -77,21 +85,75 @@ var TasksIndex = React.createClass({
     ClientActions.deleteTask(task);
   },
 
+  dropHandler: function(e, ui) {
+    var draggedIndex = this.getIndexFromId(ui.draggable.attr('id'));
+    var dropZoneArray = e.target.getAttribute('id').split('-');
+    var dropZoneIndex = dropZoneArray[dropZoneArray.length - 2];
+    if (dropZoneIndex == "top") { dropZoneIndex = -1; }
+
+    var hash = {};
+    var parent = e.target.parentElement;
+    var parentId, $tasks, timeframe;
+    if (parent.classList[0] == "tasks-index") { // top drop zone
+      parentId = parent.parentElement.getAttribute('id');
+      timeframe = parentId.split('-')[parentId.split('-').length - 1];
+      $tasks = $('#' + parentId + ' > .tasks-index > .group > .task');
+    } else if (parent.parentElement.classList[0] == "tasks-index") { // root level
+      parentId = parent.parentElement.parentElement.getAttribute('id');
+      timeframe = parentId.split('-')[parentId.split('-').length - 1];
+      $tasks = $('#' + parentId + ' > .tasks-index > .group > .task');
+    } else { // subtasks
+      parentId = parent.parentElement.parentElement.children[0].getAttribute('id');
+      timeframe = parentId.split("-")[0];
+      $tasks = $('#subtasks-' + parentId + ' .task');
+    }
+
+    $tasks.each(function(index, task) {
+      var index = this.getIndexFromId(task.getAttribute('id'));
+      var id = task.dataset.taskid;
+      hash[index] = +id;
+    }.bind(this))
+
+    var newHash = this.rearrangeFields(hash, draggedIndex, dropZoneIndex);
+    ClientActions.rearrangeTasks(newHash, timeframe);
+  },
+
+  rearrangeFields: function(hash, draggedIndex, dropZoneIndex) {
+    var result = {};
+    var draggedTaskId;
+    if (dropZoneIndex == -1) {
+      draggedTaskId = hash[draggedIndex];
+      result[0] = draggedTaskId;
+    }
+    for (var i = 0; i < Object.keys(hash).length; i++) {
+      if (i != draggedIndex) {
+        result[Object.keys(result).length] = hash[i];
+      }
+      if (i == dropZoneIndex) {
+        result[Object.keys(result).length] = hash[draggedIndex];
+      }
+    }
+    return result;
+  },
+
+  getIndexFromId: function(id) {
+    var array = id.split('-');
+    return array[array.length - 1];
+  },
+
   render: function() {
     return(
-      <div className="tasks-index match-height">
+      <div className="tasks-index match-height" data-index={this.props.timeframe}>
         {Common.renderSpinner(this.state.fetching)}
         {Common.renderGrayedOut(this.state.fetching)}
         {this.renderHeader()}
         <a href="" onClick={this.clickAddButton}>Add Task</a>
         <hr />
-        <div className="drop-area"></div>
-        {this.state.tasks.map(function(task, index) {
-          if (!task.parent_id) {
-            return(
-              <TasksIndexItem key={index} task={task} store={this.properStore} updateTask={this.updateTask} addSubTask={this.addSubTask} deleteTask={this.deleteTask} />
-            )
-          }
+        <div id={this.props.timeframe + '-top-drop'} className="drop-area"></div>
+        {this.state.rootTasks.map(function(task, index) {
+          return(
+            <TasksIndexItem key={index} index={index} task={task} level={"0"} store={this.properStore} updateTask={this.updateTask} addSubTask={this.addSubTask} deleteTask={this.deleteTask} dropHandler={this.dropHandler} />
+          )
         }.bind(this))}
       </div>
     )
