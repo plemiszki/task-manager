@@ -128,6 +128,7 @@ var TaskIndexItem = React.createClass({
           <div className={((this.state.editing) ? "hidden" : (this.state.task.complete ? "check" : (this.state.subtasks == 0 ? "hidden" : (this.state.task.expanded ? "minus" : "plus"))))} onClick={this.clickExpand}>
           </div>
           <div className="click-area" onClick={this.clickText}>
+            ({this.state.task.order})
             <div className="handle"></div>
             <input className={this.state.editing ? "" : "disabled"} disabled={!this.state.editing} value={this.state.task.text} onChange={this.changeText} onKeyPress={this.clickEnter} />
           </div>
