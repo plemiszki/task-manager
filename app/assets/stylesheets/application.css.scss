@@ -158,7 +158,6 @@
     }
 
     .plus, .minus, .check {
-      width: 20px;
       height: 100%;
       top: 0;
       position: absolute;
@@ -166,16 +165,18 @@
     }
 
     .plus {
+      width: 20px;
       background: asset-data-url("plus.png") center center no-repeat;
     }
 
     .minus {
+      width: 20px;
       background: asset-data-url("minus.png") center center no-repeat;
     }
 
     .check {
-      background: asset-data-url("checkmark.png") center center no-repeat;
-      left: 10px;
+      width: 30px;
+      background: asset-data-url("checkmark-padded.png") center center no-repeat;
     }
 
     .hidden {
