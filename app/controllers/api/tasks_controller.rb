@@ -19,6 +19,7 @@ class Api::TasksController < ActionController::Base
   def update
     @task = Task.find(params[:task][:id])
     @task.update(task_params)
+    check_if_all_siblings_complete(@task)
     render json: Task.where(timeframe: params[:task][:timeframe]).order(:order)
   end
 
@@ -42,6 +43,17 @@ class Api::TasksController < ActionController::Base
   end
 
   private
+
+  def check_if_all_siblings_complete(task)
+    return if !task.parent_id
+    tasks = Task.where(parent_id: task.parent_id)
+    tasks.each do |task|
+      return if !task.complete
+    end
+    parent_task = Task.find(task.parent_id)
+    parent_task.update(complete: true, expanded: false)
+    check_if_all_siblings_complete(parent_task)
+  end
 
   def task_params
     params.require(:task).permit(:text, :color, :complete, :duplicate_id, :parent_id, :expanded)
