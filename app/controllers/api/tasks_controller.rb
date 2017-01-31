@@ -5,7 +5,7 @@ class Api::TasksController < ActionController::Base
   end
 
   def create
-    tasks_length = Task.where(timeframe: params[:timeframe]).length
+    tasks_length = Task.where(timeframe: params[:timeframe], parent_id: params[:parent_id]).length
     @task = Task.new(timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length)
     @task.save!
     # expand parent task if a subtask was just created
@@ -33,7 +33,11 @@ class Api::TasksController < ActionController::Base
 
   def delete
     @task = Task.find(params[:id])
+    task_parent_id = @task.parent_id
     @task.destroy
+    Task.where(timeframe: params[:timeframe], parent_id: task_parent_id).order(:order).each_with_index do |task, index|
+      task.update(order: index)
+    end
     render json: Task.where(timeframe: params[:timeframe]).order(:order)
   end
 
