@@ -19,7 +19,7 @@ var TaskIndexItem = React.createClass({
       start: this.dragStartHandler,
       stop: this.dragEndHandler
     });
-    $('#' + this.createDropAreaId()).droppable({
+    $('#' + this.createDropAreaId() + ', #' + this.createSubtaskTopDropAreaId()).droppable({
       accept: Common.canIDrop,
       tolerance: 'pointer',
       over: Common.dragOverHandler,
@@ -116,10 +116,15 @@ var TaskIndexItem = React.createClass({
     return currentId + "-" + this.props.index + "-drop";
   },
 
+  createSubtaskTopDropAreaId: function() {
+    return this.props.parentId + "-top-drop";
+  },
+
   render: function() {
     return(
       <div className="group">
-        <div id={this.createTaskId()} className="task" data-taskid={this.props.task.id}>
+        <div id={this.createTaskId()} className={"task" + (this.state.task.expanded ? " expanded" : "")} data-taskid={this.props.task.id}>
+          {this.state.task.order}
           <div className={"controls" + (this.state.editing ? " hidden" : "")}>
             <a href="" className="delete-button" onClick={this.deleteTask}></a>
             <a href="" className="done-button" onClick={this.finishedTask}></a>
@@ -129,21 +134,29 @@ var TaskIndexItem = React.createClass({
           <div className={((this.state.editing) ? "hidden" : (this.state.task.complete ? "check" : (this.state.subtasks == 0 ? "hidden" : (this.state.task.expanded ? "minus" : "plus"))))} onClick={this.clickExpand}>
           </div>
           <div className="click-area" onClick={this.clickText}>
-            ({this.state.task.order})
             <div className="handle"></div>
             <input className={this.state.editing ? "" : "disabled"} disabled={!this.state.editing} value={this.state.task.text} onChange={this.changeText} onKeyPress={this.clickEnter} />
           </div>
         </div>
-        <div id={this.createDropAreaId()} className="drop-area"></div>
+        {this.renderBottomDropArea()}
         {this.renderSubTasks()}
       </div>
     );
+  },
+
+  renderBottomDropArea: function() {
+    if (!this.state.task.expanded) {
+      return(
+        <div id={this.createDropAreaId()} className="drop-area"></div>
+      )
+    }
   },
 
   renderSubTasks: function() {
     if (this.state.task.expanded) {
       return(
         <div id={"subtasks-" + this.createTaskId()} className="subtasks">
+          <div id={this.createTaskId() + '-top-drop'} className="drop-area"></div>
           {this.state.subtasks.map(function(task, index) {
             return(
               <TaskIndexItem key={index} index={index} task={task} parentId={this.createTaskId()} store={this.props.store} updateTask={this.props.updateTask} addSubTask={this.props.addSubTask} deleteTask={this.props.deleteTask} dropHandler={this.props.dropHandler} />
