@@ -105,7 +105,7 @@ var TasksIndex = React.createClass({
       } else if (parent.parentElement.classList[0] == "tasks-index") { // root level
         parentId = parent.parentElement.parentElement.getAttribute('id');
         $tasks = $('#' + parentId + ' > .tasks-index > .group > .task');
-      } else if (parent.getAttribute('id').split('-')[0] == "subtasks") { // subtasks top drop zone
+      } else if (parent.getAttribute('id') && parent.getAttribute('id').split('-')[0] == "subtasks") { // subtasks top drop zone
         parentId = parent.getAttribute('id');
         $tasks = $('#' + parentId + ' .task');
       } else { // subtasks
