@@ -19,19 +19,33 @@ var TaskIndexItem = React.createClass({
       start: this.dragStartHandler,
       stop: this.dragEndHandler
     });
+    this.attachDropZoneHandlers();
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    var $bottomDropArea = $('#' + this.createDropAreaId());
+    if ($bottomDropArea.data('droppable')) {
+      $bottomDropArea.droppable('destroy');
+    }
+    var $subtasksTopDropArea = $('#' + this.createSubtaskTopDropAreaId());
+    if ($subtasksTopDropArea.data('droppable')) {
+      $subtasksTopDropArea.droppable('destroy');
+    }
+    this.setState({
+      task: nextProps.task,
+      subtasks: this.props.store.subTasks(nextProps.task.id)
+    }, function() {
+      this.attachDropZoneHandlers();
+    });
+  },
+
+  attachDropZoneHandlers: function() {
     $('#' + this.createDropAreaId() + ', #' + this.createSubtaskTopDropAreaId()).droppable({
       accept: Common.canIDrop,
       tolerance: 'pointer',
       over: Common.dragOverHandler,
       out: Common.dragOutHandler,
       drop: this.props.dropHandler
-    });
-  },
-
-  componentWillReceiveProps: function(nextProps) {
-    this.setState({
-      task: nextProps.task,
-      subtasks: this.props.store.subTasks(nextProps.task.id)
     });
   },
 

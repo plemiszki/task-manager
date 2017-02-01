@@ -36,7 +36,13 @@ class Api::TasksController < ActionController::Base
     @task = Task.find(params[:id])
     task_parent_id = @task.parent_id
     @task.destroy
-    Task.where(timeframe: params[:timeframe], parent_id: task_parent_id).order(:order).each_with_index do |task, index|
+    siblings = Task.where(timeframe: params[:timeframe], parent_id: task_parent_id).order(:order)
+    # close parent task if no siblings left
+    if task_parent_id && siblings.length == 0
+      Task.find(task_parent_id).update(expanded: false)
+    end
+    # reassign order to siblings
+    siblings.each_with_index do |task, index|
       task.update(order: index)
     end
     render json: Task.where(timeframe: params[:timeframe]).order(:order)
