@@ -5,13 +5,20 @@ class Api::TasksController < ActionController::Base
   end
 
   def create
-    tasks_length = Task.where(timeframe: params[:timeframe], parent_id: params[:parent_id]).length
-    @task = Task.new(timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length)
-    @task.save!
-    # expand parent task if a subtask was just created
-    if params[:parent_id]
-      @parent_task = Task.find(params[:parent_id])
-      @parent_task.update(expanded: true)
+    if params[:task]
+      @task = Task.new(task_params)
+      p @task
+      @task.order = Task.where(timeframe: params[:timeframe]).length
+      @task.save!
+    else
+      tasks_length = Task.where(timeframe: params[:timeframe], parent_id: params[:parent_id]).length
+      @task = Task.new(timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length)
+      @task.save!
+      # expand parent task if a subtask was just created
+      if params[:parent_id]
+        @parent_task = Task.find(params[:parent_id])
+        @parent_task.update(expanded: true)
+      end
     end
     render json: Task.where(timeframe: params[:timeframe]).order(:order)
   end
@@ -62,7 +69,7 @@ class Api::TasksController < ActionController::Base
   end
 
   def task_params
-    params.require(:task).permit(:text, :color, :complete, :duplicate_id, :parent_id, :expanded)
+    params.require(:task).permit(:text, :color, :complete, :duplicate_id, :parent_id, :expanded, :timeframe)
   end
 
 end

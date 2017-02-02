@@ -121,11 +121,11 @@ var TasksIndex = React.createClass({
 
       var newHash = this.rearrangeFields(hash, draggedIndex, dropZoneIndex);
       ClientActions.rearrangeTasks(newHash, droppedTimeFrame);
-
     } else {
-
-      console.log("duplicate!");
-
+      var taskid = ui.draggable.data().taskid;
+      var storeName = "Tasks" + draggedTimeFrame.charAt(0).toUpperCase() + draggedTimeFrame.slice(1) + "Store";
+      var task = eval(storeName + '.find(' + taskid + ');');
+      ClientActions.addTask(dropZoneTimeFrame, null, task);
     }
   },
 

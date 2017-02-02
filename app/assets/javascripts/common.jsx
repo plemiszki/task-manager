@@ -55,7 +55,8 @@ Common = {
         return false;
       }
     } else {
-      if (dropZoneParentId == "") {
+      var numbers = {day: 1, weekend: 2, month: 3, year: 4, life: 5};
+      if (dropZoneParentId == "" && (numbers[draggedTimeFrame] > numbers[dropZoneTimeFrame])) {
         return true;
       }
     }
@@ -71,4 +72,4 @@ Common = {
   }
 }
 
-module.exports = Common
+module.exports = Common;

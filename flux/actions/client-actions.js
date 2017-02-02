@@ -32,13 +32,23 @@ var ClientActions = {
     });
   },
 
-  addTask: function(timeframe, parent_id) {
+  addTask: function(timeframe, parent_id, task) {
+    if (task) {
+      task = {
+        text: task.text,
+        color: task.color,
+        duplicate_id: task.id,
+        complete: task.complete,
+        timeframe: timeframe
+      };
+    }
     $.ajax({
       url: '/api/tasks',
       type: "POST",
       data: {
         timeframe: timeframe,
-        parent_id: parent_id
+        parent_id: parent_id,
+        task: task
       },
       success: function(response) {
         switch (timeframe) {
