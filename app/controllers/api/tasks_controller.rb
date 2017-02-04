@@ -1,14 +1,13 @@
 class Api::TasksController < ActionController::Base
 
   def index
-    render json: Task.where(timeframe: params[:timeframe]).order(:order)
+    render json: Task.all.order(:order)
   end
 
   def create
     if params[:task]
       @task = Task.new(task_params)
-      p @task
-      @task.order = Task.where(timeframe: params[:timeframe]).length
+      @task.order = Task.where(timeframe: params[:timeframe], parent_id: nil).length
       @task.save!
     else
       tasks_length = Task.where(timeframe: params[:timeframe], parent_id: params[:parent_id]).length
@@ -20,14 +19,17 @@ class Api::TasksController < ActionController::Base
         @parent_task.update(expanded: true)
       end
     end
-    render json: Task.where(timeframe: params[:timeframe]).order(:order)
+    render json: Task.all.order(:order)
   end
 
   def update
     @task = Task.find(params[:task][:id])
     @task.update(task_params)
     check_if_all_siblings_complete(@task)
-    render json: Task.where(timeframe: params[:task][:timeframe]).order(:order)
+    if @task.complete && @task.duplicate_id
+      mark_dups_complete(@task.duplicate_id)
+    end
+    render json: Task.all.order(:order)
   end
 
   def rearrange
@@ -36,7 +38,7 @@ class Api::TasksController < ActionController::Base
       task = Task.find(id)
       task.update(order: index)
     end
-    render json: Task.where(timeframe: params[:timeframe]).order(:order)
+    render json: Task.all.order(:order)
   end
 
   def delete
@@ -52,10 +54,19 @@ class Api::TasksController < ActionController::Base
     siblings.each_with_index do |task, index|
       task.update(order: index)
     end
-    render json: Task.where(timeframe: params[:timeframe]).order(:order)
+    render json: Task.all.order(:order)
   end
 
   private
+
+  def mark_dups_complete(id)
+    while id
+      @task = Task.find(id)
+      @task.update!(complete: true)
+      id = @task.duplicate_id
+    end
+    check_if_all_siblings_complete(@task)
+  end
 
   def check_if_all_siblings_complete(task)
     return if !task.parent_id

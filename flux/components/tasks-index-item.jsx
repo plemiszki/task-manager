@@ -1,5 +1,6 @@
 var React = require('react');
 var ClientActions = require('../actions/client-actions.js');
+var TasksStore = require('../stores/tasks-store.js');
 
 var TaskIndexItem = React.createClass({
 
@@ -7,7 +8,7 @@ var TaskIndexItem = React.createClass({
     return({
       editing: false,
       task: this.props.task,
-      subtasks: this.props.store.subTasks(this.props.task.id)
+      subtasks: TasksStore.subTasks(this.props.task)
     });
   },
 
@@ -33,7 +34,7 @@ var TaskIndexItem = React.createClass({
     }
     this.setState({
       task: nextProps.task,
-      subtasks: this.props.store.subTasks(nextProps.task.id)
+      subtasks: TasksStore.subTasks(nextProps.task)
     }, function() {
       this.attachDropZoneHandlers();
     });
@@ -173,7 +174,7 @@ var TaskIndexItem = React.createClass({
           <div id={this.createTaskId() + '-top-drop'} className="drop-area"></div>
           {this.state.subtasks.map(function(task, index) {
             return(
-              <TaskIndexItem key={index} index={index} task={task} parentId={this.createTaskId()} store={this.props.store} updateTask={this.props.updateTask} addSubTask={this.props.addSubTask} deleteTask={this.props.deleteTask} dropHandler={this.props.dropHandler} />
+              <TaskIndexItem key={index} index={index} task={task} parentId={this.createTaskId()} updateTask={this.props.updateTask} addSubTask={this.props.addSubTask} deleteTask={this.props.deleteTask} dropHandler={this.props.dropHandler} />
             );
           }.bind(this))}
         </div>

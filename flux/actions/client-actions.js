@@ -7,27 +7,8 @@ var ClientActions = {
     $.ajax({
       url: '/api/tasks',
       type: "GET",
-      data: {
-        timeframe: timeframe
-      },
       success: function(response) {
-        switch (timeframe) {
-          case "day":
-            ServerActions.receiveDayTasks(response);
-            break;
-          case "weekend":
-            ServerActions.receiveWeekendTasks(response);
-            break;
-          case "month":
-            ServerActions.receiveMonthTasks(response);
-            break;
-          case "year":
-            ServerActions.receiveYearTasks(response);
-            break;
-          case "life":
-            ServerActions.receiveLifeTasks(response);
-            break;
-        }
+        ServerActions.receiveTasks(response);
       }
     });
   },
@@ -51,23 +32,7 @@ var ClientActions = {
         task: task
       },
       success: function(response) {
-        switch (timeframe) {
-          case "day":
-            ServerActions.receiveDayTasks(response);
-            break;
-          case "weekend":
-            ServerActions.receiveWeekendTasks(response);
-            break;
-          case "month":
-            ServerActions.receiveMonthTasks(response);
-            break;
-          case "year":
-            ServerActions.receiveYearTasks(response);
-            break;
-          case "life":
-            ServerActions.receiveLifeTasks(response);
-            break;
-        }
+        ServerActions.receiveTasks(response);
       }
     });
   },
@@ -80,23 +45,7 @@ var ClientActions = {
         task: task
       },
       success: function(response) {
-        switch (task.timeframe) {
-          case "day":
-            ServerActions.receiveDayTasks(response);
-            break;
-          case "weekend":
-            ServerActions.receiveWeekendTasks(response);
-            break;
-          case "month":
-            ServerActions.receiveMonthTasks(response);
-            break;
-          case "year":
-            ServerActions.receiveYearTasks(response);
-            break;
-          case "life":
-            ServerActions.receiveLifeTasks(response);
-            break;
-        }
+        ServerActions.receiveTasks(response);
       }
     });
   },
@@ -110,23 +59,7 @@ var ClientActions = {
         timeframe: task.timeframe
       },
       success: function(response) {
-        switch (task.timeframe) {
-          case "day":
-            ServerActions.receiveDayTasks(response);
-            break;
-          case "weekend":
-            ServerActions.receiveWeekendTasks(response);
-            break;
-          case "month":
-            ServerActions.receiveMonthTasks(response);
-            break;
-          case "year":
-            ServerActions.receiveYearTasks(response);
-            break;
-          case "life":
-            ServerActions.receiveLifeTasks(response);
-            break;
-        }
+        ServerActions.receiveTasks(response);
       }
     });
   },
@@ -140,23 +73,7 @@ var ClientActions = {
         timeframe: timeframe
       },
       success: function(response) {
-        switch (timeframe) {
-          case "day":
-            ServerActions.receiveDayTasks(response);
-            break;
-          case "weekend":
-            ServerActions.receiveWeekendTasks(response);
-            break;
-          case "month":
-            ServerActions.receiveMonthTasks(response);
-            break;
-          case "year":
-            ServerActions.receiveYearTasks(response);
-            break;
-          case "life":
-            ServerActions.receiveLifeTasks(response);
-            break;
-        }
+        ServerActions.receiveTasks(response);
       }
     });
   }

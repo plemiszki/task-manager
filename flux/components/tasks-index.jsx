@@ -1,16 +1,10 @@
 var React = require('react');
 var Common = require('../../app/assets/javascripts/common.jsx');
 var ClientActions = require('../actions/client-actions.js');
-var TasksDayStore = require('../stores/tasks-day-store.js');
-var TasksWeekendStore = require('../stores/tasks-weekend-store.js');
-var TasksMonthStore = require('../stores/tasks-month-store.js');
-var TasksYearStore = require('../stores/tasks-year-store.js');
-var TasksLifeStore = require('../stores/tasks-life-store.js');
+var TasksStore = require('../stores/tasks-store.js');
 var TasksIndexItem = require('./tasks-index-item.jsx');
 
 var TasksIndex = React.createClass({
-
-  properStore: null,
 
   getInitialState: function() {
     return({
@@ -28,23 +22,7 @@ var TasksIndex = React.createClass({
       out: Common.dragOutHandler,
       drop: this.dropHandler
     });
-    switch (this.props.timeframe) {
-      case "day":
-        this.properStore = TasksDayStore;
-        break;
-      case "weekend":
-        this.properStore = TasksWeekendStore;
-        break;
-      case "month":
-        this.properStore = TasksMonthStore;
-        break;
-      case "year":
-        this.properStore = TasksYearStore;
-        break;
-      case "life":
-        this.properStore = TasksLifeStore;
-    }
-    this.tasksListener = this.properStore.addListener(this.getTasks);
+    this.tasksListener = TasksStore.addListener(this.getTasks);
     ClientActions.fetchTasks(this.props.timeframe);
   },
 
@@ -53,10 +31,11 @@ var TasksIndex = React.createClass({
   },
 
   getTasks: function() {
+    console.log(TasksStore.rootTasks(this.props.timeframe).length);
     this.setState({
       fetching: false,
-      rootTasks: this.properStore.rootTasks(),
-      tasks: this.properStore.all()
+      rootTasks: TasksStore.rootTasks(this.props.timeframe),
+      tasks: TasksStore.all(this.props.timeframe)
     });
   },
 
@@ -123,8 +102,7 @@ var TasksIndex = React.createClass({
       ClientActions.rearrangeTasks(newHash, droppedTimeFrame);
     } else {
       var taskid = ui.draggable.data().taskid;
-      var storeName = "Tasks" + draggedTimeFrame.charAt(0).toUpperCase() + draggedTimeFrame.slice(1) + "Store";
-      var task = eval(storeName + '.find(' + taskid + ');');
+      var task = TasksStore.find(taskid);
       ClientActions.addTask(dropZoneTimeFrame, null, task);
     }
   },
@@ -163,7 +141,7 @@ var TasksIndex = React.createClass({
         <div id={this.props.timeframe + '-top-drop'} className="drop-area"></div>
         {this.state.rootTasks.map(function(task, index) {
           return(
-            <TasksIndexItem key={index} index={index} task={task} level={"0"} store={this.properStore} updateTask={this.updateTask} addSubTask={this.addSubTask} deleteTask={this.deleteTask} dropHandler={this.dropHandler} />
+            <TasksIndexItem key={index} index={index} task={task} level={"0"} updateTask={this.updateTask} addSubTask={this.addSubTask} deleteTask={this.deleteTask} dropHandler={this.dropHandler} />
           )
         }.bind(this))}
       </div>
