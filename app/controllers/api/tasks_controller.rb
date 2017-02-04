@@ -42,17 +42,25 @@ class Api::TasksController < ActionController::Base
   end
 
   def delete
-    @task = Task.find(params[:id])
-    task_parent_id = @task.parent_id
-    @task.destroy
-    siblings = Task.where(timeframe: params[:timeframe], parent_id: task_parent_id).order(:order)
-    # close parent task if no siblings left
-    if task_parent_id && siblings.length == 0
-      Task.find(task_parent_id).update(expanded: false)
-    end
-    # reassign order to siblings
-    siblings.each_with_index do |task, index|
-      task.update(order: index)
+    id = params[:id]
+    while id
+      @task = Task.find(id)
+      task_parent_id = @task.parent_id
+      @task.destroy
+
+      siblings = Task.where(timeframe: params[:timeframe], parent_id: task_parent_id).order(:order)
+      # close parent task if no siblings left
+      if task_parent_id && siblings.length == 0
+        Task.find(task_parent_id).update(expanded: false)
+      end
+      # reassign order to siblings
+      siblings.each_with_index do |task, index|
+        task.update(order: index)
+      end
+
+      # now let's start it all again if there's a duplicate
+      @dup_task = Task.where(duplicate_id: id).first
+      id = @dup_task ? @dup_task.id : nil
     end
     render json: Task.all.order(:order)
   end

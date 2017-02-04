@@ -31,7 +31,6 @@ var TasksIndex = React.createClass({
   },
 
   getTasks: function() {
-    console.log(TasksStore.rootTasks(this.props.timeframe).length);
     this.setState({
       fetching: false,
       rootTasks: TasksStore.rootTasks(this.props.timeframe),
