@@ -43,15 +43,15 @@ class Api::TasksController < ActionController::Base
 
   def delete
     id = params[:id]
+    timeframe = params[:timeframe]
     while id
       @task = Task.find(id)
-      task_parent_id = @task.parent_id
       @task.destroy
 
-      siblings = Task.where(timeframe: params[:timeframe], parent_id: task_parent_id).order(:order)
+      siblings = Task.where(timeframe: @task.timeframe, parent_id: @task.parent_id).order(:order)
       # close parent task if no siblings left
-      if task_parent_id && siblings.length == 0
-        Task.find(task_parent_id).update(expanded: false)
+      if @task.parent_id && siblings.length == 0
+        Task.find(@task.parent_id).update(expanded: false)
       end
       # reassign order to siblings
       siblings.each_with_index do |task, index|
