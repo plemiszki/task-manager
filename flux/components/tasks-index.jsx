@@ -40,6 +40,9 @@ var TasksIndex = React.createClass({
 
   clickAddButton: function(event) {
     event.preventDefault();
+    this.setState({
+      fetching: true
+    });
     ClientActions.addTask(this.props.timeframe);
   },
 
@@ -98,10 +101,16 @@ var TasksIndex = React.createClass({
       }.bind(this))
 
       var newHash = this.rearrangeFields(hash, draggedIndex, dropZoneIndex);
+      this.setState({
+        fetching: true
+      });
       ClientActions.rearrangeTasks(newHash, droppedTimeFrame);
     } else {
       var taskid = ui.draggable.data().taskid;
       var task = TasksStore.find(taskid);
+      this.setState({
+        fetching: true
+      });
       ClientActions.addTask(dropZoneTimeFrame, null, task);
     }
   },

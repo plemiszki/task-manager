@@ -52,10 +52,12 @@ var TaskIndexItem = React.createClass({
 
   clickText: function(event) {
     event.preventDefault();
-    event.target.classList.remove('handle');
-    this.setState({
-      editing: true
-    });
+    if ($(event.target.parentElement.parentElement).hasClass('duplicate') === false) {
+      event.target.classList.remove('handle');
+      this.setState({
+        editing: true
+      });
+    }
   },
 
   changeText: function(event) {
