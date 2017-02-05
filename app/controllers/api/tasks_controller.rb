@@ -8,7 +8,7 @@ class Api::TasksController < ActionController::Base
     if params[:task]
       @task = Task.new(task_params)
       @task.save!
-      rearrange(params[:new_order])
+      rearrange(params[:new_order]) if params[:new_order]
     else
       tasks_length = Task.where(timeframe: params[:timeframe], parent_id: params[:parent_id]).length
       @task = Task.new(timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length)

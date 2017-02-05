@@ -176,11 +176,13 @@ var TaskIndexItem = React.createClass({
           <div className="hidden color-picker">
             <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(234, 30, 30)'}}></div>
             <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(255, 175, 163)'}}></div>
+            <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(255, 175, 36)'}}></div>
             <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(238, 244, 66)'}}></div>
             <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(140, 244, 66)'}}></div>
             <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(111, 138, 240)'}}></div>
             <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(181, 111, 240)'}}></div>
             <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(175, 96, 26)'}}></div>
+            <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(210, 206, 200)'}}></div>
           </div>
           <div className={((this.state.editing) ? "hidden" : (this.state.task.complete ? "check" : (this.state.subtasks == 0 ? "hidden" : (this.state.task.expanded ? "minus" : "plus"))))} onClick={this.clickExpand}>
           </div>
