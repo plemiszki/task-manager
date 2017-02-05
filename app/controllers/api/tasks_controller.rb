@@ -11,11 +11,19 @@ class Api::TasksController < ActionController::Base
       rearrange(params[:new_order])
     else
       tasks_length = Task.where(timeframe: params[:timeframe], parent_id: params[:parent_id]).length
-      @task = Task.new(timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length, color: "238, 244, 66")
-      @task.save!
-      # expand parent task if a subtask was just created
+      @task = Task.new(timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length)
+
+      # assign the proper color
+      color = "238, 244, 66"
       if params[:parent_id]
         @parent_task = Task.find(params[:parent_id])
+        color = @parent_task.color
+      end
+      @task.color = color
+      @task.save!
+
+      # expand parent task if a subtask was just created
+      if @parent_task
         @parent_task.update(expanded: true)
       end
       render json: Task.all.order(:order)
@@ -27,6 +35,7 @@ class Api::TasksController < ActionController::Base
     updating_dups = false
     while id
       @task = Task.find(id)
+      original_color = @task.color
       if updating_dups
         @task.update!(
           complete: params[:task][:complete],
@@ -40,6 +49,7 @@ class Api::TasksController < ActionController::Base
         end
       end
       check_if_all_siblings_complete(@task)
+      update_subtask_colors(@task) if (original_color != @task.color)
       @dup_task = Task.where(duplicate_id: id).first
       id = @dup_task ? @dup_task.id : nil
       updating_dups = true
@@ -99,6 +109,17 @@ class Api::TasksController < ActionController::Base
     parent_task = Task.find(task.parent_id)
     parent_task.update(complete: true, expanded: false)
     check_if_all_siblings_complete(parent_task)
+  end
+
+  def update_subtask_colors(task)
+    tasks_queue = task.subtasks.to_a
+    ids = []
+    until tasks_queue.empty?
+      ids << tasks_queue.first.id
+      tasks_queue += tasks_queue.first.subtasks.to_a
+      tasks_queue.shift
+    end
+    Task.where(id: ids).update_all(color: task.color)
   end
 
   def task_params

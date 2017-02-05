@@ -144,6 +144,30 @@
       }
     }
 
+    .color-picker {
+      display: block;
+      position: absolute;
+      background-color: white;
+      border: solid 1px black;
+      border-radius: 5px;
+      width: calc(100% - 35px);
+      height: 100%;
+      left: 0;
+      top: 0;
+      z-index: 3;
+      padding: 5px 0 5px 5px;
+
+      div {
+        display: block;
+        border: solid 1px transparent;
+        border-radius: 5px;
+        height: 100%;
+        width: calc(33% - 5px);
+        float: left;
+        margin-right: 5px;
+      }
+    }
+
     .click-area {
       position: relative;
       z-index: 1;

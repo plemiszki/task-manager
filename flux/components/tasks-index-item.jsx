@@ -32,6 +32,7 @@ var TaskIndexItem = React.createClass({
     if ($subtasksTopDropArea.data('droppable')) {
       $subtasksTopDropArea.droppable('destroy');
     }
+    $('.color-picker').addClass('hidden');
     this.setState({
       task: nextProps.task,
       subtasks: TasksStore.subTasks(nextProps.task)
@@ -104,6 +105,23 @@ var TaskIndexItem = React.createClass({
     });
   },
 
+  clickColorPicker: function(event) {
+    event.preventDefault();
+    $(event.target.parentElement.parentElement.children[1]).toggleClass('hidden');
+  },
+
+  pickColor: function(event) {
+    var style = event.target.getAttribute('style');
+    var color = style.split('(')[1].slice(0, -2);
+    var task = this.state.task;
+    task.color = color;
+    this.setState({
+      task: task
+    }, function() {
+      this.props.updateTask(this.state.task);
+    })
+  },
+
   addSubTask: function(event) {
     event.preventDefault();
     this.props.addSubTask(this.state.task);
@@ -149,12 +167,16 @@ var TaskIndexItem = React.createClass({
     return(
       <div className="group">
         <div id={this.createTaskId()} className={"task" + (this.state.task.expanded ? " expanded" : "") + (this.state.task.duplicate_id ? " duplicate" : "")} style={this.taskStyle()} data-taskid={this.props.task.id}>
-          {this.state.task.order}
           <div className={"controls" + (this.state.editing ? " hidden" : "")}>
             <a href="" className="delete-button" onClick={this.deleteTask}></a>
             <a href="" className="done-button" onClick={this.finishedTask}></a>
             <a href="" className="add-subtask-button" onClick={this.addSubTask}></a>
-            <a href="" className={"color-button" + ((this.state.task.duplicate_id || this.state.task.parent_id) ? " hidden" : "")}></a>
+            <a href="" className={"color-button" + ((this.state.task.duplicate_id || this.state.task.parent_id) ? " hidden" : "")} onClick={this.clickColorPicker}></a>
+          </div>
+          <div className="hidden color-picker">
+            <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(140, 244, 66)'}}></div>
+            <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(238, 244, 66)'}}></div>
+            <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(255, 175, 163)'}}></div>
           </div>
           <div className={((this.state.editing) ? "hidden" : (this.state.task.complete ? "check" : (this.state.subtasks == 0 ? "hidden" : (this.state.task.expanded ? "minus" : "plus"))))} onClick={this.clickExpand}>
           </div>
