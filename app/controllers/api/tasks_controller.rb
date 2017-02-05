@@ -23,11 +23,26 @@ class Api::TasksController < ActionController::Base
   end
 
   def update
-    @task = Task.find(params[:task][:id])
-    @task.update(task_params)
-    check_if_all_siblings_complete(@task)
-    if @task.complete && @task.duplicate_id
-      mark_dups_complete(@task.duplicate_id)
+    id = params[:task][:id]
+    updating_dups = false
+    while id
+      @task = Task.find(id)
+      if updating_dups
+        @task.update!(
+          complete: params[:task][:complete],
+          text: params[:task][:text],
+          order: params[:task][:color]
+        )
+      else
+        @task.update(task_params)
+        if @task.duplicate_id
+          mark_master_complete(@task.duplicate_id, params[:task][:complete])
+        end
+      end
+      check_if_all_siblings_complete(@task)
+      @dup_task = Task.where(duplicate_id: id).first
+      id = @dup_task ? @dup_task.id : nil
+      updating_dups = true
     end
     render json: Task.all.order(:order)
   end
@@ -67,10 +82,10 @@ class Api::TasksController < ActionController::Base
 
   private
 
-  def mark_dups_complete(id)
+  def mark_master_complete(id, complete)
     while id
       @task = Task.find(id)
-      @task.update!(complete: true)
+      @task.update!(complete: complete)
       id = @task.duplicate_id
     end
     check_if_all_siblings_complete(@task)
