@@ -11,7 +11,7 @@ class Api::TasksController < ActionController::Base
       @task.save!
     else
       tasks_length = Task.where(timeframe: params[:timeframe], parent_id: params[:parent_id]).length
-      @task = Task.new(timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length)
+      @task = Task.new(timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length, color: "238, 244, 66")
       @task.save!
       # expand parent task if a subtask was just created
       if params[:parent_id]

@@ -154,7 +154,7 @@ var TaskIndexItem = React.createClass({
             <a href="" className="delete-button" onClick={this.deleteTask}></a>
             <a href="" className="done-button" onClick={this.finishedTask}></a>
             <a href="" className="add-subtask-button" onClick={this.addSubTask}></a>
-            <a href="" className="color-button"></a>
+            <a href="" className={"color-button" + ((this.state.task.duplicate_id || this.state.task.parent_id) ? " hidden" : "")}></a>
           </div>
           <div className={((this.state.editing) ? "hidden" : (this.state.task.complete ? "check" : (this.state.subtasks == 0 ? "hidden" : (this.state.task.expanded ? "minus" : "plus"))))} onClick={this.clickExpand}>
           </div>
