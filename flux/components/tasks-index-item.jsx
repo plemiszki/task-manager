@@ -137,10 +137,18 @@ var TaskIndexItem = React.createClass({
     return this.props.parentId + "-top-drop";
   },
 
+  taskStyle: function() {
+    if (this.state.task.duplicate_id) {
+      return {background: 'rgba(' + this.state.task.color + ', 0.5)'};
+    } else {
+      return {background: 'rgb(' + this.state.task.color + ')'};
+    }
+  },
+
   render: function() {
     return(
       <div className="group">
-        <div id={this.createTaskId()} className={"task" + (this.state.task.expanded ? " expanded" : "") + (this.state.task.duplicate_id ? " duplicate" : "")} data-taskid={this.props.task.id}>
+        <div id={this.createTaskId()} className={"task" + (this.state.task.expanded ? " expanded" : "") + (this.state.task.duplicate_id ? " duplicate" : "")} style={this.taskStyle()} data-taskid={this.props.task.id}>
           {this.state.task.order}
           <div className={"controls" + (this.state.editing ? " hidden" : "")}>
             <a href="" className="delete-button" onClick={this.deleteTask}></a>

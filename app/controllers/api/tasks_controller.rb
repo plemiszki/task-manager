@@ -31,7 +31,7 @@ class Api::TasksController < ActionController::Base
         @task.update!(
           complete: params[:task][:complete],
           text: params[:task][:text],
-          order: params[:task][:color]
+          color: params[:task][:color]
         )
       else
         @task.update(task_params)
