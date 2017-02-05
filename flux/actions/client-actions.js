@@ -13,13 +13,15 @@ var ClientActions = {
     });
   },
 
-  addTask: function(timeframe, parent_id, task) {
+  addTask: function(timeframe, parent_id, task, newOrder) {
     if (task) {
+      console.log(task);
       task = {
         text: task.text,
         color: task.color,
         duplicate_id: task.id,
         complete: task.complete,
+        order: task.order,
         timeframe: timeframe
       };
     }
@@ -29,7 +31,8 @@ var ClientActions = {
       data: {
         timeframe: timeframe,
         parent_id: parent_id,
-        task: task
+        task: task,
+        new_order: newOrder
       },
       success: function(response) {
         ServerActions.receiveTasks(response);
@@ -64,13 +67,12 @@ var ClientActions = {
     });
   },
 
-  rearrangeTasks: function(hash, timeframe) {
+  rearrangeTasks: function(hash) {
     $.ajax({
       url: '/api/tasks/rearrange',
       type: "PATCH",
       data: {
-        tasks: hash,
-        timeframe: timeframe
+        tasks: hash
       },
       success: function(response) {
         ServerActions.receiveTasks(response);

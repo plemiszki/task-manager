@@ -70,48 +70,47 @@ var TasksIndex = React.createClass({
   dropHandler: function(e, ui) {
     var draggedTimeFrame = ui.draggable.attr('id').split('-')[0];
     var droppedTimeFrame = e.target.getAttribute('id').split('-')[0];
+    var draggedIndex = this.getIndexFromId(ui.draggable.attr('id'));
+    var dropZoneArray = e.target.getAttribute('id').split('-');
+    var dropZoneIndex = dropZoneArray[dropZoneArray.length - 2];
+    if (dropZoneIndex == "top") { dropZoneIndex = -1; }
 
-    if (draggedTimeFrame == droppedTimeFrame) {
-      var draggedIndex = this.getIndexFromId(ui.draggable.attr('id'));
-      var dropZoneArray = e.target.getAttribute('id').split('-');
-      var dropZoneIndex = dropZoneArray[dropZoneArray.length - 2];
-      if (dropZoneIndex == "top") { dropZoneIndex = -1; }
+    var hash = {};
+    var parent = e.target.parentElement;
+    var parentId, $tasks, timeframe;
+    if (parent.classList[0] == "tasks-index") { // top drop zone
+      parentId = parent.parentElement.getAttribute('id');
+      $tasks = $('#' + parentId + ' > .tasks-index > .group > .task');
+    } else if (parent.parentElement.classList[0] == "tasks-index") { // root level
+      parentId = parent.parentElement.parentElement.getAttribute('id');
+      $tasks = $('#' + parentId + ' > .tasks-index > .group > .task');
+    } else if (parent.getAttribute('id') && parent.getAttribute('id').split('-')[0] == "subtasks") { // subtasks top drop zone
+      parentId = parent.getAttribute('id');
+      $tasks = $('#' + parentId + ' .task');
+    } else { // subtasks
+      parentId = parent.parentElement.parentElement.children[0].getAttribute('id');
+      $tasks = $('#subtasks-' + parentId + ' .task');
+    }
 
-      var hash = {};
-      var parent = e.target.parentElement;
-      var parentId, $tasks, timeframe;
-      if (parent.classList[0] == "tasks-index") { // top drop zone
-        parentId = parent.parentElement.getAttribute('id');
-        $tasks = $('#' + parentId + ' > .tasks-index > .group > .task');
-      } else if (parent.parentElement.classList[0] == "tasks-index") { // root level
-        parentId = parent.parentElement.parentElement.getAttribute('id');
-        $tasks = $('#' + parentId + ' > .tasks-index > .group > .task');
-      } else if (parent.getAttribute('id') && parent.getAttribute('id').split('-')[0] == "subtasks") { // subtasks top drop zone
-        parentId = parent.getAttribute('id');
-        $tasks = $('#' + parentId + ' .task');
-      } else { // subtasks
-        parentId = parent.parentElement.parentElement.children[0].getAttribute('id');
-        $tasks = $('#subtasks-' + parentId + ' .task');
-      }
+    $tasks.each(function(index, task) {
+      var index = this.getIndexFromId(task.getAttribute('id'));
+      var id = task.dataset.taskid;
+      hash[index] = +id;
+    }.bind(this))
 
-      $tasks.each(function(index, task) {
-        var index = this.getIndexFromId(task.getAttribute('id'));
-        var id = task.dataset.taskid;
-        hash[index] = +id;
-      }.bind(this))
-
-      var newHash = this.rearrangeFields(hash, draggedIndex, dropZoneIndex);
-      this.setState({
-        fetching: true
-      });
+    var newHash;
+    this.setState({
+      fetching: true
+    });
+    if (draggedTimeFrame === droppedTimeFrame) {
+      newHash = this.rearrangeFields(hash, draggedIndex, dropZoneIndex);
       ClientActions.rearrangeTasks(newHash, droppedTimeFrame);
     } else {
       var taskid = ui.draggable.data().taskid;
       var task = TasksStore.find(taskid);
-      this.setState({
-        fetching: true
-      });
-      ClientActions.addTask(dropZoneTimeFrame, null, task);
+      task.order = +dropZoneIndex + 1;
+      newHash = this.rearrangeOtherFields(hash, dropZoneIndex);
+      ClientActions.addTask(dropZoneTimeFrame, null, task, newHash);
     }
   },
 
@@ -128,6 +127,22 @@ var TasksIndex = React.createClass({
       }
       if (i == dropZoneIndex) {
         result[Object.keys(result).length] = hash[draggedIndex];
+      }
+    }
+    return result;
+  },
+
+  rearrangeOtherFields: function(hash, dropZoneIndex) {
+    var result = {};
+    var draggedTaskId;
+    var n = 0;
+    if (dropZoneIndex == -1) {
+      n = 1;
+    }
+    for (var i = 0; i < Object.keys(hash).length; i++) {
+      result[Object.keys(result).length + n] = hash[i];
+      if (i == dropZoneIndex) {
+        n = 1;
       }
     }
     return result;

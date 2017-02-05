@@ -7,8 +7,8 @@ class Api::TasksController < ActionController::Base
   def create
     if params[:task]
       @task = Task.new(task_params)
-      @task.order = Task.where(timeframe: params[:timeframe], parent_id: nil).length
       @task.save!
+      rearrange(params[:new_order])
     else
       tasks_length = Task.where(timeframe: params[:timeframe], parent_id: params[:parent_id]).length
       @task = Task.new(timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length, color: "238, 244, 66")
@@ -18,8 +18,8 @@ class Api::TasksController < ActionController::Base
         @parent_task = Task.find(params[:parent_id])
         @parent_task.update(expanded: true)
       end
+      render json: Task.all.order(:order)
     end
-    render json: Task.all.order(:order)
   end
 
   def update
@@ -47,9 +47,8 @@ class Api::TasksController < ActionController::Base
     render json: Task.all.order(:order)
   end
 
-  def rearrange
-    @tasks = params[:tasks]
-    @tasks.each do |index, id|
+  def rearrange(tasks = params[:tasks])
+    tasks.each do |index, id|
       task = Task.find(id)
       task.update(order: index)
     end
@@ -103,7 +102,7 @@ class Api::TasksController < ActionController::Base
   end
 
   def task_params
-    params.require(:task).permit(:text, :color, :complete, :duplicate_id, :parent_id, :expanded, :timeframe)
+    params.require(:task).permit(:text, :color, :complete, :duplicate_id, :parent_id, :expanded, :timeframe, :order)
   end
 
 end
