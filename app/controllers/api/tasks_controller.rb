@@ -8,7 +8,7 @@ class Api::TasksController < ActionController::Base
     if params[:task]
       @task = Task.new(task_params)
       @task.save!
-      rearrange(params[:new_order]) if params[:new_order]
+      rearrange(params[:new_order] || {})
     else
       tasks_length = Task.where(timeframe: params[:timeframe], parent_id: params[:parent_id]).length
       @task = Task.new(timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length)
@@ -47,9 +47,9 @@ class Api::TasksController < ActionController::Base
         if @task.duplicate_id
           mark_master_complete(@task.duplicate_id, params[:task][:complete])
         end
+        update_subtask_colors(@task) if (original_color != @task.color)
       end
       check_if_all_siblings_complete(@task)
-      update_subtask_colors(@task) if (original_color != @task.color)
       @dup_task = Task.where(duplicate_id: id).first
       id = @dup_task ? @dup_task.id : nil
       updating_dups = true
@@ -117,6 +117,7 @@ class Api::TasksController < ActionController::Base
     until tasks_queue.empty?
       ids << tasks_queue.first.id
       tasks_queue += tasks_queue.first.subtasks.to_a
+      tasks_queue += tasks_queue.first.duplicates.to_a
       tasks_queue.shift
     end
     Task.where(id: ids).update_all(color: task.color)

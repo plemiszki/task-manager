@@ -8,4 +8,11 @@ class Task < ActiveRecord::Base
     dependent: :destroy
   )
 
+  has_many(
+    :duplicates,
+    class_name: "Task",
+    foreign_key: :duplicate_id,
+    primary_key: :id
+  )
+
 end
