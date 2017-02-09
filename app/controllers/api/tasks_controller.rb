@@ -14,7 +14,7 @@ class Api::TasksController < ActionController::Base
       @task = Task.new(timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length)
 
       # assign the proper color
-      color = "238, 244, 66"
+      color = "210, 206, 200"
       if params[:parent_id]
         @parent_task = Task.find(params[:parent_id])
         color = @parent_task.color
