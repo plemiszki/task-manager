@@ -106,7 +106,7 @@ var TasksIndex = React.createClass({
       newHash = this.rearrangeFields(hash, draggedIndex, dropZoneIndex);
       ClientActions.rearrangeTasks(newHash, droppedTimeFrame);
     } else {
-      var taskid = ui.draggable.data().taskid;
+      var taskid = ui.draggable[0].dataset.taskid;
       var task = TasksStore.find(taskid);
       task.order = +dropZoneIndex + 1;
       newHash = this.rearrangeOtherFields(hash, dropZoneIndex);

@@ -15,7 +15,6 @@ var ClientActions = {
 
   addTask: function(timeframe, parent_id, task, newOrder) {
     if (task) {
-      console.log(newOrder);
       task = {
         text: task.text,
         color: task.color,

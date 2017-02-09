@@ -13,31 +13,38 @@ var TaskIndexItem = React.createClass({
   },
 
   componentDidMount: function() {
+    this.attachDragHandler();
+    this.attachDropZoneHandlers();
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    // var $bottomDropArea = $('#' + this.createDropAreaId());
+    // if ($bottomDropArea.data('droppable')) {
+    //   // don't seem to ever get here
+    //   $bottomDropArea.droppable('destroy');
+    // }
+    // var $subtasksTopDropArea = $('#' + this.createSubtaskTopDropAreaId());
+    // if ($subtasksTopDropArea.data('droppable')) {
+    //   // don't seem to ever get here
+    //   $subtasksTopDropArea.droppable('destroy');
+    // }
+    $('.color-picker').addClass('hidden');
+    this.setState({
+      task: nextProps.task,
+      subtasks: TasksStore.subTasks(nextProps.task)
+    }, function() {
+      this.attachDragHandler();
+      this.attachDropZoneHandlers();
+    });
+  },
+
+  attachDragHandler: function() {
     $('#' + this.createTaskId()).draggable({
       cursor: '-webkit-grabbing',
       handle: '.handle',
       helper: function() { return '<div></div>'; },
       start: this.dragStartHandler,
       stop: this.dragEndHandler
-    });
-    this.attachDropZoneHandlers();
-  },
-
-  componentWillReceiveProps: function(nextProps) {
-    var $bottomDropArea = $('#' + this.createDropAreaId());
-    if ($bottomDropArea.data('droppable')) {
-      $bottomDropArea.droppable('destroy');
-    }
-    var $subtasksTopDropArea = $('#' + this.createSubtaskTopDropAreaId());
-    if ($subtasksTopDropArea.data('droppable')) {
-      $subtasksTopDropArea.droppable('destroy');
-    }
-    $('.color-picker').addClass('hidden');
-    this.setState({
-      task: nextProps.task,
-      subtasks: TasksStore.subTasks(nextProps.task)
-    }, function() {
-      this.attachDropZoneHandlers();
     });
   },
 
