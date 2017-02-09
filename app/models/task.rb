@@ -15,4 +15,11 @@ class Task < ActiveRecord::Base
     primary_key: :id
   )
 
+  belongs_to(
+    :master,
+    class_name: "Task",
+    foreign_key: :duplicate_id,
+    primary_key: :id
+  )
+
 end

@@ -8,6 +8,7 @@ class Api::TasksController < ActionController::Base
     if params[:task]
       @task = Task.new(task_params)
       @task.save!
+      create_duplicate_subtasks(@task)
       rearrange(params[:new_order] || {})
     else
       tasks_length = Task.where(timeframe: params[:timeframe], parent_id: params[:parent_id]).length
@@ -95,15 +96,6 @@ class Api::TasksController < ActionController::Base
 
   private
 
-  def mark_master_complete(id, complete)
-    while id
-      @task = Task.find(id)
-      @task.update!(complete: complete)
-      id = @task.duplicate_id
-    end
-    check_if_all_siblings_complete(@task)
-  end
-
   def check_if_all_siblings_complete(task)
     return if !task.parent_id
     tasks = Task.where(parent_id: task.parent_id)
@@ -113,6 +105,36 @@ class Api::TasksController < ActionController::Base
     parent_task = Task.find(task.parent_id)
     parent_task.update(complete: true, expanded: false)
     check_if_all_siblings_complete(parent_task)
+  end
+
+  def create_duplicate_subtasks(task)
+    master_task = task.master
+    master_queue = master_task.subtasks.to_a
+    until master_queue.empty?
+      master_queue += master_queue.first.subtasks.to_a
+      @subtask = Task.new(
+        timeframe: task.timeframe,
+        duplicate_id: master_queue.first.id,
+        parent_id: Task.find(master_queue.first.parent_id).duplicates[0].id,
+        text: master_queue.first.text,
+        complete: master_queue.first.complete,
+        expanded: false,
+        color: master_queue.first.color,
+        order: master_queue.first.order,
+        template: master_queue.first.template
+      )
+      @subtask.save!
+      master_queue.shift
+    end
+  end
+
+  def mark_master_complete(id, complete)
+    while id
+      @task = Task.find(id)
+      @task.update!(complete: complete)
+      id = @task.duplicate_id
+    end
+    check_if_all_siblings_complete(@task)
   end
 
   def update_subtask_colors(task)
