@@ -22,4 +22,8 @@ class Task < ActiveRecord::Base
     primary_key: :id
   )
 
+  def self.clear_daily_tasks
+    Task.where(timeframe: "day", complete: true).destroy_all
+  end
+
 end
