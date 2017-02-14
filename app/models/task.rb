@@ -23,7 +23,7 @@ class Task < ActiveRecord::Base
   )
 
   def self.clear_daily_tasks
-    Task.where(timeframe: "day", complete: true).destroy_all
+    Task.where(timeframe: "day", parent_id: nil, complete: true).destroy_all
   end
 
 end
