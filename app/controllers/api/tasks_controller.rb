@@ -108,11 +108,11 @@ class Api::TasksController < ActionController::Base
 
   def mark_master_complete(id, complete)
     while id
-      @task = Task.find(id)
-      @task.update!(complete: complete)
-      id = @task.duplicate_id
+      task = Task.find(id)
+      task.update!(complete: complete)
+      id = task.duplicate_id
     end
-    check_if_all_siblings_complete(@task)
+    check_if_all_siblings_complete(task)
   end
 
   def update_subtask_colors(task)
