@@ -24,8 +24,24 @@ class Task < ActiveRecord::Base
 
   def self.clear_daily_tasks
     tasks_to_delete = Task.where(timeframe: "day", parent_id: nil, complete: true)
+    tasks_to_delete += Task.where(timeframe: "weekend", parent_id: nil, complete: true) if Date.today.strftime("%A") == "Monday"
+    tasks_to_delete += Task.where(timeframe: "month", parent_id: nil, complete: true) if Date.today.strftime("%d") == "1"
     tasks_to_delete.each do |task|
       Task.delete_task_and_subs_and_dups(task)
+    end
+
+    # add day tasks
+    day_tasks = []
+    day_tasks << Task.create(timeframe: "day", text: "20 push ups", color: "210, 206, 200")
+    day_tasks << Task.create(timeframe: "day", text: "take Vitamin D", color: "210, 206, 200")
+
+    if Date.today.strftime("%A") == "Saturday" || Date.today.strftime("%A") == "Wednesday"
+      day_tasks << Task.create(timeframe: "day", text: "update finances", color: "210, 206, 200")
+    end
+
+    day_tasks += Task.where(timeframe: "day", parent_id: nil)
+    day_tasks.each_with_index do |task, index|
+      task.update(order: index)
     end
   end
 
