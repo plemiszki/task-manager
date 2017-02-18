@@ -8,6 +8,8 @@ Rails.application.routes.draw do
     patch '/tasks' => '/api/tasks#update'
     patch '/tasks/rearrange' => '/api/tasks#rearrange'
     delete '/tasks' => '/api/tasks#delete'
+
+    get '/daily' => '/api/tasks#daily'
   end
 
 end

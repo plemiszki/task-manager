@@ -30,16 +30,20 @@ class Task < ActiveRecord::Base
       Task.delete_task_and_subs_and_dups(task)
     end
 
+    leftover_day_tasks = Task.where(timeframe: "day", parent_id: nil)
+
     # add day tasks
     day_tasks = []
     day_tasks << Task.create(timeframe: "day", text: "20 push ups", color: "210, 206, 200")
     day_tasks << Task.create(timeframe: "day", text: "take Vitamin D", color: "210, 206, 200")
+    day_tasks << Task.create(timeframe: "day", text: "daily mondly lesson", color: "255, 175, 36")
 
     if Date.today.strftime("%A") == "Saturday" || Date.today.strftime("%A") == "Wednesday"
       day_tasks << Task.create(timeframe: "day", text: "update finances", color: "210, 206, 200")
     end
 
-    day_tasks += Task.where(timeframe: "day", parent_id: nil)
+    day_tasks += leftover_day_tasks
+
     day_tasks.each_with_index do |task, index|
       task.update(order: index)
     end

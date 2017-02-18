@@ -18,16 +18,6 @@ var TaskIndexItem = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
-    // var $bottomDropArea = $('#' + this.createDropAreaId());
-    // if ($bottomDropArea.data('droppable')) {
-    //   // don't seem to ever get here
-    //   $bottomDropArea.droppable('destroy');
-    // }
-    // var $subtasksTopDropArea = $('#' + this.createSubtaskTopDropAreaId());
-    // if ($subtasksTopDropArea.data('droppable')) {
-    //   // don't seem to ever get here
-    //   $subtasksTopDropArea.droppable('destroy');
-    // }
     $('.color-picker').addClass('hidden');
     this.setState({
       task: nextProps.task,
