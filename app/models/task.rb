@@ -32,6 +32,9 @@ class Task < ActiveRecord::Base
 
     leftover_day_tasks = Task.where(timeframe: "day", parent_id: nil).order(:order)
 
+    p 'leftover --------------------'
+    p leftover_day_tasks
+
     # add day tasks
     day_tasks = []
     day_tasks << Task.create(timeframe: "day", text: "20 push ups", color: "210, 206, 200")
@@ -42,9 +45,18 @@ class Task < ActiveRecord::Base
       day_tasks << Task.create(timeframe: "day", text: "update finances", color: "210, 206, 200")
     end
 
+    p 'day tasks --------------------'
+    p day_tasks
+
     day_tasks += leftover_day_tasks
 
+    p 'together ----------------------'
+    p day_tasks
+
     day_tasks.each_with_index do |task, index|
+      p 'update ---'
+      p task.id
+      p index
       task.update(order: index)
     end
   end
