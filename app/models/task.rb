@@ -1,5 +1,3 @@
-require 'byebug'
-
 class Task < ActiveRecord::Base
 
   has_many(
