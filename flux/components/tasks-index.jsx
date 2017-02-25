@@ -2,6 +2,7 @@ var React = require('react');
 var Common = require('../../app/assets/javascripts/common.jsx');
 var ClientActions = require('../actions/client-actions.js');
 var TasksStore = require('../stores/tasks-store.js');
+var UserStore = require('../stores/user-store.js');
 var TasksIndexItem = require('./tasks-index-item.jsx');
 
 var TasksIndex = React.createClass({
@@ -10,7 +11,8 @@ var TasksIndex = React.createClass({
     return({
       fetching: true,
       rootTasks: [],
-      tasks: []
+      tasks: [],
+      longWeekend: false
     });
   },
 
@@ -23,7 +25,12 @@ var TasksIndex = React.createClass({
       drop: this.dropHandler
     });
     this.tasksListener = TasksStore.addListener(this.getTasks);
-    ClientActions.fetchTasks(this.props.timeframe);
+    if (this.props.timeframe == "life") {
+      ClientActions.fetchTasks(this.props.timeframe);
+    }
+    if (this.props.timeframe == "weekend") {
+      this.userListener = UserStore.addListener(this.getUser);
+    }
   },
 
   componentDidUpdate: function() {
@@ -35,6 +42,17 @@ var TasksIndex = React.createClass({
       fetching: false,
       rootTasks: TasksStore.rootTasks(this.props.timeframe),
       tasks: TasksStore.all(this.props.timeframe)
+    }, function() {
+      if (this.props.timeframe == "weekend") {
+        ClientActions.fetchUser();
+      }
+    });
+  },
+
+  getUser: function() {
+    this.setState({
+      longWeekend: UserStore.user().long_weekend,
+      fetching: false
     });
   },
 
@@ -153,6 +171,15 @@ var TasksIndex = React.createClass({
     return array[array.length - 1];
   },
 
+  clickWeekend: function() {
+    var user = UserStore.user();
+    user.long_weekend = !user.long_weekend;
+    this.setState({
+      fetching: true
+    });
+    ClientActions.updateUser(user);
+  },
+
   render: function() {
     return(
       <div className="tasks-index match-height" data-index={this.props.timeframe}>
@@ -178,8 +205,9 @@ var TasksIndex = React.createClass({
           <h1>Today</h1>
         )
       case "weekend":
+        var text = this.state.longWeekend ? "Long Weekend" : "Weekend";
         return(
-          <h1>Weekend</h1>
+          <h1 id="weekend-header" onClick={this.clickWeekend}>{text}</h1>
         )
       case "month":
         return(

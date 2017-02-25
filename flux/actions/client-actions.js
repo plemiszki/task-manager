@@ -3,10 +3,33 @@ var ServerActions = require('../actions/server-actions.js');
 
 var ClientActions = {
 
+  fetchUser: function() {
+    $.ajax({
+      url: '/api/user',
+      type: 'GET',
+      success: function(response) {
+        ServerActions.receiveUser(response);
+      }
+    });
+  },
+
+  updateUser: function(user) {
+    $.ajax({
+      url: '/api/user',
+      type: 'POST',
+      data: {
+        user: user
+      },
+      success: function(response) {
+        ServerActions.receiveUser(response);
+      }
+    });
+  },
+
   fetchTasks: function(timeframe) {
     $.ajax({
       url: '/api/tasks',
-      type: "GET",
+      type: 'GET',
       success: function(response) {
         ServerActions.receiveTasks(response);
       }

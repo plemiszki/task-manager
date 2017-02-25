@@ -1,8 +1,12 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var CurrentUser = require('./components/current-user.jsx');
 var TasksIndex = require('./components/tasks-index.jsx');
 
 $(document).ready(function() {
+  if ($('#current-user')[0]) {
+    ReactDOM.render(<CurrentUser />, document.getElementById("current-user"));
+  }
   if ($('#tasks-index-day')[0]) {
     ReactDOM.render(<TasksIndex timeframe={"day"} />, document.getElementById("tasks-index-day"));
   }
