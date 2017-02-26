@@ -29,6 +29,23 @@
   }
 }
 
+.current-user {
+  margin-top: 10px;
+  background: #FFFFFF;
+  padding: 10px 15px;
+
+  a {
+    font-size: 12px;
+    float: right;
+  }
+}
+
+.current-user:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
 .tasks-index {
   margin-top: 20px;
   background: #FFFFFF;

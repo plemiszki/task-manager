@@ -22,8 +22,9 @@ var CurrentUser = React.createClass({
 
   render: function() {
     return(
-      <div>
+      <div className="current-user">
         {this.state.user ? this.state.user.email : "(loading)"}
+        <a className="btn btn-primary" rel="nofollow" data-method="delete" href="/sign_out">Log Out</a>
       </div>
     )
   }
