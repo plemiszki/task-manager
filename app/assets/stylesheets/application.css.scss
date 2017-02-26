@@ -29,6 +29,33 @@
   }
 }
 
+#flash {
+  margin-top: 10px;
+  text-align: center;
+  color: red;
+}
+
+.sign-in {
+  width: 90%;
+  margin: auto;
+  max-width: 350px;
+  margin-top: 20px;
+
+  h2 {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  input {
+    text-align: left;
+    margin-bottom: 10px;
+  }
+
+  .submit-field input {
+    text-align: center;
+  }
+}
+
 .current-user {
   margin-top: 10px;
   background: #FFFFFF;
