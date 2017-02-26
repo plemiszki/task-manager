@@ -104,7 +104,12 @@ var TasksIndex = React.createClass({
       $tasks = $('#' + parentId + ' > .tasks-index > .group > .task');
     } else if (parent.getAttribute('id') && parent.getAttribute('id').split('-')[0] == "subtasks") { // subtasks top drop zone
       parentId = parent.getAttribute('id');
-      $tasks = $('#' + parentId + ' .task');
+      $tasks = $('#' + parentId + ' .task'); // <-- this will grab all of the child tasks within the subtask, even grandchildren (etc.) not involved in the rearrange
+      var properLevelsDeep = parentId.split('-').length - 1;
+      $tasks = $tasks.filter(function(index, task) {
+        var levelsDeep = task.id.split('-').length - 1;
+        return properLevelsDeep === levelsDeep;
+      });
     } else { // subtasks
       parentId = parent.parentElement.parentElement.children[0].getAttribute('id');
       $tasks = $('#subtasks-' + parentId + ' .task');
