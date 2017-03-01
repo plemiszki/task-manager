@@ -25,7 +25,7 @@ class Task < ActiveRecord::Base
   def self.clear_daily_tasks
     tasks_to_delete = Task.where(timeframe: "day", parent_id: nil, complete: true)
     tasks_to_delete += Task.where(timeframe: "weekend", parent_id: nil, complete: true) if Date.today.strftime("%A") == (User.first.long_weekend ? "Tuesday" : "Monday")
-    tasks_to_delete += Task.where(timeframe: "month", parent_id: nil, complete: true) if Date.today.strftime("%d") == "1"
+    tasks_to_delete += Task.where(timeframe: "month", parent_id: nil, complete: true) if Date.today.strftime("%-d") == "1"
     tasks_to_delete.each do |task|
       Task.delete_task_and_subs_and_dups(task)
     end
