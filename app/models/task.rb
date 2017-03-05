@@ -23,7 +23,7 @@ class Task < ActiveRecord::Base
   )
 
   def self.clear_daily_tasks
-    tasks_to_delete = Task.where(timeframe: "day", parent_id: nil, complete: true)
+    tasks_to_delete = Task.where(timeframe: "day", parent_id: nil, complete: true) + Task.where(timeframe: "day", parent_id: nil, template: true)
     tasks_to_delete += Task.where(timeframe: "weekend", parent_id: nil, complete: true) if Date.today.strftime("%A") == (User.first.long_weekend ? "Tuesday" : "Monday")
     tasks_to_delete += Task.where(timeframe: "month", parent_id: nil, complete: true) if Date.today.strftime("%-d") == "1"
     tasks_to_delete.each do |task|
@@ -37,10 +37,16 @@ class Task < ActiveRecord::Base
 
     # add day tasks
     day_tasks = []
-    day_tasks << Task.create(timeframe: "day", text: "20 push ups", color: "210, 206, 200")
+    day_tasks << Task.create(timeframe: "day", text: "20 push ups", color: "210, 206, 200", template: true)
     day_tasks << Task.create(timeframe: "day", text: "mondly - daily lesson", color: "255, 175, 36")
-    day_tasks << Task.create(timeframe: "day", text: "mondly - one lesson in course", color: "255, 175, 36")
-    day_tasks << Task.create(timeframe: "day", text: "take Vitamin D", color: "210, 206, 200")
+    if Date.today.strftime("%A") == "Sunday"
+      day_tasks << Task.create(timeframe: "day", text: "mondly - conversation", color: "255, 175, 36")
+      day_tasks << Task.create(timeframe: "day", text: "mondly - vocabulary", color: "255, 175, 36")
+      day_tasks << Task.create(timeframe: "day", text: "mondly - weekly quiz", color: "255, 175, 36")
+    else
+      day_tasks << Task.create(timeframe: "day", text: "mondly - one lesson in course", color: "255, 175, 36")
+    end
+    day_tasks << Task.create(timeframe: "day", text: "take Vitamin D", color: "210, 206, 200", template: true)
 
     if Date.today.strftime("%A") == "Saturday" || Date.today.strftime("%A") == "Wednesday"
       day_tasks << Task.create(timeframe: "day", text: "update finances", color: "210, 206, 200")
@@ -54,7 +60,7 @@ class Task < ActiveRecord::Base
     p 'together ----------------------'
     p day_tasks
 
-    day_tasks << Task.create(timeframe: "day", text: "floss, brush Max, dishes", color: "210, 206, 200")
+    day_tasks << Task.create(timeframe: "day", text: "floss, brush Max, dishes", color: "210, 206, 200", template: true)
 
     day_tasks.each_with_index do |task, index|
       p 'update ---'
