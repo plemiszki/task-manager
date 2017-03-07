@@ -145,6 +145,7 @@
 
     input.disabled {
       background-color: rgba(0, 0, 0, 0);
+      -webkit-text-fill-color: #000000;
       border: none;
       cursor: pointer;
       user-select: none;
