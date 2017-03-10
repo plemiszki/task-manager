@@ -114,9 +114,9 @@ class Api::TasksController < ActionController::Base
     while id
       task = Task.find(id)
       task.update!(complete: complete)
+      check_if_all_siblings_complete(task)
       id = task.duplicate_id
     end
-    check_if_all_siblings_complete(task)
   end
 
   def update_subtask_colors(task)

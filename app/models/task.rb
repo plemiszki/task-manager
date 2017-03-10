@@ -68,6 +68,17 @@ class Task < ActiveRecord::Base
       p index
       task.update(order: index)
     end
+
+    # add weekend tasks
+    if Date.today.strftime("%A") == "Saturday"
+      existing_weekend_tasks = Task.where(timeframe: "weekend", parent_id: nil).order(:order)
+      weekend_tasks = []
+      weekend_tasks << Task.create(timeframe: "weekend", text: "change bedsheets", color: "210, 206, 200")
+      weekend_tasks += existing_weekend_tasks
+      weekend_tasks.each_with_index do |task, index|
+        task.update(order: index)
+      end
+    end
   end
 
   def self.delete_task_and_subs_and_dups(task)
