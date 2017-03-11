@@ -45,7 +45,7 @@ var TasksIndex = React.createClass({
       rootTasks: TasksStore.rootTasks(this.props.timeframe),
       tasks: TasksStore.all(this.props.timeframe)
     }, function() {
-      if (this.props.timeframe == "weekend" && UserStore.user() === {}) {
+      if (this.props.timeframe == "weekend" && UserStore.user() === "empty") {
         ClientActions.fetchUser();
       }
     });

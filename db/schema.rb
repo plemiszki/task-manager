@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170311232251) do
+ActiveRecord::Schema.define(version: 20170311235514) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 20170311232251) do
     t.boolean "complete",     default: false
     t.boolean "template",     default: false
     t.boolean "expanded",     default: false
-    t.integer "user_id"
+    t.integer "user_id",                         null: false
   end
 
   add_index "tasks", ["duplicate_id"], name: "index_tasks_on_duplicate_id", using: :btree

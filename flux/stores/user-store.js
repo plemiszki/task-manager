@@ -3,7 +3,7 @@ var AppDispatcher = require('../dispatcher/dispatcher.js');
 
 var UserStore = new Store(AppDispatcher);
 
-var _user = {};
+var _user = "empty";
 
 UserStore.setUser = function(user) {
   _user = user;

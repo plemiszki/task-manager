@@ -1,12 +1,14 @@
 class Api::UsersController < ActionController::Base
 
+  include Clearance::Controller
+
   def show
-    render json: User.first
+    render json: current_user
   end
 
   def update
-    User.first.update(user_params)
-    render json: User.first
+    current_user.update(user_params)
+    render json: current_user
   end
 
   private
