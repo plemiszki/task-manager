@@ -14,8 +14,13 @@ var ServerActions = {
       actionType: "TASKS_RECEIVED",
       tasks: response
     });
-  }
+  },
 
+  receiveError: function() {
+    AppDispatcher.dispatch({
+      actionType: "ERROR"
+    });
+  }
 };
 
 module.exports = ServerActions;

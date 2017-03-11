@@ -3,6 +3,7 @@ var Common = require('../../app/assets/javascripts/common.jsx');
 var ClientActions = require('../actions/client-actions.js');
 var TasksStore = require('../stores/tasks-store.js');
 var UserStore = require('../stores/user-store.js');
+var ErrorStore = require('../stores/error-store.js');
 var TasksIndexItem = require('./tasks-index-item.jsx');
 
 var TasksIndex = React.createClass({
@@ -25,6 +26,7 @@ var TasksIndex = React.createClass({
       drop: this.dropHandler
     });
     this.tasksListener = TasksStore.addListener(this.getTasks);
+    this.errorListener = ErrorStore.addListener(this.getError);
     if (this.props.timeframe == "life") {
       ClientActions.fetchTasks(this.props.timeframe);
     }
@@ -43,7 +45,7 @@ var TasksIndex = React.createClass({
       rootTasks: TasksStore.rootTasks(this.props.timeframe),
       tasks: TasksStore.all(this.props.timeframe)
     }, function() {
-      if (this.props.timeframe == "weekend") {
+      if (this.props.timeframe == "weekend" && UserStore.user() === {}) {
         ClientActions.fetchUser();
       }
     });
@@ -52,6 +54,12 @@ var TasksIndex = React.createClass({
   getUser: function() {
     this.setState({
       longWeekend: UserStore.user().long_weekend,
+      fetching: false
+    });
+  },
+
+  getError: function() {
+    this.setState({
       fetching: false
     });
   },

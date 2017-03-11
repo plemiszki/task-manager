@@ -58,6 +58,10 @@ var ClientActions = {
       },
       success: function(response) {
         ServerActions.receiveTasks(response);
+      },
+      error: function() {
+        alert("A duplicate of this task already exists!");
+        ServerActions.receiveError();
       }
     });
   },

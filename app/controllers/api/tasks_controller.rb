@@ -6,10 +6,14 @@ class Api::TasksController < ActionController::Base
 
   def create
     if params[:task]
-      @task = Task.new(task_params)
-      @task.save!
-      create_duplicate_subtasks(@task)
-      rearrange(params[:new_order] || {})
+      if existing_dup?
+        render json: [], status: 422
+      else
+        @task = Task.new(task_params)
+        @task.save!
+        create_duplicate_subtasks(@task)
+        rearrange(params[:new_order] || {})
+      end
     else
       tasks_length = Task.where(timeframe: params[:timeframe], parent_id: params[:parent_id]).length
       @task = Task.new(timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length)
@@ -119,6 +123,22 @@ class Api::TasksController < ActionController::Base
     parent_task = Task.find(task.parent_id)
     parent_task.update(complete: true, expanded: false)
     check_if_all_siblings_complete(parent_task)
+  end
+
+  def existing_dup?
+    master_task = Task.find_by(id: params[:task][:duplicate_id])
+    return true if Task.find_by(duplicate_id: master_task.id)
+    tasks_queue = master_task.subtasks.to_a
+    ids = []
+    until tasks_queue.empty?
+      ids << tasks_queue.first.id
+      tasks_queue += tasks_queue.first.subtasks.to_a
+      tasks_queue.shift
+    end
+    ids.each do |id|
+      return true if Task.find_by(duplicate_id: id)
+    end
+    false
   end
 
   def create_duplicate_subtasks(task)
