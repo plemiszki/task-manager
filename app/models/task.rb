@@ -9,6 +9,7 @@ class Task < ActiveRecord::Base
   )
 
   belongs_to :parent, class_name: "Task"
+  belongs_to :user
 
   has_many(
     :duplicates,
