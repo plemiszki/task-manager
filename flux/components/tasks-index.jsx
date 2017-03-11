@@ -113,6 +113,11 @@ var TasksIndex = React.createClass({
     } else { // subtasks
       parentId = parent.parentElement.parentElement.children[0].getAttribute('id');
       $tasks = $('#subtasks-' + parentId + ' .task');
+      var properLevelsDeep = parentId.split('-').length;
+      $tasks = $tasks.filter(function(index, task) {
+        var levelsDeep = task.id.split('-').length - 1;
+        return properLevelsDeep === levelsDeep;
+      });
     }
 
     $tasks.each(function(index, task) {
