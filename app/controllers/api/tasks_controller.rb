@@ -24,9 +24,23 @@ class Api::TasksController < ActionController::Base
       @task.save!
 
       # expand parent task if a subtask was just created
-      if @parent_task
+      if @parent_task && !@parent_task.expanded
         @parent_task.update(expanded: true)
       end
+
+      # if a subtask was added, and duplicates exist of the parent task, we need to create duplicates for the subtask
+      if @parent_task
+        duped_tasks = Task.where(duplicate_id: @parent_task.id)
+        while duped_tasks.length == 1
+          @dup_parent_task = duped_tasks.first
+          @dup_child_task = Task.new(timeframe: @dup_parent_task.timeframe, parent_id: @dup_parent_task.id, duplicate_id: @task.id, text: @task.text, color: @task.color, order: tasks_length)
+          @dup_child_task.save!
+
+          @task = @dup_child_task
+          duped_tasks = Task.where(duplicate_id: @dup_parent_task.id)
+        end
+      end
+
       render json: Task.all.order(:order)
     end
   end
