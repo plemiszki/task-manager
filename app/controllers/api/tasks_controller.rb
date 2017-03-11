@@ -76,6 +76,24 @@ class Api::TasksController < ActionController::Base
     tasks.each do |index, id|
       task = Task.find(id)
       task.update(order: index)
+      if task.parent_id
+        duped_parents = Task.where(duplicate_id: task.parent_id)
+        until duped_parents.empty?
+          duped_task = Task.where(duplicate_id: task.id).first
+          duped_task.update(order: index)
+
+          duped_parents = Task.where(duplicate_id: duped_task.parent_id)
+          task = duped_task
+        end
+        master_parents = Task.where(id: task.parent.duplicate_id)
+        until master_parents.empty?
+          master_task = Task.where(id: task.duplicate_id).first
+          master_task.update(order: index)
+
+          master_parents = Task.where(id: master_task.parent.duplicate_id)
+          task = master_task
+        end
+      end
     end
     render json: Task.all.order(:order)
   end
