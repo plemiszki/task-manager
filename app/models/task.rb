@@ -26,9 +26,9 @@ class Task < ActiveRecord::Base
   )
 
   def self.clear_daily_tasks
-    tasks_to_delete = Task.where(user_id: 1, timeframe: "day", parent_id: nil, complete: true) + Task.where(user_id: 1, timeframe: "day", parent_id: nil, template: true)
-    tasks_to_delete += Task.where(user_id: 1, timeframe: "weekend", parent_id: nil, complete: true) if Date.today.strftime("%A") == (User.first.long_weekend ? "Tuesday" : "Monday")
-    tasks_to_delete += Task.where(user_id: 1, timeframe: "month", parent_id: nil, complete: true) if Date.today.strftime("%-d") == "1"
+    tasks_to_delete = Task.where(timeframe: "day", parent_id: nil, complete: true) + Task.where(timeframe: "day", parent_id: nil, template: true)
+    tasks_to_delete += Task.where(timeframe: "weekend", parent_id: nil, complete: true) if Date.today.strftime("%A") == (User.first.long_weekend ? "Tuesday" : "Monday")
+    tasks_to_delete += Task.where(timeframe: "month", parent_id: nil, complete: true) if Date.today.strftime("%-d") == "1"
     tasks_to_delete.each do |task|
       Task.delete_task_and_subs_and_dups(task)
     end
@@ -80,7 +80,7 @@ class Task < ActiveRecord::Base
       tasks_queue += tasks_queue.first.duplicates.to_a
       task = tasks_queue.first
       task.destroy
-      siblings = Task.where(user_id: 1, timeframe: task.timeframe, parent_id: task.parent_id).order(:order)
+      siblings = Task.where(timeframe: task.timeframe, parent_id: task.parent_id).order(:order)
       # close parent task if no siblings left
       if task.parent_id && siblings.length == 0
         parent_task = Task.where(id: task.parent_id)
