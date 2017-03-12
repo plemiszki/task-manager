@@ -26,10 +26,7 @@ class Task < ActiveRecord::Base
   )
 
   def self.clear_daily_tasks
-    p 'HERE WE GO -------------------------'
     tasks_to_delete = Task.where(timeframe: "day", parent_id: nil, complete: true) + Task.where(timeframe: "day", parent_id: nil, template: true)
-    p 'tasks to delete:'
-    p tasks_to_delete.map { |task| task.text }
     tasks_to_delete += Task.where(timeframe: "weekend", parent_id: nil, complete: true) if Date.today.strftime("%A") == (User.first.long_weekend ? "Tuesday" : "Monday")
     tasks_to_delete += Task.where(timeframe: "month", parent_id: nil, complete: true) if Date.today.strftime("%-d") == "1"
     tasks_to_delete.each do |task|
@@ -37,9 +34,7 @@ class Task < ActiveRecord::Base
     end
 
     # add day tasks
-    leftover_day_tasks = Task.where(user_id: 1, timeframe: "day", parent_id: nil).order(:order)
-    p 'leftover day tasks'
-    p leftover_day_tasks.map { |task| task.text }
+    leftover_day_tasks = Task.where(user_id: 1, timeframe: "day", parent_id: nil).order(:order).to_a
     day_tasks = []
     day_tasks << Task.create(user_id: 1, timeframe: "day", text: "20 push ups", color: "210, 206, 200", template: true)
     day_tasks << Task.create(user_id: 1, timeframe: "day", text: "mondly - daily lesson", color: "255, 175, 36")
@@ -56,20 +51,10 @@ class Task < ActiveRecord::Base
       day_tasks << Task.create(user_id: 1, timeframe: "day", text: "update finances", color: "210, 206, 200")
     end
 
-
-    p 'day tasks:'
-    p day_tasks.map { |task| task.text }
-
     day_tasks += leftover_day_tasks
-
-    p 'day tasks plus leftover day tasks'
-    p day_tasks.map { |task| task.text }
-
     day_tasks << Task.create(user_id: 1, timeframe: "day", text: "floss, brush Max, dishes", color: "210, 206, 200", template: true)
 
     day_tasks.each_with_index do |task, index|
-      p task.text
-      p index
       task.update(order: index)
     end
 

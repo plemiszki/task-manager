@@ -111,10 +111,6 @@ class Api::TasksController < ActionController::Base
     render json: Task.where(user_id: current_user.id).order(:order)
   end
 
-  def daily
-    Task.clear_daily_tasks
-  end
-
   private
 
   def check_if_all_siblings_complete(task)

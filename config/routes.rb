@@ -11,8 +11,6 @@ Rails.application.routes.draw do
 
     get '/user' => '/api/users#show'
     post '/user' => '/api/users#update'
-
-    get '/daily' => '/api/tasks#daily'
   end
 
 end
