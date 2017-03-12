@@ -26,35 +26,35 @@ class Task < ActiveRecord::Base
   )
 
   def self.clear_daily_tasks
-    tasks_to_delete = Task.where(timeframe: "day", parent_id: nil, complete: true) + Task.where(timeframe: "day", parent_id: nil, template: true)
-    tasks_to_delete += Task.where(timeframe: "weekend", parent_id: nil, complete: true) if Date.today.strftime("%A") == (User.first.long_weekend ? "Tuesday" : "Monday")
-    tasks_to_delete += Task.where(timeframe: "month", parent_id: nil, complete: true) if Date.today.strftime("%-d") == "1"
+    tasks_to_delete = Task.where(user_id: 1, timeframe: "day", parent_id: nil, complete: true) + Task.where(user_id: 1, timeframe: "day", parent_id: nil, template: true)
+    tasks_to_delete += Task.where(user_id: 1, timeframe: "weekend", parent_id: nil, complete: true) if Date.today.strftime("%A") == (User.first.long_weekend ? "Tuesday" : "Monday")
+    tasks_to_delete += Task.where(user_id: 1, timeframe: "month", parent_id: nil, complete: true) if Date.today.strftime("%-d") == "1"
     tasks_to_delete.each do |task|
       Task.delete_task_and_subs_and_dups(task)
     end
 
 
     # add day tasks
-    leftover_day_tasks = Task.where(timeframe: "day", parent_id: nil).order(:order)
+    leftover_day_tasks = Task.where(user_id: 1, timeframe: "day", parent_id: nil).order(:order)
     day_tasks = []
-    day_tasks << Task.create(timeframe: "day", text: "20 push ups", color: "210, 206, 200", template: true)
-    day_tasks << Task.create(timeframe: "day", text: "mondly - daily lesson", color: "255, 175, 36")
+    day_tasks << Task.create(user_id: 1, timeframe: "day", text: "20 push ups", color: "210, 206, 200", template: true)
+    day_tasks << Task.create(user_id: 1, timeframe: "day", text: "mondly - daily lesson", color: "255, 175, 36")
     if Date.today.strftime("%A") == "Sunday"
-      day_tasks << Task.create(timeframe: "day", text: "mondly - conversation", color: "255, 175, 36")
-      day_tasks << Task.create(timeframe: "day", text: "mondly - vocabulary", color: "255, 175, 36")
-      day_tasks << Task.create(timeframe: "day", text: "mondly - weekly quiz", color: "255, 175, 36")
+      day_tasks << Task.create(user_id: 1, timeframe: "day", text: "mondly - conversation", color: "255, 175, 36")
+      day_tasks << Task.create(user_id: 1, timeframe: "day", text: "mondly - vocabulary", color: "255, 175, 36")
+      day_tasks << Task.create(user_id: 1, timeframe: "day", text: "mondly - weekly quiz", color: "255, 175, 36")
     else
-      day_tasks << Task.create(timeframe: "day", text: "mondly - one lesson in course", color: "255, 175, 36")
+      day_tasks << Task.create(user_id: 1, timeframe: "day", text: "mondly - one lesson in course", color: "255, 175, 36")
     end
-    day_tasks << Task.create(timeframe: "day", text: "take Vitamin D", color: "210, 206, 200", template: true)
+    day_tasks << Task.create(user_id: 1, timeframe: "day", text: "take Vitamin D", color: "210, 206, 200", template: true)
 
     if Date.today.strftime("%A") == "Saturday" || Date.today.strftime("%A") == "Wednesday"
-      day_tasks << Task.create(timeframe: "day", text: "update finances", color: "210, 206, 200")
+      day_tasks << Task.create(user_id: 1, timeframe: "day", text: "update finances", color: "210, 206, 200")
     end
 
     day_tasks += leftover_day_tasks
 
-    day_tasks << Task.create(timeframe: "day", text: "floss, brush Max, dishes", color: "210, 206, 200", template: true)
+    day_tasks << Task.create(user_id: 1, timeframe: "day", text: "floss, brush Max, dishes", color: "210, 206, 200", template: true)
 
     day_tasks.each_with_index do |task, index|
       task.update(order: index)
@@ -62,10 +62,10 @@ class Task < ActiveRecord::Base
 
     # add weekend tasks
     if Date.today.strftime("%A") == "Saturday"
-      existing_weekend_tasks = Task.where(timeframe: "weekend", parent_id: nil).order(:order)
+      existing_weekend_tasks = Task.where(user_id: 1, timeframe: "weekend", parent_id: nil).order(:order)
       weekend_tasks = []
-      weekend_tasks << Task.create(timeframe: "weekend", text: "change bedsheets", color: "210, 206, 200")
-      weekend_tasks << Task.create(timeframe: "weekend", text: "vacuum lady cave", color: "210, 206, 200")
+      weekend_tasks << Task.create(user_id: 1, timeframe: "weekend", text: "change bedsheets", color: "210, 206, 200")
+      weekend_tasks << Task.create(user_id: 1, timeframe: "weekend", text: "vacuum lady cave", color: "210, 206, 200")
       weekend_tasks += existing_weekend_tasks
       weekend_tasks.each_with_index do |task, index|
         task.update(order: index)
@@ -80,7 +80,7 @@ class Task < ActiveRecord::Base
       tasks_queue += tasks_queue.first.duplicates.to_a
       task = tasks_queue.first
       task.destroy
-      siblings = Task.where(timeframe: task.timeframe, parent_id: task.parent_id).order(:order)
+      siblings = Task.where(user_id: 1, timeframe: task.timeframe, parent_id: task.parent_id).order(:order)
       # close parent task if no siblings left
       if task.parent_id && siblings.length == 0
         parent_task = Task.where(id: task.parent_id)
