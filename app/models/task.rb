@@ -37,14 +37,6 @@ class Task < ActiveRecord::Base
     leftover_day_tasks = Task.where(user_id: 1, timeframe: "day", parent_id: nil).order(:order).to_a
     day_tasks = []
     day_tasks << Task.create(user_id: 1, timeframe: "day", text: "20 push ups", color: "210, 206, 200", template: true)
-    day_tasks << Task.create(user_id: 1, timeframe: "day", text: "mondly - daily lesson", color: "255, 175, 36")
-    if Date.today.strftime("%A") == "Sunday"
-      day_tasks << Task.create(user_id: 1, timeframe: "day", text: "mondly - conversation", color: "255, 175, 36")
-      day_tasks << Task.create(user_id: 1, timeframe: "day", text: "mondly - vocabulary", color: "255, 175, 36")
-      day_tasks << Task.create(user_id: 1, timeframe: "day", text: "mondly - weekly quiz", color: "255, 175, 36")
-    else
-      day_tasks << Task.create(user_id: 1, timeframe: "day", text: "mondly - one lesson in course", color: "255, 175, 36")
-    end
     day_tasks << Task.create(user_id: 1, timeframe: "day", text: "take Vitamin D", color: "210, 206, 200", template: true)
 
     if Date.today.strftime("%A") == "Saturday" || Date.today.strftime("%A") == "Wednesday"
@@ -52,7 +44,8 @@ class Task < ActiveRecord::Base
     end
 
     day_tasks += leftover_day_tasks
-    day_tasks << Task.create(user_id: 1, timeframe: "day", text: "floss, brush Max, dishes", color: "210, 206, 200", template: true)
+    day_tasks << Task.create(user_id: 1, timeframe: "day", text: "floss", color: "210, 206, 200", template: true)
+    day_tasks << Task.create(user_id: 1, timeframe: "day", text: "brush Max", color: "210, 206, 200", template: true)
 
     day_tasks.each_with_index do |task, index|
       task.update(order: index)
