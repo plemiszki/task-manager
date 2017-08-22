@@ -54,6 +54,15 @@ class Task < ActiveRecord::Base
       task.update(order: index)
     end
 
+    # add day tasks 2
+    leftover_day_tasks = Task.where(user_id: 2, timeframe: "day", parent_id: nil).order(:order).to_a
+    day_tasks = []
+    day_tasks << Task.create(user_id: 2, timeframe: "day", text: "shower", color: "210, 206, 200", template: true)
+    day_tasks += leftover_day_tasks
+    day_tasks.each_with_index do |task, index|
+      task.update(order: index)
+    end
+
     # add weekend tasks
     if Date.today.strftime("%A") == "Saturday"
       existing_weekend_tasks = Task.where(user_id: 1, timeframe: "weekend", parent_id: nil).order(:order)
