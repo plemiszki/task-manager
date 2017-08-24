@@ -57,7 +57,7 @@ class Task < ActiveRecord::Base
     # add day tasks 2
     leftover_day_tasks = Task.where(user_id: 2, timeframe: "day", parent_id: nil).order(:order).to_a
     day_tasks = []
-    day_tasks << Task.create(user_id: 2, timeframe: "day", text: "shower", color: "210, 206, 200", template: true)
+    day_tasks << Task.create(user_id: 2, timeframe: "day", text: "Shower", color: "238, 244, 66", template: true)
     day_tasks += leftover_day_tasks
     day_tasks.each_with_index do |task, index|
       task.update(order: index)
