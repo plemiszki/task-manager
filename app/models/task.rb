@@ -37,7 +37,7 @@ class Task < ActiveRecord::Base
     leftover_day_tasks = Task.where(user_id: 1, timeframe: "day", parent_id: nil).order(:order).to_a
     day_tasks = []
     day_tasks << Task.create(user_id: 1, timeframe: "day", text: "take Vitamin D", color: "210, 206, 200", template: true)
-    if Date.today.strftime("%A") == "Saturday" || Date.today.strftime("%A") == "Wednesday"
+    if Date.today.strftime("%A") == "Wednesday"
       day_tasks << Task.create(user_id: 1, timeframe: "day", text: "push ups", color: "210, 206, 200", template: true)
     end
     if Date.today.strftime("%A") == "Saturday"
@@ -68,9 +68,21 @@ class Task < ActiveRecord::Base
       existing_weekend_tasks = Task.where(user_id: 1, timeframe: "weekend", parent_id: nil).order(:order)
       weekend_tasks = []
       weekend_tasks << Task.create(user_id: 1, timeframe: "weekend", text: "change bedsheets", color: "210, 206, 200")
-      weekend_tasks << Task.create(user_id: 1, timeframe: "weekend", text: "vacuum lady cave", color: "210, 206, 200")
+      weekend_tasks << Task.create(user_id: 1, timeframe: "weekend", text: "push ups", color: "210, 206, 200")
       weekend_tasks += existing_weekend_tasks
       weekend_tasks.each_with_index do |task, index|
+        task.update(order: index)
+      end
+    end
+
+    # add month tasks
+    if Date.today.strftime("%-d") == "1"
+      existing_month_tasks = Task.where(user_id: 1, timeframe: "month", parent_id: nil).order(:order)
+      month_tasks = []
+      month_tasks << Task.create(user_id: 1, timeframe: "month", text: "send money to India", color: "255, 175, 36")
+      # TODO: add dentist and vet appointments based on month
+      month_tasks += existing_month_tasks
+      month_tasks.each_with_index do |task, index|
         task.update(order: index)
       end
     end
