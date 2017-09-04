@@ -58,6 +58,11 @@ class Task < ActiveRecord::Base
     leftover_day_tasks = Task.where(user_id: 2, timeframe: "day", parent_id: nil).order(:order).to_a
     day_tasks = []
     day_tasks << Task.create(user_id: 2, timeframe: "day", text: "Shower", color: "238, 244, 66", template: true)
+    pee_pad_day = DateTime.parse('September 3 2017')
+    days_since_change = (DateTime.now - pee_pad_day).to_i
+    if days_since_change % 10 == 0
+      day_tasks << Task.create(user_id: 2, timeframe: "day", text: "Change Max's Pee Pad", color: "255, 175, 36")
+    end
     day_tasks += leftover_day_tasks
     day_tasks.each_with_index do |task, index|
       task.update(order: index)
