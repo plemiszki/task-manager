@@ -85,7 +85,10 @@ class Task < ActiveRecord::Base
       existing_month_tasks = Task.where(user_id: 1, timeframe: "month", parent_id: nil).order(:order)
       month_tasks = []
       month_tasks << Task.create(user_id: 1, timeframe: "month", text: "send money to India", color: "255, 175, 36")
-      # TODO: add dentist and vet appointments based on month
+      if Date.today.strftime("%B") == "September" || Date.today.strftime("%B") == "March"
+        month_tasks << Task.create(user_id: 1, timeframe: "month", text: "dentist appointment", color: "210, 206, 200")
+      end
+      # TODO: add doctor and vet appointments based on month
       month_tasks += existing_month_tasks
       month_tasks.each_with_index do |task, index|
         task.update(order: index)
