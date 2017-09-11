@@ -163,7 +163,7 @@ var TaskIndexItem = React.createClass({
   render: function() {
     return(
       <div className="group">
-        <div id={this.createTaskId()} className={"task" + (this.state.task.expanded ? " expanded" : "") + (this.state.task.duplicate_id ? " duplicate" : "")} style={this.taskStyle()} data-taskid={this.props.task.id}>
+        <div id={this.createTaskId()} className={"task" + (this.state.task.expanded ? " expanded" : "") + (this.state.task.duplicate_id ? " duplicate" : "") + (this.state.task.joint_id ? " joint" : "")} style={this.taskStyle()} data-taskid={this.props.task.id}>
           <div className={"controls" + (this.state.editing ? " hidden" : "")}>
             <a href="" className={"delete-button" + (this.state.task.duplicate_id && this.state.task.parent_id ? " hidden" : "")} onClick={this.deleteTask}></a>
             <a href="" className="done-button" onClick={this.finishedTask}></a>

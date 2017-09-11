@@ -151,6 +151,14 @@
       user-select: none;
     }
 
+    &.joint {
+      background-color: black !important;
+
+      input.disabled {
+        -webkit-text-fill-color: #FFFFFF;
+      }
+    }
+
     .controls {
       display: none;
       width: 30px;
