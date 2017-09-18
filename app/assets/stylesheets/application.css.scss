@@ -151,8 +151,48 @@
       user-select: none;
     }
 
+    .plus, .minus, .check {
+      height: 100%;
+      top: 0;
+      position: absolute;
+      z-index: 2;
+    }
+
+    .plus {
+      width: 20px;
+      background: asset-data-url("plus.png") center center no-repeat;
+    }
+
+    .minus {
+      width: 20px;
+      background: asset-data-url("minus.png") center center no-repeat;
+    }
+
+    .check {
+      width: 30px;
+      background: asset-data-url("checkmark-padded.png") center center no-repeat;
+    }
+
     &.joint {
       background-color: black !important;
+
+      .check {
+        width: 30px;
+        background: asset-data-url("checkmark-padded-white.png") center center no-repeat;
+      }
+
+      a.color-button, a.add-subtask-button {
+        display: none;
+      }
+
+      a.done-button {
+        background: asset-data-url("checkmark-white.png") 45% 40% no-repeat;
+        background-size: 70%;
+      }
+
+      a.delete-button {
+        background: asset-data-url("delete-white.png") 45% 40% no-repeat;
+      }
 
       input.disabled {
         -webkit-text-fill-color: #FFFFFF;
@@ -235,28 +275,6 @@
         height: 100%;
         width: 100%;
       }
-    }
-
-    .plus, .minus, .check {
-      height: 100%;
-      top: 0;
-      position: absolute;
-      z-index: 2;
-    }
-
-    .plus {
-      width: 20px;
-      background: asset-data-url("plus.png") center center no-repeat;
-    }
-
-    .minus {
-      width: 20px;
-      background: asset-data-url("minus.png") center center no-repeat;
-    }
-
-    .check {
-      width: 30px;
-      background: asset-data-url("checkmark-padded.png") center center no-repeat;
     }
 
     .hidden {
