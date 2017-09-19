@@ -66,11 +66,11 @@ class Task < ActiveRecord::Base
     # add joint tasks
     pee_pad_day = DateTime.parse('September 3 2017')
     days_since_change = (DateTime.now - pee_pad_day).to_i
-    if days_since_change % 10 == 0
+    if days_since_change % 8 == 0
       first_pee_pad_task = Task.create(user_id: 1, timeframe: "day", text: "change pee pad", color: "210, 206, 200")
       second_pee_pad_task = Task.create(user_id: 2, timeframe: "day", text: "Change Max's Pee Pad", color: "255, 175, 36", joint_id: first_pee_pad_task.id)
       first_pee_pad_task.update(joint_id: second_pee_pad_task.id)
-    elsif days_since_change % 5 == 0
+    elsif days_since_change % 4 == 0
       first_pee_pad_task = Task.create(user_id: 1, timeframe: "day", text: "flip pee pad", color: "210, 206, 200")
       second_pee_pad_task = Task.create(user_id: 2, timeframe: "day", text: "Flip Max's Pee Pad", color: "255, 175, 36", joint_id: first_pee_pad_task.id)
       first_pee_pad_task.update(joint_id: second_pee_pad_task.id)
