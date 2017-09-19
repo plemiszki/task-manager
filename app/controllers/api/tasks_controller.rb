@@ -66,6 +66,12 @@ class Api::TasksController < ActionController::Base
         )
       else
         @task.update(task_params)
+        if @task.joint_id
+          joint_task = Task.find(@task.joint_id)
+          joint_task.update!(
+            complete: params[:task][:complete]
+          )
+        end
         if @task.duplicate_id
           mark_master_complete(@task.duplicate_id, params[:task][:complete])
         end
