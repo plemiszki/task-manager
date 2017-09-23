@@ -64,7 +64,7 @@ class Task < ActiveRecord::Base
     end
 
     # add joint tasks
-    pee_pad_day = DateTime.parse('September 3 2017')
+    pee_pad_day = DateTime.parse('September 23 2017')
     days_since_change = (DateTime.now - pee_pad_day).to_i
     if days_since_change % 8 == 0
       first_pee_pad_task = Task.create(user_id: 1, timeframe: "day", text: "change pee pad", color: "210, 206, 200")
