@@ -33,6 +33,10 @@ class Task < ActiveRecord::Base
       Task.delete_task_and_subs_and_dups(task)
     end
 
+    # joint tasks
+    pee_pad_day = DateTime.parse('September 23 2017')
+    days_since_change = (DateTime.now - pee_pad_day).to_i
+
     # add day tasks
     leftover_day_tasks = Task.where(user_id: 1, timeframe: "day", parent_id: nil).order(:order).to_a
     day_tasks = []
@@ -46,6 +50,13 @@ class Task < ActiveRecord::Base
     day_tasks += leftover_day_tasks
     if Date.today.strftime("%A") == "Wednesday"
       day_tasks << Task.create(user_id: 1, timeframe: "day", text: "update finances", color: "210, 206, 200")
+    end
+    if days_since_change % 8 == 0
+      first_pee_pad_task = Task.create(user_id: 1, timeframe: "day", text: "change pee pad", color: "210, 206, 200")
+      day_tasks << first_pee_pad_task
+    elsif days_since_change % 4 == 0
+      first_pee_pad_task = Task.create(user_id: 1, timeframe: "day", text: "flip pee pad", color: "210, 206, 200")
+      day_tasks << first_pee_pad_task
     end
     day_tasks << Task.create(user_id: 1, timeframe: "day", text: "brush Max", color: "210, 206, 200", template: true)
     day_tasks << Task.create(user_id: 1, timeframe: "day", text: "floss", color: "210, 206, 200", template: true)
@@ -62,21 +73,17 @@ class Task < ActiveRecord::Base
       day_tasks << Task.create(user_id: 2, timeframe: "day", text: "Create Wonderland Doodle", color: "181, 111, 240")
     end
     day_tasks += leftover_day_tasks
-    day_tasks.each_with_index do |task, index|
-      task.update(order: index)
-    end
-
-    # add joint tasks
-    pee_pad_day = DateTime.parse('September 23 2017')
-    days_since_change = (DateTime.now - pee_pad_day).to_i
     if days_since_change % 8 == 0
-      first_pee_pad_task = Task.create(user_id: 1, timeframe: "day", text: "change pee pad", color: "210, 206, 200")
       second_pee_pad_task = Task.create(user_id: 2, timeframe: "day", text: "Change Max's Pee Pad", color: "255, 175, 36", joint_id: first_pee_pad_task.id)
+      day_tasks << second_pee_pad_task
       first_pee_pad_task.update(joint_id: second_pee_pad_task.id)
     elsif days_since_change % 4 == 0
-      first_pee_pad_task = Task.create(user_id: 1, timeframe: "day", text: "flip pee pad", color: "210, 206, 200")
       second_pee_pad_task = Task.create(user_id: 2, timeframe: "day", text: "Flip Max's Pee Pad", color: "255, 175, 36", joint_id: first_pee_pad_task.id)
+      day_tasks << first_pee_pad_task
       first_pee_pad_task.update(joint_id: second_pee_pad_task.id)
+    end
+    day_tasks.each_with_index do |task, index|
+      task.update(order: index)
     end
 
     # add weekend tasks

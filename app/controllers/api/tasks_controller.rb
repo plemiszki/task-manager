@@ -18,7 +18,7 @@ class Api::TasksController < ActionController::Base
         rearrange(params[:new_order] || {})
       end
     else
-      tasks_length = Task.where(timeframe: params[:timeframe], parent_id: params[:parent_id]).length
+      tasks_length = Task.where(user_id: current_user.id, timeframe: params[:timeframe], parent_id: params[:parent_id]).length
       @task = Task.new(user_id: current_user.id, timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length)
 
       # assign the proper color
