@@ -121,7 +121,7 @@ class Task < ActiveRecord::Base
       tasks_queue += tasks_queue.first.duplicates.to_a
       task = tasks_queue.first
       task.destroy
-      siblings = Task.where(timeframe: task.timeframe, parent_id: task.parent_id).order(:order)
+      siblings = Task.where(user_id: current_user.id, timeframe: task.timeframe, parent_id: task.parent_id).order(:order)
       # close parent task if no siblings left
       if task.parent_id && siblings.length == 0
         parent_task = Task.where(id: task.parent_id)
