@@ -9,6 +9,17 @@ var ClientActions = {
       type: 'GET',
       success: function(response) {
         ServerActions.receiveUser(response);
+        ClientActions.fetchCongress();
+      }
+    });
+  },
+
+  fetchCongress: function() {
+    $.ajax({
+      url: '/api/congress',
+      type: 'GET',
+      success: function(response) {
+        ServerActions.receiveCongress(response);
       }
     });
   },

@@ -14,12 +14,14 @@ gem 'sdoc', '~> 0.4.0', group: :doc # bundle exec rake doc:rails generates the A
 gem 'bootstrap-sass'
 gem 'clearance', '~> 1.11'
 gem 'database_cleaner'
+gem 'httparty'
 # ------------------------------
 
 group :development, :test do
   gem 'byebug'
   gem 'pry-rails'
   gem 'better_errors'
+  gem 'dotenv-rails' # load environment variables from .env file
 end
 
 group :development do

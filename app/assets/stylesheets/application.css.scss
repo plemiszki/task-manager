@@ -61,6 +61,34 @@
   background: #FFFFFF;
   padding: 10px 15px;
 
+  .email {
+    float: left;
+  }
+
+  .congress {
+    width: 210px;
+    display: block;
+    margin: auto;
+
+    img, div {
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    div {
+      width: 120px;
+      text-align: center;
+
+      p {
+        margin-bottom: 0;
+      }
+    }
+
+    img:not(:last-of-type), div {
+      margin-right: 10px;
+    }
+  }
+
   a {
     font-size: 12px;
     float: right;

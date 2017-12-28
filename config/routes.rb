@@ -9,6 +9,8 @@ Rails.application.routes.draw do
     patch '/tasks/rearrange' => '/api/tasks#rearrange'
     delete '/tasks' => '/api/tasks#delete'
 
+    get '/congress' => '/api/congress#show'
+
     get '/user' => '/api/users#show'
     post '/user' => '/api/users#update'
   end

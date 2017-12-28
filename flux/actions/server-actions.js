@@ -20,6 +20,13 @@ var ServerActions = {
     AppDispatcher.dispatch({
       actionType: "ERROR"
     });
+  },
+
+  receiveCongress: function(response) {
+    AppDispatcher.dispatch({
+      actionType: "CONGRESS_RECEIVED",
+      obj: response
+    });
   }
 };
 
