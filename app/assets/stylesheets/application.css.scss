@@ -62,13 +62,14 @@
   padding: 10px 15px;
 
   .email {
-    float: left;
+    margin-top: 9px;
+    float: right;
+    margin-right: 15px;
   }
 
   .congress {
     width: 210px;
     display: block;
-    margin: auto;
 
     img, div {
       display: inline-block;
@@ -90,6 +91,7 @@
   }
 
   a {
+    margin-top: 2px;
     font-size: 12px;
     float: right;
   }

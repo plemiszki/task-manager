@@ -35,10 +35,10 @@ var CurrentUser = React.createClass({
   render: function() {
     return(
       <div className="current-user">
+        <a className="btn btn-primary" rel="nofollow" data-method="delete" href="/sign_out">Log Out</a>
         <div className="email">
           { this.state.user ? this.state.user.email : "(loading)" }
         </div>
-        <a className="btn btn-primary" rel="nofollow" data-method="delete" href="/sign_out">Log Out</a>
         <div className="widget congress">
           <img src={ Images.democrat } />
           <div><p>{ this.state.congressObj.senate.dems } - Senate - { this.state.congressObj.senate.repubs }</p><p>{ this.state.congressObj.house.dems } - House - { this.state.congressObj.house.repubs }</p></div>
