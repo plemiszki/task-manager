@@ -9,8 +9,8 @@ var CurrentUser = React.createClass({
     return({
       user: null,
       congressObj: {
-        senate: { repubs: "...", dems: "..." },
-        house: { repubs: "...", dems: "..." }
+        senate: {},
+        house: {}
       }
     });
   },
@@ -41,7 +41,12 @@ var CurrentUser = React.createClass({
         </div>
         <div className="widget congress">
           <img src={ Images.democrat } />
-          <div><p>{ this.state.congressObj.senate.dems } - Senate - { this.state.congressObj.senate.repubs }</p><p>{ this.state.congressObj.house.dems } - House - { this.state.congressObj.house.repubs }</p></div>
+          <div>
+            <p>{ this.state.congressObj.senate.dems } - Senate - { this.state.congressObj.senate.repubs }</p>
+            <p className="elections">{ this.state.congressObj.senate.dems_up } - 2018 Elections - { this.state.congressObj.senate.repubs_up }</p>
+            <hr />
+            <p>{ this.state.congressObj.house.dems } - House - { this.state.congressObj.house.repubs }</p>
+          </div>
           <img src={ Images.republican } />
         </div>
       </div>
