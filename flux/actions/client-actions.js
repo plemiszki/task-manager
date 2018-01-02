@@ -115,6 +115,16 @@ var ClientActions = {
         ServerActions.receiveTasks(response);
       }
     });
+  },
+
+  fetchFutureTasks: function() {
+    $.ajax({
+      url: '/api/future_tasks',
+      type: 'GET',
+      success: function(response) {
+        ServerActions.receiveFutureTasks(response);
+      }
+    });
   }
 };
 

@@ -2,6 +2,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var CurrentUser = require('./components/current-user.jsx');
 var TasksIndex = require('./components/tasks-index.jsx');
+var FutureTasksIndex = require('./components/future-tasks-index.jsx');
 
 $(document).ready(function() {
   if ($('#current-user')[0]) {
@@ -21,5 +22,8 @@ $(document).ready(function() {
   }
   if ($('#tasks-index-life')[0]) {
     ReactDOM.render(<TasksIndex timeframe={"life"} />, document.getElementById("tasks-index-life"));
+  }
+  if ($('#future-tasks-index')[0]) {
+    ReactDOM.render(<FutureTasksIndex />, document.getElementById("future-tasks-index"));
   }
 });

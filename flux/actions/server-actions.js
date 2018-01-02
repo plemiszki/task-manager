@@ -27,6 +27,13 @@ var ServerActions = {
       actionType: "CONGRESS_RECEIVED",
       obj: response
     });
+  },
+
+  receiveFutureTasks: function(response) {
+    AppDispatcher.dispatch({
+      actionType: "FUTURE_TASKS_RECEIVED",
+      tasks: response.tasks
+    });
   }
 };
 
