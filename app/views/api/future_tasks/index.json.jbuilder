@@ -4,4 +4,5 @@ json.tasks @future_tasks do |task|
   json.date task.date
   json.color task.color
   json.timeframe task.timeframe
+  json.addToEnd task.add_to_end
 end

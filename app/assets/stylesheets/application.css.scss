@@ -29,6 +29,31 @@
   }
 }
 
+.grayed-out {
+  position: absolute;
+  z-index: 100;
+  background-color: gray;
+  opacity: 0.1;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  margin-top: -10px;
+  margin-left: -15px;
+}
+
+.spinner {
+  position: absolute;
+  z-index: 101;
+  $spinner-size: 90px;
+  width: $spinner-size;
+  height: $spinner-size;
+  background-color: black;
+  opacity: 0.75;
+  left: calc(50% - (#{$spinner-size} / 2));
+  top: calc(50% - (#{$spinner-size} / 2));
+  background: asset-data-url("ajax-loader.svg") center center no-repeat;
+}
+
 #flash {
   margin-top: 10px;
   text-align: center;
@@ -126,6 +151,11 @@
   color: black;
   text-align: center;
 
+  .grayed-out {
+    margin-top: -10px;
+    margin-left: -15px;
+  }
+
   h1 {
     font-family: 'Helvetica Neue';
     font-size: 20px;
@@ -152,31 +182,6 @@
     border-radius: 100px;
     text-align: center;
     text-decoration: none;
-  }
-
-  .grayed-out {
-    position: absolute;
-    z-index: 100;
-    background-color: gray;
-    opacity: 0.1;
-    width: 100%;
-    height: 100%;
-    border-radius: 5px;
-    margin-top: -10px;
-    margin-left: -15px;
-  }
-
-  .spinner {
-    position: absolute;
-    z-index: 101;
-    $spinner-size: 90px;
-    width: $spinner-size;
-    height: $spinner-size;
-    background-color: black;
-    opacity: 0.75;
-    left: calc(50% - (#{$spinner-size} / 2));
-    top: calc(50% - (#{$spinner-size} / 2));
-    background: asset-data-url("ajax-loader.svg") center center no-repeat;
   }
 
   .task {
@@ -386,6 +391,11 @@
   box-shadow: 1px 2px 3px 0px #E6E9EC;
   color: black;
 
+  .grayed-out {
+    margin-top: -20px;
+    margin-left: -25px;
+  }
+
   .btn-info {
     margin-top: 2px;
     font-size: 12px;
@@ -397,16 +407,57 @@
     font-size: 20px;
     color: #2C2F33;
     letter-spacing: 1.08px;
-    margin-bottom: 15px;
+    margin-bottom: 24px;
   }
 
   table {
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     font-family: 'TeachableSans';
 
+    th {
+      padding-bottom: 10px;
+
+      &:first-of-type {
+        padding-left: 10px;
+      }
+
+      &:last-of-type {
+        width: 27px;
+      }
+    }
+
+    td {
+      padding: 6px 0;
+
+      &:first-of-type {
+        padding-left: 10px;
+      }
+    }
+
     tr.below-header td {
-      padding-top: 5px;
+      padding-top: 0;
+    }
+
+    thead {
+      border-bottom: solid 1px #DADEE2;
+    }
+
+    tbody tr:not(.below-header):hover {
+      background-color: #F5F5F5;
+    }
+
+    td:last-of-type {
+
+      .x-button {
+        top: 10px;
+        margin-right: 10px;
+        background-image: asset-url('gray-x.png');
+        background-size: contain;
+        width: 17px;
+        height: 17px;
+        cursor: pointer;
+      }
     }
   }
 

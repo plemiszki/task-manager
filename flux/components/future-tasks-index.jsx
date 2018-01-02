@@ -37,11 +37,11 @@ var FutureTasksIndex = React.createClass({
     // ClientActions.addTask(this.props.timeframe);
   },
 
-  deleteTask: function(task) {
+  clickXButton: function(e) {
     this.setState({
       fetching: true
     });
-    ClientActions.deleteTask(task);
+    ClientActions.deleteFutureTask(e.target.dataset.id);
   },
 
   render: function() {
@@ -49,6 +49,8 @@ var FutureTasksIndex = React.createClass({
       <div className="container">
         <div className="row">
           <div className="col-xs-12">
+            { Common.renderSpinner(this.state.fetching) }
+            { Common.renderGrayedOut(this.state.fetching) }
             <a className="btn btn-info" rel="nofollow" href="/">Home</a>
             <h1>Future Tasks</h1>
             <table>
@@ -57,21 +59,25 @@ var FutureTasksIndex = React.createClass({
                   <th>Date</th>
                   <th>Text</th>
                   <th>Timeframe</th>
+                  <th>Position</th>
                   <th>Color</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="below-header"><td></td><td></td><td></td><td></td></tr>
+                <tr className="below-header"><td></td><td></td><td></td><td></td><td></td></tr>
                 {this.state.tasks.map(function(task) {
                   return(
                     <tr key={ task.id }>
                       <td>{ task.date }</td>
                       <td>{ task.text }</td>
                       <td>{ task.timeframe }</td>
+                      <td>{ task.addToEnd ? "End" : "Start" }</td>
                       <td>{ task.color }</td>
+                      <td><div className="x-button" onClick={ this.clickXButton } data-id={ task.id }></div></td>
                     </tr>
                   )
-                })}
+                }.bind(this))}
               </tbody>
             </table>
             <div className="btn btn-primary">Add New</div>

@@ -125,6 +125,16 @@ var ClientActions = {
         ServerActions.receiveFutureTasks(response);
       }
     });
+  },
+
+  deleteFutureTask: function(id) {
+    $.ajax({
+      url: '/api/future_tasks/' + id,
+      type: 'DELETE',
+      success: function(response) {
+        ServerActions.receiveFutureTasks(response);
+      }
+    });
   }
 };
 
