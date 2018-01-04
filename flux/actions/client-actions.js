@@ -131,7 +131,7 @@ var ClientActions = {
     $.ajax({
       url: '/api/future_tasks',
       type: 'POST',
-      data: { task },
+      data: { future_task: task },
       success: function(response) {
         ServerActions.receiveFutureTasks(response);
       }

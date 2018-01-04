@@ -35,6 +35,8 @@ var FutureTasksIndex = React.createClass({
   getFutureTasks: function() {
     this.setState({
       fetching: false,
+      modalFetching: false,
+      modalOpen: false,
       tasks: FutureTasksStore.all()
     });
   },
@@ -78,7 +80,7 @@ var FutureTasksIndex = React.createClass({
     this.setState({
       modalFetching: true
     });
-    ClientActions.createFutureTask({ date, text, timeframe, position, color });
+    ClientActions.createFutureTask({ date, text, timeframe, add_to_end: (position == "End"), color });
   },
 
   render: function() {
@@ -109,8 +111,8 @@ var FutureTasksIndex = React.createClass({
                       <td>{ task.date }</td>
                       <td>{ task.text }</td>
                       <td>{ task.timeframe }</td>
-                      <td>{ task.addToEnd ? "End" : "Start" }</td>
-                      <td>{ task.color }</td>
+                      <td>{ task.addToEnd ? "End" : "Beginning" }</td>
+                      <td><div className="swatch" style={ { backgroundColor: task.color } }></div></td>
                       <td><div className="x-button" onClick={ this.clickXButton } data-id={ task.id }></div></td>
                     </tr>
                   )

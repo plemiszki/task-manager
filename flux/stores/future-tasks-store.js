@@ -17,11 +17,11 @@ FutureTasksStore.find = function(id) {
 };
 
 FutureTasksStore.all = function() {
-  var result = [];
+  var tasks = [];
   Object.keys(_tasks).forEach(function(id) {
-    result.push(_tasks[id]);
+    tasks.push(_tasks[id]);
   });
-  return result;
+  return Tools.sortArrayOfObjects(tasks, 'date');
 };
 
 FutureTasksStore.__onDispatch = function(payload) {
