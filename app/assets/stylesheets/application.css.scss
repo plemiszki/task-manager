@@ -17,6 +17,7 @@
  @import 'bootstrap-sprockets';
  @import 'bootstrap';
  @import 'reset';
+ @import 'library/nice-select';
 
  @media (min-width: 992px) {
   .container{
@@ -380,6 +381,79 @@
 
 .grabbing {
   cursor: -webkit-grabbing !important;
+}
+
+// Other Pages
+
+.my-modal {
+  padding: 20px;
+  background-color: white;
+  font-size: 12px;
+
+  .grayed-out {
+    margin-top: -20px;
+    margin-left: -20px;
+  }
+
+  .container {
+    width: 100%;
+  }
+
+  h1 {
+    font-family: 'TeachableSansBold';
+    margin-bottom: 10px;
+  }
+
+  .row:not(:last-of-type) {
+    margin-bottom: 25px;
+  }
+
+  .btn {
+    margin-top: 20px;
+    font-size: 12px;
+  }
+
+  input, .nice-select {
+    text-align: left;
+    width: 100%;
+    border: 1px solid #E4E9ED;
+    border-radius: 3px;
+    color: #5F5F5F;
+    padding: 13px;
+    line-height: inherit;
+    font-family: 'TeachableSans';
+    font-size: 12px;
+
+    ul {
+      width: 100%;
+      max-height: 80px;
+      overflow-y: scroll;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .colors {
+
+    .color {
+      margin-top: 4px;
+      display: inline-block;
+      border-radius: 3px;
+      width: 34px;
+      height: 34px;
+      cursor: pointer;
+
+      &:not(:last-of-type) {
+        margin-right: 10px;
+      }
+
+      &.selected {
+        border: solid 2px black;
+      }
+    }
+  }
 }
 
 #future-tasks-index .row .col-xs-12 {

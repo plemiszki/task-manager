@@ -127,6 +127,17 @@ var ClientActions = {
     });
   },
 
+  createFutureTask: function(task) {
+    $.ajax({
+      url: '/api/future_tasks',
+      type: 'POST',
+      data: { task },
+      success: function(response) {
+        ServerActions.receiveFutureTasks(response);
+      }
+    });
+  },
+
   deleteFutureTask: function(id) {
     $.ajax({
       url: '/api/future_tasks/' + id,

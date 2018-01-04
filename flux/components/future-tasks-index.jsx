@@ -1,12 +1,28 @@
 var React = require('react');
+var Modal = require('react-modal');
 var ClientActions = require('../actions/client-actions.js');
 var FutureTasksStore = require('../stores/future-tasks-store.js');
+
+var ModalStyles = {
+  overlay: {
+    background: 'rgba(0, 0, 0, 0.50)'
+  },
+  content: {
+    background: '#F5F6F7',
+    padding: 0,
+    margin: 'auto',
+    maxWidth: 1000,
+    height: 276
+  }
+};
 
 var FutureTasksIndex = React.createClass({
 
   getInitialState: function() {
     return({
+      modalOpen: false,
       fetching: true,
+      modalFetching: false,
       tasks: []
     });
   },
@@ -29,12 +45,12 @@ var FutureTasksIndex = React.createClass({
     });
   },
 
-  clickAddButton: function(event) {
-    // event.preventDefault();
-    // this.setState({
-    //   fetching: true
-    // });
-    // ClientActions.addTask(this.props.timeframe);
+  clickAddNewButton: function() {
+    this.setState({
+      modalOpen: true
+    }, function() {
+      Common.resetNiceSelect('select');
+    });
   },
 
   clickXButton: function(e) {
@@ -42,6 +58,27 @@ var FutureTasksIndex = React.createClass({
       fetching: true
     });
     ClientActions.deleteFutureTask(e.target.dataset.id);
+  },
+
+  handleModalClose: function() {
+    this.setState({ modalOpen: false });
+  },
+
+  clickColor: function(e) {
+    $('.color').removeClass('selected');
+    e.target.classList.add('selected');
+  },
+
+  clickAddButton: function() {
+    var date = $('[data-field="date"]')[0].value;
+    var text = $('[data-field="text"]')[0].value;
+    var timeframe = $('[data-field="timeframe"]')[0].value;
+    var position = $('[data-field="position"]')[0].value;
+    var color = $('.color.selected')[0].style.backgroundColor;
+    this.setState({
+      modalFetching: true
+    });
+    ClientActions.createFutureTask({ date, text, timeframe, position, color });
   },
 
   render: function() {
@@ -58,7 +95,7 @@ var FutureTasksIndex = React.createClass({
                 <tr>
                   <th>Date</th>
                   <th>Text</th>
-                  <th>Timeframe</th>
+                  <th>Time Frame</th>
                   <th>Position</th>
                   <th>Color</th>
                   <th></th>
@@ -80,9 +117,64 @@ var FutureTasksIndex = React.createClass({
                 }.bind(this))}
               </tbody>
             </table>
-            <div className="btn btn-primary">Add New</div>
+            <div className="btn btn-primary" onClick={ this.clickAddNewButton }>Add New</div>
           </div>
         </div>
+        <Modal isOpen={ this.state.modalOpen } onRequestClose={ this.handleModalClose } contentLabel="Modal" style={ ModalStyles }>
+          <div className="my-modal">
+            { Common.renderSpinner(this.state.modalFetching) }
+            { Common.renderGrayedOut(this.state.modalFetching) }
+            <div className="container">
+              <div className="row">
+                <div className="col-xs-3">
+                  <h1>Date</h1>
+                  <input data-field="date" />
+                </div>
+                <div className="col-xs-9">
+                  <h1>Text</h1>
+                  <input data-field="text" />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-xs-3">
+                  <h1>Time Frame</h1>
+                    <select data-field="timeframe">
+                      <option>Day</option>
+                      <option>Weekend</option>
+                      <option>Month</option>
+                      <option>Year</option>
+                    </select>
+                </div>
+                <div className="col-xs-3">
+                  <h1>Position</h1>
+                  <select data-field="position">
+                    <option>Beginning</option>
+                    <option>End</option>
+                  </select>
+                </div>
+                <div className="col-xs-6">
+                  <h1>Color</h1>
+                  <div className="colors">
+                    <div className="color" onClick={ this.clickColor } style={{'backgroundColor': 'rgb(234, 30, 30)'}} ></div>
+                    <div className="color" onClick={ this.clickColor } style={{'backgroundColor': 'rgb(255, 175, 163)'}} ></div>
+                    <div className="color" onClick={ this.clickColor } style={{'backgroundColor': 'rgb(255, 175, 36)'}} ></div>
+                    <div className="color" onClick={ this.clickColor } style={{'backgroundColor': 'rgb(238, 244, 66)'}} ></div>
+                    <div className="color" onClick={ this.clickColor } style={{'backgroundColor': 'rgb(30, 124, 33)'}} ></div>
+                    <div className="color" onClick={ this.clickColor } style={{'backgroundColor': 'rgb(111, 138, 240)'}} ></div>
+                    <div className="color" onClick={ this.clickColor } style={{'backgroundColor': 'rgb(181, 111, 240)'}} ></div>
+                    <div className="color" onClick={ this.clickColor } style={{'backgroundColor': 'rgb(175, 96, 26)'}} ></div>
+                    <div className="color selected" onClick={ this.clickColor } style={{'backgroundColor': 'rgb(210, 206, 200)'}} ></div>
+                  </div>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-xs-12">
+                  <div className="btn btn-primary" onClick={ this.clickAddButton }>Add</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Modal>
       </div>
     )
   }

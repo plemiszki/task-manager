@@ -1,10 +1,12 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var ReactModal = require('react-modal');
 var CurrentUser = require('./components/current-user.jsx');
 var TasksIndex = require('./components/tasks-index.jsx');
 var FutureTasksIndex = require('./components/future-tasks-index.jsx');
 
 $(document).ready(function() {
+  ReactModal.setAppElement(document.body);
   if ($('#current-user')[0]) {
     ReactDOM.render(<CurrentUser />, document.getElementById("current-user"));
   }

@@ -10,26 +10,6 @@ Common = {
     $.fn.matchHeight._maintainScroll = true;
   },
 
-  renderDisabledButtonClass: function(fetching) {
-    return fetching ? " disabled" : "";
-  },
-
-  renderGrayedOut: function(fetching) {
-    if (fetching) {
-      return(
-        <div className="grayed-out"></div>
-      );
-    }
-  },
-
-  renderSpinner: function(fetching) {
-    if (fetching) {
-      return(
-        <div className="spinner"></div>
-      );
-    }
-  },
-
   canIDrop: function($e) {
     draggedId = $e[0].getAttribute('id');
     draggedIdArray = draggedId.split('-');
@@ -69,6 +49,32 @@ Common = {
   dragOutHandler: function(e) {
     e.target.classList.remove('highlight-black');
     e.target.classList.remove('highlight-blue');
+  },
+
+  renderDisabledButtonClass: function(fetching) {
+    return fetching ? " disabled" : "";
+  },
+
+  renderGrayedOut: function(fetching) {
+    if (fetching) {
+      return(
+        <div className="grayed-out"></div>
+      );
+    }
+  },
+
+  renderSpinner: function(fetching) {
+    if (fetching) {
+      return(
+        <div className="spinner"></div>
+      );
+    }
+  },
+
+  resetNiceSelect: function(selector) {
+    var $dropDowns = $(selector);
+    $dropDowns.niceSelect('destroy');
+    $dropDowns.niceSelect();
   }
 }
 
