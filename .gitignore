@@ -12,6 +12,9 @@
 !/log/.keep
 /tmp
 
+# Ignore .env file
+.env
+
 # Ignore DS Store Files
 *.DS_Store
 .DS_Store
