@@ -61,7 +61,7 @@ var FutureTasksIndex = React.createClass({
   },
 
   handleModalClose: function() {
-    this.setState({ modalOpen: false });
+    this.setState({ modalOpen: false, errors: [] });
   },
 
   clickColor: function(e) {
