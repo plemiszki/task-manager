@@ -15,6 +15,8 @@ gem 'bootstrap-sass'
 gem 'clearance', '~> 1.11'
 gem 'database_cleaner'
 gem 'httparty'
+gem 'validates_timeliness', '~> 4.0'
+gem 'timeliness'
 # ------------------------------
 
 group :development, :test do

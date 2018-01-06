@@ -34,6 +34,13 @@ var ServerActions = {
       actionType: "FUTURE_TASKS_RECEIVED",
       tasks: response.tasks
     });
+  },
+
+  receiveErrors: function(response) {
+    AppDispatcher.dispatch({
+      actionType: "ERRORS_RECEIVED",
+      errors: response.responseJSON
+    });
   }
 };
 

@@ -10,7 +10,7 @@ class Api::FutureTasksController < ActionController::Base
   def create
     @future_task = FutureTask.new(future_task_params)
     @future_task.user_id = current_user.id
-    if @future_task.save!
+    if @future_task.save
       @future_tasks = FutureTask.where(user_id: current_user.id)
       render "index.json.jbuilder"
     else

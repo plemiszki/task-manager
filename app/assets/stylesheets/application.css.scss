@@ -433,6 +433,10 @@
     &:focus {
       outline: none;
     }
+
+    &.error {
+      border-color: red;
+    }
   }
 
   .colors {

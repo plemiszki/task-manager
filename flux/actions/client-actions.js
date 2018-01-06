@@ -134,6 +134,9 @@ var ClientActions = {
       data: { future_task: task },
       success: function(response) {
         ServerActions.receiveFutureTasks(response);
+      },
+      error: function(response) {
+        ServerActions.receiveErrors(response);
       }
     });
   },

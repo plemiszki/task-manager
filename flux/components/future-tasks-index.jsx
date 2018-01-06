@@ -2,6 +2,7 @@ var React = require('react');
 var Modal = require('react-modal');
 var ClientActions = require('../actions/client-actions.js');
 var FutureTasksStore = require('../stores/future-tasks-store.js');
+var ErrorsStore = require('../stores/errors-store.js');
 
 var ModalStyles = {
   overlay: {
@@ -23,12 +24,14 @@ var FutureTasksIndex = React.createClass({
       modalOpen: false,
       fetching: true,
       modalFetching: false,
-      tasks: []
+      tasks: [],
+      errors: []
     });
   },
 
   componentDidMount: function() {
     this.tasksListener = FutureTasksStore.addListener(this.getFutureTasks);
+    this.errorsListener = ErrorsStore.addListener(this.getErrors);
     ClientActions.fetchFutureTasks();
   },
 
@@ -41,17 +44,12 @@ var FutureTasksIndex = React.createClass({
     });
   },
 
-  getError: function() {
-    this.setState({
-      fetching: false
-    });
-  },
-
   clickAddNewButton: function() {
     this.setState({
       modalOpen: true
     }, function() {
       Common.resetNiceSelect('select');
+      $('[data-field="date"]').val(moment().add(1, 'days').format('l'));
     });
   },
 
@@ -83,6 +81,25 @@ var FutureTasksIndex = React.createClass({
     ClientActions.createFutureTask({ date, text, timeframe, add_to_end: (position == "End"), color });
   },
 
+  getErrors: function() {
+    this.setState({
+      modalFetching: false,
+      errors: ErrorsStore.all()
+    });
+  },
+
+  clearError: function(e) {
+    var errors = this.state.errors;
+    if (e.target.dataset.field == "date") {
+      Tools.removeFromArray(errors, "Date is not a valid date");
+    } else if (e.target.dataset.field == "text") {
+      Tools.removeFromArray(errors, "Text can't be blank");
+    }
+    this.setState({
+      errors: errors
+    });
+  },
+
   render: function() {
     return(
       <div className="container">
@@ -108,7 +125,7 @@ var FutureTasksIndex = React.createClass({
                 {this.state.tasks.map(function(task) {
                   return(
                     <tr key={ task.id }>
-                      <td>{ task.date }</td>
+                      <td>{ moment(task.date).format('l') }</td>
                       <td>{ task.text }</td>
                       <td>{ task.timeframe }</td>
                       <td>{ task.addToEnd ? "End" : "Beginning" }</td>
@@ -130,11 +147,11 @@ var FutureTasksIndex = React.createClass({
               <div className="row">
                 <div className="col-xs-3">
                   <h1>Date</h1>
-                  <input data-field="date" />
+                  <input className={ this.state.errors.indexOf("Date is not a valid date") >= 0 ? "error" : "" } onChange={ this.clearError } data-field="date" />
                 </div>
                 <div className="col-xs-9">
                   <h1>Text</h1>
-                  <input data-field="text" />
+                  <input className={ this.state.errors.indexOf("Text can't be blank") >= 0 ? "error" : "" } onChange={ this.clearError } data-field="text" />
                 </div>
               </div>
               <div className="row">

@@ -2,6 +2,7 @@ class FutureTask < ActiveRecord::Base
 
   belongs_to :user
 
-  validate :presence, :text, :color
+  validates :text, :color, presence: true
+  validates_date :date
 
 end

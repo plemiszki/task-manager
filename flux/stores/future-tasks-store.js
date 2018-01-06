@@ -21,7 +21,7 @@ FutureTasksStore.all = function() {
   Object.keys(_tasks).forEach(function(id) {
     tasks.push(_tasks[id]);
   });
-  return Tools.sortArrayOfObjects(tasks, 'date');
+  return Tools.sortArrayOfDateStrings(tasks, 'date');
 };
 
 FutureTasksStore.__onDispatch = function(payload) {
