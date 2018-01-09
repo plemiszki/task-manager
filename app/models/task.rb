@@ -35,7 +35,7 @@ class Task < ActiveRecord::Base
 
     first_pee_pad_task = nil
 
-    User.all.each do |user|
+    User.all.order(:id).each do |user|
 
       # DAILY TASKS
 
