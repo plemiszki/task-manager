@@ -85,6 +85,9 @@ class Task < ActiveRecord::Base
 
       # hardcoded recurring evening tasks ---
       if user.id == 1
+        if Date.today.strftime("%A") == "Wednesday"
+          day_tasks << Task.create(user_id: 1, timeframe: "day", text: "update finances", color: "210, 206, 200", template: true)
+        end
         day_tasks << Task.create(user_id: 1, timeframe: "day", text: "brush Max", color: "210, 206, 200", template: true)
         day_tasks << Task.create(user_id: 1, timeframe: "day", text: "floss", color: "210, 206, 200", template: true)
       end
