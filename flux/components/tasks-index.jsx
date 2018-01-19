@@ -1,4 +1,5 @@
 var React = require('react');
+var HandyTools = require('handy-tools');
 var Common = require('../../app/assets/javascripts/common.jsx');
 var ClientActions = require('../actions/client-actions.js');
 var TasksStore = require('../stores/tasks-store.js');

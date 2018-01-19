@@ -1,5 +1,6 @@
 var React = require('react');
 var Modal = require('react-modal');
+var HandyTools = require('handy-tools');
 var ClientActions = require('../actions/client-actions.js');
 var FutureTasksStore = require('../stores/future-tasks-store.js');
 var ErrorsStore = require('../stores/errors-store.js');
@@ -91,9 +92,9 @@ var FutureTasksIndex = React.createClass({
   clearError: function(e) {
     var errors = this.state.errors;
     if (e.target.dataset.field == "date") {
-      Tools.removeFromArray(errors, "Date is not a valid date");
+      HandyTools.removeFromArray(errors, "Date is not a valid date");
     } else if (e.target.dataset.field == "text") {
-      Tools.removeFromArray(errors, "Text can't be blank");
+      HandyTools.removeFromArray(errors, "Text can't be blank");
     }
     this.setState({
       errors: errors
