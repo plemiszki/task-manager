@@ -1,5 +1,6 @@
 var Store = require('flux/utils').Store;
 var AppDispatcher = require('../dispatcher/dispatcher.js');
+var HandyTools = require('handy-tools');
 
 var FutureTasksStore = new Store(AppDispatcher);
 
@@ -21,7 +22,7 @@ FutureTasksStore.all = function() {
   Object.keys(_tasks).forEach(function(id) {
     tasks.push(_tasks[id]);
   });
-  return Tools.sortArrayOfDateStrings(tasks, 'date');
+  return HandyTools.sortArrayOfDateStrings(tasks, 'date');
 };
 
 FutureTasksStore.__onDispatch = function(payload) {

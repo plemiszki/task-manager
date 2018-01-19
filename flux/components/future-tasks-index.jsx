@@ -1,6 +1,7 @@
 var React = require('react');
 var Modal = require('react-modal');
 var HandyTools = require('handy-tools');
+var Moment = require('moment');
 var ClientActions = require('../actions/client-actions.js');
 var FutureTasksStore = require('../stores/future-tasks-store.js');
 var ErrorsStore = require('../stores/errors-store.js');
@@ -50,7 +51,7 @@ var FutureTasksIndex = React.createClass({
       modalOpen: true
     }, function() {
       Common.resetNiceSelect('select');
-      $('[data-field="date"]').val(moment().add(1, 'days').format('l'));
+      $('[data-field="date"]').val(Moment().add(1, 'days').format('l'));
     });
   },
 
@@ -126,7 +127,7 @@ var FutureTasksIndex = React.createClass({
                 {this.state.tasks.map(function(task) {
                   return(
                     <tr key={ task.id }>
-                      <td>{ moment(task.date).format('l') }</td>
+                      <td>{ Moment(task.date).format('l') }</td>
                       <td>{ task.text }</td>
                       <td>{ task.timeframe }</td>
                       <td>{ task.addToEnd ? "End" : "Beginning" }</td>
