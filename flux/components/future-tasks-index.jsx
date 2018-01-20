@@ -107,8 +107,8 @@ var FutureTasksIndex = React.createClass({
       <div className="container">
         <div className="row">
           <div className="col-xs-12">
-            { Common.renderSpinner(this.state.fetching) }
-            { Common.renderGrayedOut(this.state.fetching) }
+            { HandyTools.renderSpinner(this.state.fetching) }
+            { HandyTools.renderGrayedOut(this.state.fetching, -20, -25) }
             <a className="btn btn-info" rel="nofollow" href="/">Home</a>
             <h1>Future Tasks</h1>
             <table>
@@ -143,8 +143,8 @@ var FutureTasksIndex = React.createClass({
         </div>
         <Modal isOpen={ this.state.modalOpen } onRequestClose={ this.handleModalClose } contentLabel="Modal" style={ ModalStyles }>
           <div className="my-modal">
-            { Common.renderSpinner(this.state.modalFetching) }
-            { Common.renderGrayedOut(this.state.modalFetching) }
+            { HandyTools.renderSpinner(this.state.modalFetching) }
+            { HandyTools.renderGrayedOut(this.state.modalFetching, -20, -20) }
             <div className="container">
               <div className="row">
                 <div className="col-xs-3">

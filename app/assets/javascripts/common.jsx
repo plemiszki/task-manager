@@ -55,22 +55,6 @@ Common = {
     return fetching ? " disabled" : "";
   },
 
-  renderGrayedOut: function(fetching) {
-    if (fetching) {
-      return(
-        <div className="grayed-out"></div>
-      );
-    }
-  },
-
-  renderSpinner: function(fetching) {
-    if (fetching) {
-      return(
-        <div className="spinner"></div>
-      );
-    }
-  },
-
   resetNiceSelect: function(selector) {
     var $dropDowns = $(selector);
     $dropDowns.niceSelect('destroy');

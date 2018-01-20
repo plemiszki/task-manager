@@ -201,18 +201,18 @@ var TasksIndex = React.createClass({
 
   render: function() {
     return(
-      <div className="tasks-index match-height" data-index={this.props.timeframe}>
-        {Common.renderSpinner(this.state.fetching)}
-        {Common.renderGrayedOut(this.state.fetching)}
-        {this.renderHeader()}
-        <a href="" onClick={this.clickAddButton}>Add Task</a>
+      <div className="tasks-index match-height" data-index={ this.props.timeframe }>
+        { HandyTools.renderSpinner(this.state.fetching) }
+        { HandyTools.renderGrayedOut(this.state.fetching, -10, -15) }
+        { this.renderHeader() }
+        <a href="" onClick={ this.clickAddButton }>Add Task</a>
         <hr />
-        <div id={this.props.timeframe + '-top-drop'} className="drop-area"></div>
-        {this.state.rootTasks.map(function(task, index) {
+        <div id={ this.props.timeframe + '-top-drop' } className="drop-area"></div>
+        { this.state.rootTasks.map(function(task, index) {
           return(
-            <TasksIndexItem key={index} index={index} task={task} level={"0"} updateTask={this.updateTask} addSubTask={this.addSubTask} deleteTask={this.deleteTask} dropHandler={this.dropHandler} />
+            <TasksIndexItem key={ index } index={ index } task={ task } level={ "0" } updateTask={ this.updateTask } addSubTask={ this.addSubTask } deleteTask={ this.deleteTask } dropHandler={ this.dropHandler } />
           )
-        }.bind(this))}
+        }.bind(this)) }
       </div>
     )
   },
