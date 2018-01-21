@@ -17,19 +17,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "babel-core": "^6.21.0",
-    "babel-loader": "^6.2.10",
-    "babel-preset-es2015-without-strict": "0.0.4",
-    "babel-preset-react": "^6.16.0",
-    "flux": "^3.1.2",
-    "handy-tools": "^0.1.2",
-    "moment": "^2.20.1",
-    "react": "^15.4.1",
-    "react-dom": "^15.4.1",
-    "react-modal": "^1.6.4",
-    "webpack": "^1.14.0"
-  },
+  "dependencies": {},
   "engines": {
     "node": "4.1.1",
     "npm": "2.1.x"
