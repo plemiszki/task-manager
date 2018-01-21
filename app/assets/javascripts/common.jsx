@@ -51,10 +51,6 @@ Common = {
     e.target.classList.remove('highlight-blue');
   },
 
-  renderDisabledButtonClass: function(fetching) {
-    return fetching ? " disabled" : "";
-  },
-
   resetNiceSelect: function(selector) {
     var $dropDowns = $(selector);
     $dropDowns.niceSelect('destroy');
