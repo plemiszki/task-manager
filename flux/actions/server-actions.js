@@ -41,6 +41,15 @@ var ServerActions = {
       actionType: "ERRORS_RECEIVED",
       errors: response.responseJSON
     });
+  },
+
+  receiveRecurringTasks: function(response) {
+    AppDispatcher.dispatch({
+      actionType: "RECURRING_TASKS_RECEIVED",
+      dailyTasks: response.dailyTasks,
+      weekendTasks: response.weekendTasks,
+      monthlyTasks: response.monthlyTasks
+    });
   }
 };
 

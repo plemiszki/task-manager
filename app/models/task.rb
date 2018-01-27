@@ -40,6 +40,7 @@ class Task < ActiveRecord::Base
       # DAILY TASKS
 
       day_tasks = []
+      Task.convert_recurring_tasks(day_tasks, user, "Day", "beginning")
       Task.convert_future_tasks(day_tasks, user, "Day", "beginning")
 
       # hardcoded recurring morning tasks ---
@@ -54,13 +55,13 @@ class Task < ActiveRecord::Base
           first_pee_pad_task = Task.create(user_id: 1, timeframe: "day", text: "flip pee pad", color: "210, 206, 200")
           day_tasks << first_pee_pad_task
         end
-        day_tasks << Task.create(user_id: 1, timeframe: "day", text: "take Vitamin D", color: "210, 206, 200", template: true)
-        if Date.today.strftime("%A") == "Wednesday"
-          day_tasks << Task.create(user_id: 1, timeframe: "day", text: "push ups", color: "210, 206, 200", template: true)
-        end
-        if Date.today.strftime("%A") == "Saturday"
-          day_tasks << Task.create(user_id: 1, timeframe: "day", text: "update finances", color: "210, 206, 200")
-        end
+        # day_tasks << Task.create(user_id: 1, timeframe: "day", text: "take Vitamin D", color: "210, 206, 200", template: true)
+        # if Date.today.strftime("%A") == "Wednesday"
+        #   day_tasks << Task.create(user_id: 1, timeframe: "day", text: "push ups", color: "210, 206, 200", template: true)
+        # end
+        # if Date.today.strftime("%A") == "Saturday"
+        #   day_tasks << Task.create(user_id: 1, timeframe: "day", text: "update finances", color: "210, 206, 200")
+        # end
       elsif user.id == 2
         if days_since_change % 8 == 0
           second_pee_pad_task = Task.create(user_id: 2, timeframe: "day", text: "Change Max's Pee Pad", color: "255, 175, 36", joint_id: first_pee_pad_task.id)
@@ -71,26 +72,24 @@ class Task < ActiveRecord::Base
           day_tasks << first_pee_pad_task
           first_pee_pad_task.update(joint_id: second_pee_pad_task.id)
         end
-        day_tasks << Task.create(user_id: 2, timeframe: "day", text: "Shower", color: "238, 244, 66", template: true)
-        if DateTime.now.strftime("%d") == "15"
-          day_tasks << Task.create(user_id: 2, timeframe: "day", text: "Create Wonderland Doodle", color: "181, 111, 240")
-        end
+        # day_tasks << Task.create(user_id: 2, timeframe: "day", text: "Shower", color: "238, 244, 66", template: true)
       end
       # ---------------------
 
       leftover_day_tasks = Task.where(user_id: user.id, timeframe: "day", parent_id: nil).order(:order).to_a
       day_tasks += leftover_day_tasks
 
+      Task.convert_recurring_tasks(day_tasks, user, "Day", "end")
       Task.convert_future_tasks(day_tasks, user, "Day", "end")
 
       # hardcoded recurring evening tasks ---
-      if user.id == 1
-        if Date.today.strftime("%A") == "Wednesday"
-          day_tasks << Task.create(user_id: 1, timeframe: "day", text: "update finances", color: "210, 206, 200", template: true)
-        end
-        day_tasks << Task.create(user_id: 1, timeframe: "day", text: "brush Max", color: "210, 206, 200", template: true)
-        day_tasks << Task.create(user_id: 1, timeframe: "day", text: "floss", color: "210, 206, 200", template: true)
-      end
+      # if user.id == 1
+      #   if Date.today.strftime("%A") == "Wednesday"
+      #     day_tasks << Task.create(user_id: 1, timeframe: "day", text: "update finances", color: "210, 206, 200", template: true)
+      #   end
+      #   day_tasks << Task.create(user_id: 1, timeframe: "day", text: "brush Max", color: "210, 206, 200", template: true)
+      #   day_tasks << Task.create(user_id: 1, timeframe: "day", text: "floss", color: "210, 206, 200", template: true)
+      # end
       # ---------------------
 
       day_tasks.each_with_index do |task, index|
@@ -100,18 +99,20 @@ class Task < ActiveRecord::Base
       # WEEKEND TASKS
 
       weekend_tasks = []
+      Task.convert_recurring_tasks(weekend_tasks, user, "Weekend", "beginning")
       Task.convert_future_tasks(weekend_tasks, user, "Weekend", "beginning")
       existing_weekend_tasks = Task.where(user_id: 1, timeframe: "weekend", parent_id: nil).order(:order)
       weekend_tasks += existing_weekend_tasks
 
-      if user.id == 1
-        if Date.today.strftime("%A") == "Saturday"
-          weekend_tasks << Task.create(user_id: 1, timeframe: "weekend", text: "change bedsheets", color: "210, 206, 200")
-          weekend_tasks << Task.create(user_id: 1, timeframe: "weekend", text: "push ups", color: "210, 206, 200")
-          weekend_tasks += existing_weekend_tasks
-        end
-      end
+      # if user.id == 1
+      #   if Date.today.strftime("%A") == "Saturday"
+      #     weekend_tasks << Task.create(user_id: 1, timeframe: "weekend", text: "change bedsheets", color: "210, 206, 200")
+      #     weekend_tasks << Task.create(user_id: 1, timeframe: "weekend", text: "push ups", color: "210, 206, 200")
+      #     weekend_tasks += existing_weekend_tasks
+      #   end
+      # end
 
+      Task.convert_recurring_tasks(weekend_tasks, user, "Weekend", "end")
       Task.convert_future_tasks(weekend_tasks, user, "Weekend", "end")
 
       weekend_tasks.each_with_index do |task, index|
@@ -120,21 +121,23 @@ class Task < ActiveRecord::Base
 
       month_tasks = []
 
+      Task.convert_recurring_tasks(month_tasks, user, "Month", "beginning")
       Task.convert_future_tasks(month_tasks, user, "Month", "beginning")
 
-      if user.id == 1
-        if Date.today.strftime("%-d") == "1"
-          month_tasks << Task.create(user_id: 1, timeframe: "month", text: "send money to India", color: "255, 175, 36")
-          if Date.today.strftime("%B") == "September" || Date.today.strftime("%B") == "March"
-            month_tasks << Task.create(user_id: 1, timeframe: "month", text: "Dentist Appointment", color: "210, 206, 200")
-          end
-          # TODO: add doctor and vet appointments based on month
-        end
-      end
+      # if user.id == 1
+      #   if Date.today.strftime("%-d") == "1"
+      #     month_tasks << Task.create(user_id: 1, timeframe: "month", text: "send money to India", color: "255, 175, 36")
+      #     if Date.today.strftime("%B") == "September" || Date.today.strftime("%B") == "March"
+      #       month_tasks << Task.create(user_id: 1, timeframe: "month", text: "Dentist Appointment", color: "210, 206, 200")
+      #     end
+      #     # TODO: add doctor and vet appointments based on month
+      #   end
+      # end
 
       existing_month_tasks = Task.where(user_id: 1, timeframe: "month", parent_id: nil).order(:order)
       month_tasks += existing_month_tasks
 
+      Task.convert_recurring_tasks(month_tasks, user, "Month", "end")
       Task.convert_future_tasks(month_tasks, user, "Month", "end")
 
       month_tasks.each_with_index do |task, index|
@@ -174,6 +177,15 @@ class Task < ActiveRecord::Base
       tasks_array << Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task.text, color: task.color.gsub(/[rgb\(\)]/, ""))
     end
     future_tasks.destroy_all
+  end
+
+  def self.convert_recurring_tasks(tasks_array, user, timeframe, position)
+    recurring_tasks = RecurringTask.where(user_id: user.id, timeframe: timeframe, add_to_end: position == "end")
+    recurring_tasks.each do |task|
+      if Montrose.r(YAML::load(task.recurrence)).events.first.to_date == Date.today
+        tasks_array << Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task.text, template: task.expires, color: task.color.gsub(/[rgb\(\)]/, ""))
+      end
+    end
   end
 
 end

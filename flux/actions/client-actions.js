@@ -149,6 +149,27 @@ var ClientActions = {
         ServerActions.receiveFutureTasks(response);
       }
     });
+  },
+
+  fetchRecurringTasks: function() {
+    $.ajax({
+      url: '/api/recurring_tasks',
+      type: 'GET',
+      success: function(response) {
+        ServerActions.receiveRecurringTasks(response);
+      }
+    });
+  },
+
+  deleteRecurringTask: function(id) {
+    $.ajax({
+      url: '/api/recurring_tasks/' + id,
+      type: 'DELETE',
+      success: function(response) {
+        console.log(response);
+        ServerActions.receiveRecurringTasks(response);
+      }
+    });
   }
 };
 

@@ -30,6 +30,16 @@
   }
 }
 
+a.btn {
+  margin-top: 2px;
+  font-size: 12px;
+  float: right;
+
+  &:not(:first-of-type) {
+    margin-right: 10px;
+  }
+}
+
 #flash {
   margin-top: 10px;
   text-align: center;
@@ -97,16 +107,6 @@
 
     img:not(:last-of-type), div {
       margin-right: 15px;
-    }
-  }
-
-  a {
-    margin-top: 2px;
-    font-size: 12px;
-    float: right;
-
-    &:not(:first-of-type) {
-      margin-right: 10px;
     }
   }
 }
@@ -425,7 +425,7 @@
   }
 }
 
-#future-tasks-index .row .col-xs-12 {
+#future-tasks-index .row .col-xs-12, #recurring-tasks-index .row .col-xs-12 {
   margin-top: 10px;
   background: #FFFFFF;
   position: relative;
@@ -448,10 +448,24 @@
     margin-bottom: 24px;
   }
 
+  h2 {
+    text-align: center;
+    padding: 5px;
+    background-color: #C0C0C0;
+    margin-bottom: 10px;
+  }
+
+  hr {
+    margin-left: -25px;
+    width: calc(100% + 50px);
+  }
+
   table {
     width: 100%;
     margin-bottom: 16px;
     font-family: 'TeachableSans';
+
+    &.extra-margin { margin-bottom: 30px; }
 
     th {
       padding-bottom: 10px;

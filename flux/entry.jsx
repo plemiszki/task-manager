@@ -4,6 +4,7 @@ var ReactModal = require('react-modal');
 var CurrentUser = require('./components/current-user.jsx');
 var TasksIndex = require('./components/tasks-index.jsx');
 var FutureTasksIndex = require('./components/future-tasks-index.jsx');
+var RecurringTasksIndex = require('./components/recurring-tasks-index.jsx');
 
 $(document).ready(function() {
   ReactModal.setAppElement(document.body);
@@ -27,5 +28,8 @@ $(document).ready(function() {
   }
   if ($('#future-tasks-index')[0]) {
     ReactDOM.render(<FutureTasksIndex />, document.getElementById("future-tasks-index"));
+  }
+  if ($('#recurring-tasks-index')[0]) {
+    ReactDOM.render(<RecurringTasksIndex />, document.getElementById("recurring-tasks-index"));
   }
 });
