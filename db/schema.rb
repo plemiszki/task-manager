@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180127175434) do
+ActiveRecord::Schema.define(version: 20180127184255) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,15 +26,14 @@ ActiveRecord::Schema.define(version: 20180127175434) do
   end
 
   create_table "recurring_tasks", force: :cascade do |t|
-    t.string  "text",                                     null: false
-    t.string  "color",          default: "210, 206, 200"
-    t.string  "timeframe",      default: "day"
-    t.integer "user_id",                                  null: false
+    t.string  "text",                                    null: false
+    t.string  "color",         default: "210, 206, 200"
+    t.string  "timeframe",     default: "day"
+    t.integer "user_id",                                 null: false
     t.integer "order"
-    t.string  "recurring_info",                           null: false
-    t.string  "recurrence",                               null: false
-    t.boolean "add_to_end",     default: false
-    t.boolean "expires",        default: false
+    t.string  "recurrence",                              null: false
+    t.boolean "add_to_end",    default: false
+    t.boolean "expires",       default: false
     t.integer "joint_user_id"
     t.string  "joint_text"
   end
