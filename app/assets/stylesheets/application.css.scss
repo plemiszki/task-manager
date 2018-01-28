@@ -522,3 +522,9 @@ a.btn {
     font-size: 12px;
   }
 }
+
+#recurring-tasks-index table {
+  table-layout: fixed;
+
+  th:first-of-type { width: 30%; }
+}
