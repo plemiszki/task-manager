@@ -28,7 +28,7 @@ RecurringTasksStore.dailyTasks = function() {
   Object.keys(_dailyTasks).forEach(function(id) {
     tasks.push(_dailyTasks[id]);
   });
-  return HandyTools.sortArrayOfDateStrings(tasks, 'date');
+  return HandyTools.sortArrayOfObjects(tasks, 'order');
 };
 
 RecurringTasksStore.weekendTasks = function() {
@@ -36,7 +36,7 @@ RecurringTasksStore.weekendTasks = function() {
   Object.keys(_weekendTasks).forEach(function(id) {
     tasks.push(_weekendTasks[id]);
   });
-  return HandyTools.sortArrayOfDateStrings(tasks, 'date');
+  return HandyTools.sortArrayOfObjects(tasks, 'order');
 };
 
 RecurringTasksStore.monthlyTasks = function() {
@@ -44,7 +44,7 @@ RecurringTasksStore.monthlyTasks = function() {
   Object.keys(_monthlyTasks).forEach(function(id) {
     tasks.push(_monthlyTasks[id]);
   });
-  return HandyTools.sortArrayOfDateStrings(tasks, 'date');
+  return HandyTools.sortArrayOfObjects(tasks, 'order');
 };
 
 RecurringTasksStore.__onDispatch = function(payload) {
