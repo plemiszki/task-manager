@@ -5,7 +5,7 @@ class Api::RecurringTasksController < ActionController::Base
   def index
     @daily_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Day').order(:order)
     @weekend_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Weekend').order(:order)
-    @monthly_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Monthly').order(:order)
+    @monthly_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Month').order(:order)
     render "index.json.jbuilder"
   end
 
@@ -16,7 +16,7 @@ class Api::RecurringTasksController < ActionController::Base
     RecurringTask.find(params[:id]).destroy
     @daily_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Day').order(:order)
     @weekend_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Weekend').order(:order)
-    @monthly_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Monthly').order(:order)
+    @monthly_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Month').order(:order)
     render "index.json.jbuilder"
   end
 
