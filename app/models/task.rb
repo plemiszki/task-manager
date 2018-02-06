@@ -33,44 +33,19 @@ class Task < ActiveRecord::Base
       Task.delete_task_and_subs_and_dups(task)
     end
 
-    first_pee_pad_task = nil
+    joint_tasks = []
 
     User.all.order(:id).each do |user|
 
       # DAILY TASKS
 
       day_tasks = []
-      leftover_day_tasks = Task.where(user_id: user.id, timeframe: "day", parent_id: nil).order(:order).to_a
-      Task.convert_recurring_tasks(day_tasks, user, "Day", "beginning")
+      existing_day_tasks = Task.where(user_id: user.id, timeframe: "day", parent_id: nil).order(:order).to_a
+      joint_tasks += Task.convert_recurring_tasks(day_tasks, user, "Day", "beginning")
       Task.convert_future_tasks(day_tasks, user, "Day", "beginning")
-
-      # hardcoded recurring morning tasks ---
-      pee_pad_day = DateTime.parse('September 23 2017')
-      days_since_change = (DateTime.now - pee_pad_day).to_i
-
-      if user.id == 1
-        if days_since_change % 8 == 0
-          first_pee_pad_task = Task.create(user_id: 1, timeframe: "day", text: "change pee pad", color: "210, 206, 200")
-          day_tasks << first_pee_pad_task
-        elsif days_since_change % 4 == 0
-          first_pee_pad_task = Task.create(user_id: 1, timeframe: "day", text: "flip pee pad", color: "210, 206, 200")
-          day_tasks << first_pee_pad_task
-        end
-      elsif user.id == 2
-        if days_since_change % 8 == 0
-          second_pee_pad_task = Task.create(user_id: 2, timeframe: "day", text: "Change Max's Pee Pad", color: "255, 175, 36", joint_id: first_pee_pad_task.id)
-          day_tasks << second_pee_pad_task
-          first_pee_pad_task.update(joint_id: second_pee_pad_task.id)
-        elsif days_since_change % 4 == 0
-          second_pee_pad_task = Task.create(user_id: 2, timeframe: "day", text: "Flip Max's Pee Pad", color: "255, 175, 36", joint_id: first_pee_pad_task.id)
-          day_tasks << first_pee_pad_task
-          first_pee_pad_task.update(joint_id: second_pee_pad_task.id)
-        end
-      end
-      # ---------------------
-
-      day_tasks += leftover_day_tasks
-      Task.convert_recurring_tasks(day_tasks, user, "Day", "end")
+      Task.convert_joint_tasks(joint_tasks, user, "Day")
+      day_tasks += existing_day_tasks
+      joint_tasks += Task.convert_recurring_tasks(day_tasks, user, "Day", "end")
       Task.convert_future_tasks(day_tasks, user, "Day", "end")
 
       day_tasks.each_with_index do |task, index|
@@ -81,10 +56,10 @@ class Task < ActiveRecord::Base
 
       weekend_tasks = []
       existing_weekend_tasks = Task.where(user_id: 1, timeframe: "weekend", parent_id: nil).order(:order)
-      Task.convert_recurring_tasks(weekend_tasks, user, "Weekend", "beginning")
+      joint_tasks += Task.convert_recurring_tasks(weekend_tasks, user, "Weekend", "beginning")
       Task.convert_future_tasks(weekend_tasks, user, "Weekend", "beginning")
       weekend_tasks += existing_weekend_tasks
-      Task.convert_recurring_tasks(weekend_tasks, user, "Weekend", "end")
+      joint_tasks += Task.convert_recurring_tasks(weekend_tasks, user, "Weekend", "end")
       Task.convert_future_tasks(weekend_tasks, user, "Weekend", "end")
 
       weekend_tasks.each_with_index do |task, index|
@@ -95,10 +70,10 @@ class Task < ActiveRecord::Base
 
       month_tasks = []
       existing_month_tasks = Task.where(user_id: 1, timeframe: "month", parent_id: nil).order(:order)
-      Task.convert_recurring_tasks(month_tasks, user, "Month", "beginning")
+      joint_tasks += Task.convert_recurring_tasks(month_tasks, user, "Month", "beginning")
       Task.convert_future_tasks(month_tasks, user, "Month", "beginning")
       month_tasks += existing_month_tasks
-      Task.convert_recurring_tasks(month_tasks, user, "Month", "end")
+      joint_tasks += Task.convert_recurring_tasks(month_tasks, user, "Month", "end")
       Task.convert_future_tasks(month_tasks, user, "Month", "end")
 
       month_tasks.each_with_index do |task, index|
@@ -142,10 +117,22 @@ class Task < ActiveRecord::Base
 
   def self.convert_recurring_tasks(tasks_array, user, timeframe, position)
     recurring_tasks = RecurringTask.where(user_id: user.id, timeframe: timeframe, add_to_end: position == "end")
+    joint_tasks = []
     recurring_tasks.each do |task|
       if Montrose.r(YAML::load(task.recurrence)).events.first.to_date == Date.today
-        tasks_array << Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task.text, template: task.expires, color: task.color.gsub(/[rgb\(\)]/, ""))
+        new_task = Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task.text, template: task.expires, color: task.color.gsub(/[rgb\(\)]/, ""), joint_id: task.joint_user_id)
+        tasks_array << new_task
+        if task.joint_user_id
+          joint_tasks << { user_id: task.joint_user_id, timeframe: timeframe.downcase, text: task.joint_text, template: task.expires, color: task.color.gsub(/[rgb\(\)]/, ""), joint_id: new_task.id }
+        end
       end
+    end
+    joint_tasks
+  end
+
+  def self.convert_joint_tasks(joint_tasks, user, timeframe)
+    joint_tasks.select { |task| task[:user_id] == user.id && task[:timeframe] == timeframe.downcase }.each do |task|
+      Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task[:text], template: false, color: task[:color].gsub(/[rgb\(\)]/, ""), joint_id: task[:joint_id])
     end
   end
 
