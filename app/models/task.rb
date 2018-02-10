@@ -119,11 +119,18 @@ class Task < ActiveRecord::Base
     recurring_tasks = RecurringTask.where(user_id: user.id, timeframe: timeframe, add_to_end: position == "end")
     joint_tasks = []
     recurring_tasks.each do |task|
-      if Montrose.r(YAML::load(task.recurrence)).events.first.to_date == Date.today
-        new_task = Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task.text, template: task.expires, color: task.color.gsub(/[rgb\(\)]/, ""), joint_id: task.joint_user_id)
-        tasks_array << new_task
-        if task.joint_user_id
-          joint_tasks << { user_id: task.joint_user_id, timeframe: timeframe.downcase, text: task.joint_text, template: task.expires, color: task.color.gsub(/[rgb\(\)]/, ""), joint_id: new_task.id }
+      recurrence = Montrose.r(YAML::load(task.recurrence))
+      i = 1
+      while recurrence.events.take(i).last.to_date <= Date.today
+        if recurrence.events.take(i).last.to_date == Date.today
+          new_task = Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task.text, template: task.expires, color: task.color.gsub(/[rgb\(\)]/, ""), joint_id: task.joint_user_id)
+          tasks_array << new_task
+          if task.joint_user_id
+            joint_tasks << { user_id: task.joint_user_id, timeframe: timeframe.downcase, text: task.joint_text, template: task.expires, color: task.color.gsub(/[rgb\(\)]/, ""), joint_id: new_task.id }
+          end
+          break
+        else
+          i += 1
         end
       end
     end
