@@ -123,7 +123,7 @@ class Task < ActiveRecord::Base
       i = 1
       while recurrence.events.take(i).last.to_date <= Date.today
         if recurrence.events.take(i).last.to_date == Date.today
-          new_task = Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task.text, template: task.expires, color: task.color.gsub(/[rgb\(\)]/, ""), joint_id: task.joint_user_id)
+          new_task = Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task.text, template: task.expires, color: task.color.gsub(/[rgb\(\)]/, ""))
           tasks_array << new_task
           if task.joint_user_id
             joint_tasks << { user_id: task.joint_user_id, timeframe: timeframe.downcase, text: task.joint_text, template: task.expires, color: task.color.gsub(/[rgb\(\)]/, ""), joint_id: new_task.id }
@@ -139,7 +139,8 @@ class Task < ActiveRecord::Base
 
   def self.convert_joint_tasks(joint_tasks, user, timeframe)
     joint_tasks.select { |task| task[:user_id] == user.id && task[:timeframe] == timeframe.downcase }.each do |task|
-      Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task[:text], template: false, color: task[:color].gsub(/[rgb\(\)]/, ""), joint_id: task[:joint_id])
+      new_task = Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task[:text], template: false, color: task[:color].gsub(/[rgb\(\)]/, ""), joint_id: task[:joint_id])
+      Task.find_by_id(task[:joint_id]).update({ joint_id: new_task.id })
     end
   end
 
