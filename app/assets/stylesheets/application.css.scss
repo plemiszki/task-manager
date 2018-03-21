@@ -100,7 +100,7 @@ a.btn {
 
         &.elections {
           font-size: 11px;
-          font-family: 'TeachableSans';
+          font-family: 'TeachableSans-Regular';
         }
       }
     }
@@ -145,7 +145,7 @@ a.btn {
 
   a {
     display: inline-block;
-    font-family: 'TeachableSansSemiBold';
+    font-family: 'TeachableSans-SemiBold';
     font-size: 12px;
     padding: 6px 20px;
     border: solid 1px #5F5F5F;
@@ -365,7 +365,7 @@ a.btn {
   }
 
   h1 {
-    font-family: 'TeachableSansBold';
+    font-family: 'TeachableSans-Bold';
     margin-bottom: 10px;
   }
 
@@ -386,7 +386,7 @@ a.btn {
     color: #5F5F5F;
     padding: 13px;
     line-height: inherit;
-    font-family: 'TeachableSans';
+    font-family: 'TeachableSans-Regular';
     font-size: 12px;
 
     ul {
@@ -463,7 +463,7 @@ a.btn {
   table {
     width: 100%;
     margin-bottom: 16px;
-    font-family: 'TeachableSans';
+    font-family: 'TeachableSans-Regular';
 
     &.extra-margin { margin-bottom: 30px; }
 
