@@ -1,0 +1,28 @@
+body {
+  font-family: 'TeachableSans-SemiBold', sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.08px;
+  background-color: #F5F6F7;
+}
+
+.tasks-index input {
+  font-size: inherit;
+  border: 1px solid #E4E9ED;
+  border-radius: 3px;
+  color: black;
+  letter-spacing: inherit;
+  padding: 5px;
+  text-align: center;
+  width: 100%;
+}
+
+.btn {
+  padding: 7px 13px;
+  border-radius: 4px;
+}
+
+.group:after {
+  content: "";
+  display: block;
+  clear: both;
+}

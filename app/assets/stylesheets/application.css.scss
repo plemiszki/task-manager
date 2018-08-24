@@ -16,16 +16,22 @@
 
  @import 'bootstrap-sprockets';
  @import 'bootstrap';
- @import 'reset';
  @import 'library/nice-select';
 
+ @import 'handy-tools/styles/reset';
+ @import 'handy-tools/styles/fonts';
+ @import 'handy-tools/styles/general';
+ @import 'handy-tools/styles/sign-in';
+
+ @import 'general';
+
  @media (min-width: 992px) {
-  .container{
+  .container {
     width: 90%;
   }
 }
  @media (min-width: 1200px) {
-  .container{
+  .container {
     width: 1300px;
   }
 }
@@ -37,33 +43,6 @@ a.btn {
 
   &:not(:first-of-type) {
     margin-right: 10px;
-  }
-}
-
-#flash {
-  margin-top: 10px;
-  text-align: center;
-  color: red;
-}
-
-.sign-in {
-  width: 90%;
-  margin: auto;
-  max-width: 350px;
-  margin-top: 20px;
-
-  h2 {
-    font-size: 16px;
-    text-align: center;
-  }
-
-  input {
-    text-align: left;
-    margin-bottom: 10px;
-  }
-
-  .submit-field input {
-    text-align: center;
   }
 }
 
@@ -129,6 +108,7 @@ a.btn {
 
   h1 {
     font-family: 'Helvetica Neue';
+    font-weight: 500;
     font-size: 20px;
     color: #2C2F33;
     letter-spacing: 1.08px;
@@ -140,6 +120,7 @@ a.btn {
   }
 
   hr {
+    margin-top: 20px;
     margin-bottom: 10px;
   }
 
@@ -426,7 +407,7 @@ a.btn {
 }
 
 #future-tasks-index .row .col-xs-12, #recurring-tasks-index .row .col-xs-12 {
-  margin-top: 10px;
+  margin-top: 20px;
   margin-bottom: 30px;
   background: #FFFFFF;
   position: relative;
@@ -447,6 +428,7 @@ a.btn {
     color: #2C2F33;
     letter-spacing: 1.08px;
     margin-bottom: 24px;
+    font-weight: 500;
   }
 
   h2 {
@@ -459,6 +441,7 @@ a.btn {
   hr {
     margin-left: -25px;
     width: calc(100% + 50px);
+    margin-bottom: 20px;
   }
 
   table {
