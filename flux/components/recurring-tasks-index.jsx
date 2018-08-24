@@ -91,19 +91,21 @@ var RecurringTasksIndex = React.createClass({
 
   render: function() {
     return(
-      <div className="container">
+      <div className="container widened-container index-component">
         <div className="row">
           <div className="col-xs-12">
-            { HandyTools.renderSpinner(this.state.fetching) }
-            { HandyTools.renderGrayedOut(this.state.fetching, -20, -25) }
-            { this.renderTable('daily') }
-            { this.renderTable('weekend') }
-            { this.renderTable('monthly') }
-            <div className="btn btn-primary" onClick={ this.clickAddNewButton }>Add New</div>
+            <div className="white-box">
+              { HandyTools.renderSpinner(this.state.fetching) }
+              { HandyTools.renderGrayedOut(this.state.fetching, -26, -26, 6) }
+              { this.renderTable('daily') }
+              { this.renderTable('weekend') }
+              { this.renderTable('monthly') }
+              <div className="btn btn-primary" onClick={ this.clickAddNewButton }>Add New</div>
+            </div>
           </div>
         </div>
       </div>
-    )
+    );
   },
 
   renderTable: function(timeframe) {
@@ -133,20 +135,20 @@ var RecurringTasksIndex = React.createClass({
                   <td><div className="swatch" style={ { backgroundColor: task.color } }></div></td>
                   <td><div className="x-button" onClick={ this.clickXButton } data-id={ task.id }></div></td>
                 </tr>
-              )
+              );
             }.bind(this)) }
           </tbody>
         </table>
         { this.renderLine(timeframe === "daily" || timeframe === "weekend") }
       </div>
-    )
+    );
   },
 
   renderLine: function(condition) {
     if (condition) {
       return(
         <hr />
-      )
+      );
     }
   }
 });

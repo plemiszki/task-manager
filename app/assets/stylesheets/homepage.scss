@@ -1,5 +1,4 @@
 .tasks-index {
-  margin-top: 20px;
   background: #FFFFFF;
   position: relative;
   padding: 10px 15px 0 15px;
@@ -7,6 +6,7 @@
   box-shadow: 1px 2px 3px 0px #E6E9EC;
   color: black;
   text-align: center;
+  margin-bottom: 20px;
 
   h1 {
     font-family: 'Helvetica Neue';
@@ -226,10 +226,6 @@
     width: 90%;
     float: right;
   }
-}
-
-#tasks-index-life {
-  margin-bottom: 30px;
 }
 
 .grabbing {

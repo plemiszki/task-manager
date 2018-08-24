@@ -15,7 +15,7 @@ var ModalStyles = {
     padding: 0,
     margin: 'auto',
     maxWidth: 1000,
-    height: 276
+    height: 321
   }
 };
 
@@ -104,76 +104,82 @@ var FutureTasksIndex = React.createClass({
 
   render: function() {
     return(
-      <div className="container">
+      <div className="container widened-container index-component">
         <div className="row">
           <div className="col-xs-12">
-            { HandyTools.renderSpinner(this.state.fetching) }
-            { HandyTools.renderGrayedOut(this.state.fetching, -20, -25) }
-            <h1>Future Tasks</h1>
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Text</th>
-                  <th>Time Frame</th>
-                  <th>Position</th>
-                  <th>Color</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="below-header"><td></td><td></td><td></td><td></td><td></td></tr>
-                {this.state.tasks.map(function(task) {
-                  return(
-                    <tr key={ task.id }>
-                      <td>{ Moment(task.date).format('l') }</td>
-                      <td>{ task.text }</td>
-                      <td>{ task.timeframe }</td>
-                      <td>{ task.addToEnd ? "End" : "Beginning" }</td>
-                      <td><div className="swatch" style={ { backgroundColor: task.color } }></div></td>
-                      <td><div className="x-button" onClick={ this.clickXButton } data-id={ task.id }></div></td>
-                    </tr>
-                  )
-                }.bind(this))}
-              </tbody>
-            </table>
-            <div className="btn btn-primary" onClick={ this.clickAddNewButton }>Add New</div>
+            <div className="white-box">
+              { HandyTools.renderSpinner(this.state.fetching) }
+              { HandyTools.renderGrayedOut(this.state.fetching, -26, -26, 6) }
+              <h1>Future Tasks</h1>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Text</th>
+                    <th>Time Frame</th>
+                    <th>Position</th>
+                    <th>Color</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="below-header"><td></td><td></td><td></td><td></td><td></td></tr>
+                  { this.state.tasks.map(function(task) {
+                    return(
+                      <tr key={ task.id }>
+                        <td>{ Moment(task.date).format('l') }</td>
+                        <td>{ task.text }</td>
+                        <td>{ task.timeframe }</td>
+                        <td>{ task.addToEnd ? "End" : "Beginning" }</td>
+                        <td><div className="swatch" style={ { backgroundColor: task.color } }></div></td>
+                        <td><div className="x-button" onClick={ this.clickXButton } data-id={ task.id }></div></td>
+                      </tr>
+                    );
+                  }.bind(this)) }
+                </tbody>
+              </table>
+              <div className="btn btn-primary" onClick={ this.clickAddNewButton }>Add New</div>
+            </div>
           </div>
         </div>
         <Modal isOpen={ this.state.modalOpen } onRequestClose={ this.handleModalClose } contentLabel="Modal" style={ ModalStyles }>
-          <div className="my-modal">
-            { HandyTools.renderSpinner(this.state.modalFetching) }
-            { HandyTools.renderGrayedOut(this.state.modalFetching, -20, -20) }
-            <div className="container">
+          <div className="admin-modal">
+            <div className="white-box">
+              { HandyTools.renderSpinner(this.state.modalFetching) }
+              { HandyTools.renderGrayedOut(this.state.modalFetching, -20, -20) }
               <div className="row">
                 <div className="col-xs-3">
-                  <h1>Date</h1>
-                  <input className={ this.state.errors.indexOf("Date is not a valid date") >= 0 ? "error" : "" } onChange={ this.clearError } data-field="date" />
+                  <h2>Date</h2>
+                  <input className={ HandyTools.errorClass(this.state.errors, ["Date is not a valid date"]) } onChange={ this.clearError } data-field="date" />
+                  { HandyTools.renderFieldError(this.state.errors, ["Date is not a valid date"]) }
                 </div>
                 <div className="col-xs-9">
-                  <h1>Text</h1>
-                  <input className={ this.state.errors.indexOf("Text can't be blank") >= 0 ? "error" : "" } onChange={ this.clearError } data-field="text" />
+                  <h2>Text</h2>
+                  <input className={ HandyTools.errorClass(this.state.errors, ["Text can't be blank"]) } onChange={ this.clearError } data-field="text" />
+                  { HandyTools.renderFieldError(this.state.errors, ["Text can't be blank"]) }
                 </div>
               </div>
               <div className="row">
-                <div className="col-xs-3">
-                  <h1>Time Frame</h1>
-                    <select data-field="timeframe">
-                      <option>Day</option>
-                      <option>Weekend</option>
-                      <option>Month</option>
-                      <option>Year</option>
-                    </select>
+                <div className="col-xs-3 select-scroll-2">
+                  <h2>Time Frame</h2>
+                  <select data-field="timeframe">
+                    <option>Day</option>
+                    <option>Weekend</option>
+                    <option>Month</option>
+                    <option>Year</option>
+                  </select>
+                  { HandyTools.renderFieldError([], []) }
                 </div>
                 <div className="col-xs-3">
-                  <h1>Position</h1>
+                  <h2>Position</h2>
                   <select data-field="position">
                     <option>Beginning</option>
                     <option>End</option>
                   </select>
+                  { HandyTools.renderFieldError([], []) }
                 </div>
                 <div className="col-xs-6">
-                  <h1>Color</h1>
+                  <h2>Color</h2>
                   <div className="colors">
                     <div className="color" onClick={ this.clickColor } style={{'backgroundColor': 'rgb(234, 30, 30)'}} ></div>
                     <div className="color" onClick={ this.clickColor } style={{'backgroundColor': 'rgb(255, 175, 163)'}} ></div>
@@ -185,6 +191,7 @@ var FutureTasksIndex = React.createClass({
                     <div className="color" onClick={ this.clickColor } style={{'backgroundColor': 'rgb(175, 96, 26)'}} ></div>
                     <div className="color selected" onClick={ this.clickColor } style={{'backgroundColor': 'rgb(210, 206, 200)'}} ></div>
                   </div>
+                  { HandyTools.renderFieldError([], []) }
                 </div>
               </div>
               <div className="row">
@@ -196,7 +203,7 @@ var FutureTasksIndex = React.createClass({
           </div>
         </Modal>
       </div>
-    )
+    );
   }
 });
 
