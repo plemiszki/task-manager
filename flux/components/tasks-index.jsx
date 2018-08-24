@@ -45,17 +45,12 @@ var TasksIndex = React.createClass({
       fetching: false,
       rootTasks: TasksStore.rootTasks(this.props.timeframe),
       tasks: TasksStore.all(this.props.timeframe)
-    }, function() {
-      if (this.props.timeframe == "weekend" && UserStore.user() === "empty") {
-        ClientActions.fetchUser();
-      }
     });
   },
 
   getUser: function() {
     this.setState({
-      longWeekend: UserStore.user().long_weekend,
-      fetching: false
+      longWeekend: UserStore.user().long_weekend
     });
   },
 
@@ -193,9 +188,6 @@ var TasksIndex = React.createClass({
   clickWeekend: function() {
     var user = UserStore.user();
     user.long_weekend = !user.long_weekend;
-    this.setState({
-      fetching: true
-    });
     ClientActions.updateUser(user);
   },
 

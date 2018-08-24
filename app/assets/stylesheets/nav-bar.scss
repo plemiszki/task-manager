@@ -1,0 +1,56 @@
+.current-user {
+  margin-top: 10px;
+  position: relative;
+  background: #FFFFFF;
+  padding: 10px 15px;
+  border-radius: 6px;
+  box-shadow: 1px 2px 3px 0px #E6E9EC;
+
+  a.btn {
+    margin-top: 2px;
+    font-size: 12px;
+    float: right;
+
+    &:not(:first-of-type) {
+      margin-right: 10px;
+    }
+  }
+
+  .email {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+  }
+
+  .congress {
+    display: block;
+
+    img, div {
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    div {
+      text-align: center;
+
+      hr {
+        margin-top: 3px;
+        margin-bottom: 3px;
+        border-color: gray;
+      }
+
+      p {
+        margin-bottom: 0;
+
+        &.elections {
+          font-size: 11px;
+          font-family: 'TeachableSans-Regular';
+        }
+      }
+    }
+
+    img:not(:last-of-type), div {
+      margin-right: 15px;
+    }
+  }
+}

@@ -109,8 +109,6 @@ var FutureTasksIndex = React.createClass({
           <div className="col-xs-12">
             { HandyTools.renderSpinner(this.state.fetching) }
             { HandyTools.renderGrayedOut(this.state.fetching, -20, -25) }
-            <a className="btn btn-info" rel="nofollow" href="/">Home</a>
-            <a className="btn btn-success" rel="nofollow" href="/recurring_tasks">Recurring Tasks</a>
             <h1>Future Tasks</h1>
             <table>
               <thead>

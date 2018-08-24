@@ -96,8 +96,6 @@ var RecurringTasksIndex = React.createClass({
           <div className="col-xs-12">
             { HandyTools.renderSpinner(this.state.fetching) }
             { HandyTools.renderGrayedOut(this.state.fetching, -20, -25) }
-            <a className="btn btn-primary" rel="nofollow" href="/">Home</a>
-            <a className="btn btn-info" rel="nofollow" href="/future_tasks">Future Tasks</a>
             { this.renderTable('daily') }
             { this.renderTable('weekend') }
             { this.renderTable('monthly') }
