@@ -24,6 +24,9 @@ RecurringTasksStore.setStuff = function(payload) {
   payload.monthlyTasks.forEach(function(task) {
     _monthlyTasks[task.id] = task;
   });
+  payload.users.forEach(function(user) {
+    _users[user.id] = user;
+  });
 };
 
 RecurringTasksStore.setRecurringTasks = function(payload) {

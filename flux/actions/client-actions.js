@@ -17,6 +17,25 @@ var ClientActions = {
     });
   },
 
+  standardCreate: function(directory, objKey, obj) {
+    $.ajax({
+      url: `/api/${directory}`,
+      type: 'POST',
+      data: {
+        [objKey]: HandyTools.convertObjectKeysToUnderscore(obj)
+      },
+      success: function(response) {
+        switch (directory) {
+        case 'recurring_tasks':
+          ServerActions.receiveRecurringTasks(response);
+        }
+      },
+      error: function(response) {
+        ServerActions.receiveErrors(response);
+      }
+    });
+  },
+
   standardUpdate: function(directory, objKey, obj) {
     $.ajax({
       url: `/api/${directory}/${obj.id}`,

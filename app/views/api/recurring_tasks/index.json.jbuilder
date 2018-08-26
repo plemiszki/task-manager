@@ -28,3 +28,7 @@ json.monthlyTasks @monthly_recurring_tasks do |task|
   json.order task.order
   json.jointUserId task.joint_user_id
 end
+json.users @users do |user|
+  json.id user.id
+  json.email user.email
+end

@@ -48,7 +48,8 @@ var ServerActions = {
       actionType: "RECURRING_TASKS_RECEIVED",
       dailyTasks: response.dailyTasks,
       weekendTasks: response.weekendTasks,
-      monthlyTasks: response.monthlyTasks
+      monthlyTasks: response.monthlyTasks,
+      users: response.users
     });
   },
 

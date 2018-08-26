@@ -5,6 +5,7 @@ var Moment = require('moment');
 var ClientActions = require('../actions/client-actions.js');
 var RecurringTasksStore = require('../stores/recurring-tasks-store.js');
 var ErrorsStore = require('../stores/errors-store.js');
+import RecurringTaskNew from './recurring-task-new';
 
 var ModalStyles = {
   overlay: {
@@ -14,8 +15,8 @@ var ModalStyles = {
     background: '#F5F6F7',
     padding: 0,
     margin: 'auto',
-    maxWidth: 1000,
-    height: 276
+    maxWidth: 1270,
+    height: 323
   }
 };
 
@@ -25,11 +26,10 @@ var RecurringTasksIndex = React.createClass({
     return({
       modalOpen: false,
       fetching: true,
-      modalFetching: false,
       dailyTasks: [],
       weekendTasks: [],
       monthlyTasks: [],
-      errors: []
+      users: []
     });
   },
 
@@ -53,9 +53,12 @@ var RecurringTasksIndex = React.createClass({
   clickNew: function() {
     this.setState({
       modalOpen: true
-    }, function() {
-      Common.resetNiceSelect('select');
-      $('[data-field="date"]').val(Moment().add(1, 'days').format('l'));
+    });
+  },
+
+  closeModal: function() {
+    this.setState({
+      modalOpen: false
     });
   },
 
@@ -68,10 +71,6 @@ var RecurringTasksIndex = React.createClass({
     } else {
       window.location.pathname = `/recurring_tasks/${e.target.parentElement.dataset.id}`
     }
-  },
-
-  handleModalClose: function() {
-    this.setState({ modalOpen: false, errors: [] });
   },
 
   getErrors: function() {
@@ -104,10 +103,13 @@ var RecurringTasksIndex = React.createClass({
               { this.renderTable('daily') }
               { this.renderTable('weekend') }
               { this.renderTable('monthly') }
-              <div className="btn btn-primary" onClick={ this.clickNew }>Add New</div>
+              <div className="btn btn-success" onClick={ this.clickNew }>Add New</div>
             </div>
           </div>
         </div>
+        <Modal isOpen={ this.state.modalOpen } onRequestClose={ this.closeModal } contentLabel="Modal" style={ ModalStyles }>
+          <RecurringTaskNew users={ this.state.users } />
+        </Modal>
       </div>
     );
   },

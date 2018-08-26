@@ -6,10 +6,22 @@ class Api::RecurringTasksController < ActionController::Base
     @daily_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Day').order(:order)
     @weekend_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Weekend').order(:order)
     @monthly_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Month').order(:order)
+    @users = User.where.not(id: current_user.id)
     render 'index.json.jbuilder'
   end
 
   def create
+    @recurring_task = RecurringTask.new(recurring_task_params)
+    @recurring_task.user_id = current_user.id
+    if @recurring_task.save
+      @daily_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Day').order(:order)
+      @weekend_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Weekend').order(:order)
+      @monthly_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Month').order(:order)
+      @users = User.where.not(id: current_user.id)
+      render 'index.json.jbuilder'
+    else
+      render json: @recurring_task.errors.full_messages, status: 422
+    end
   end
 
   def show

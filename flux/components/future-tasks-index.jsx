@@ -138,7 +138,7 @@ var FutureTasksIndex = React.createClass({
                   }.bind(this)) }
                 </tbody>
               </table>
-              <div className="btn btn-primary" onClick={ this.clickAddNewButton }>Add New</div>
+              <div className="btn btn-info" onClick={ this.clickAddNewButton }>Add New</div>
             </div>
           </div>
         </div>

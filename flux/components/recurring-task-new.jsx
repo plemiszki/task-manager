@@ -1,80 +1,62 @@
 import React from 'react';
-import HandyTools from 'handy-tools';
+import ErrorsStore from '../stores/errors-store.js';
 import ClientActions from '../actions/client-actions.js';
-import RecurringTasksStore from '../stores/recurring-tasks-store.js';
-import ErrorsStore from '../stores/errors-store';
 import DetailsComponent from './_details.jsx';
+import HandyTools from 'handy-tools';
 import { ERRORS } from '../errors.js';
 
-export default class RecurringTaskDetails extends DetailsComponent {
-
+export default class RecurringTaskNew extends DetailsComponent {
   constructor(props) {
     super(props);
-    this.state = Object.assign(this.defaultState(), {
-      recurringTask: {},
-      recurringTaskSaved: {},
-      users: []
-    });
+    this.state = {
+      fetching: false,
+      recurringTask: {
+        text: '',
+        timeframe: 'Day',
+        addToEnd: false,
+        color: 'rgb(210, 206, 200)',
+        recurrence: "---\n:every: :day\n",
+        expires: true,
+        jointUserId: '',
+        jointText: ''
+      },
+      errors: []
+    };
   }
 
   componentDidMount() {
     this.errorsListener = ErrorsStore.addListener(this.getErrors.bind(this));
-    this.recurringTasksListener = RecurringTasksStore.addListener(this.getRecurringTask.bind(this));
-    ClientActions.standardFetch('recurring_tasks', window.location.pathname.split("/")[2]);
+    HandyTools.setUpNiceSelect({ selector: 'select', func: HandyTools.changeField.bind(this, this.changeFieldArgs()) });
   }
 
   componentWillUnmount() {
     this.errorsListener.remove();
-    this.recurringTasksListener.remove();
   }
 
-  checkForChanges() {
-    return !HandyTools.objectsAreEqual(this.state.recurringTask, this.state.recurringTaskSaved);
+  getErrors() {
+    this.setState({
+      fetching: false,
+      errors: ErrorsStore.all()
+    });
   }
 
   changeFieldArgs() {
     return {
       allErrors: ERRORS,
-      beforeSave: this.beforeSave,
-      errorsArray: this.state.errors,
-      changesFunction: () => this.checkForChanges()
+      errorsArray: this.state.errors
     }
-  }
-
-  beforeSave(key, value) {
-    if (value.jointUserId == "") {
-      value.jointText = "";
-      HandyTools.removeFieldError(ERRORS, this.state.errors, 'jointText');
-    }
-    return { key, value }
-  }
-
-  getRecurringTask() {
-    var recurringTask = RecurringTasksStore.find(window.location.pathname.split("/")[2]);
-    this.setState({
-      fetching: false,
-      changesToSave: false,
-      recurringTask: recurringTask,
-      recurringTaskSaved: HandyTools.deepCopy(recurringTask),
-      users: RecurringTasksStore.users()
-    }, function() {
-      HandyTools.setUpNiceSelect({ selector: 'select', func: HandyTools.changeField.bind(this, this.changeFieldArgs()) });
-    });
   }
 
   clickSave() {
     this.setState({
-      fetching: true,
-      justSaved: true
+      fetching: true
     });
-    ClientActions.updateRecurringTask(this.state.recurringTask);
+    ClientActions.standardCreate('recurring_tasks', 'recurring_task', this.state.recurringTask);
   }
 
   render() {
     return(
-      <div className="container widened-container">
-        <div className="recurring-task-details component">
-          <h1>Edit Recurring Task</h1>
+      <div id="recurring-task-new" className="admin-modal">
           <div className="white-box">
             { HandyTools.renderSpinner(this.state.fetching) }
             { HandyTools.renderGrayedOut(this.state.fetching, -26, -26, 6) }
@@ -122,7 +104,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
                 <h2>Joint User</h2>
                 <select onChange={ function() {} } value={ this.state.recurringTask.jointUserId || "" } data-entity="recurringTask" data-field="jointUserId">
                   <option value={ "" }>None</option>
-                  { this.state.users.map(function(user, index) {
+                  { this.props.users.map(function(user, index) {
                     return(
                       <option key={ index } value={ user.id }>{ user.email }</option>
                     );
@@ -136,25 +118,11 @@ export default class RecurringTaskDetails extends DetailsComponent {
                 { HandyTools.renderFieldError(this.state.errors, ERRORS.jointText) }
               </div>
             </div>
-            { this.renderButtons() }
+            <a className={ "btn btn-success" + HandyTools.renderDisabledButtonClass(this.state.fetching) } onClick={ this.clickSave.bind(this) }>
+              Add Recurring Task
+            </a>
           </div>
-        </div>
       </div>
     );
   }
-
-  renderButtons() {
-    if (this.state.changesToSave) {
-      var buttonText = "Save";
-    } else {
-      var buttonText = this.state.justSaved ? "Saved" : "No Changes";
-    }
-    return(
-      <div>
-        <a className={ "standard-width btn btn-success save-button" + HandyTools.renderDisabledButtonClass(this.state.fetching || !this.state.changesToSave) } onClick={ this.clickSave.bind(this) }>
-          { buttonText }
-        </a>
-      </div>
-    );
-  }
-};
+}

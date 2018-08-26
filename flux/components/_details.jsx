@@ -37,7 +37,6 @@ export default class _Details extends React.Component {
   }
 
   getErrors() {
-    console.log('get errors');
     this.setState({
       fetching: false,
       errors: ErrorsStore.all()
@@ -54,6 +53,39 @@ export default class _Details extends React.Component {
     this.setState({
       deleteModalOpen: false
     });
+  }
+
+  clickColor(e) {
+    let recurringTask = this.state.recurringTask;
+    recurringTask.color = e.target.style.backgroundColor;
+    this.setState({
+      recurringTask
+    }, function() {
+      var changesToSave = this.checkForChanges();
+      this.setState({
+        changesToSave: changesToSave
+      });
+    });
+  }
+
+  renderColorField() {
+    return(
+      <div className={ "col-xs-4" + (this.state.recurringTask.jointUserId ? ' hidden' : '') }>
+        <h2>Color</h2>
+        <div className="colors">
+          <div className={ 'color' + (this.state.recurringTask.color === 'rgb(234, 30, 30)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(234, 30, 30)'}} ></div>
+          <div className={ 'color' + (this.state.recurringTask.color === 'rgb(255, 175, 163)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(255, 175, 163)'}} ></div>
+          <div className={ 'color' + (this.state.recurringTask.color === 'rgb(255, 175, 36)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(255, 175, 36)'}} ></div>
+          <div className={ 'color' + (this.state.recurringTask.color === 'rgb(238, 244, 66)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(238, 244, 66)'}} ></div>
+          <div className={ 'color' + (this.state.recurringTask.color === 'rgb(30, 124, 33)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(30, 124, 33)'}} ></div>
+          <div className={ 'color' + (this.state.recurringTask.color === 'rgb(111, 138, 240)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(111, 138, 240)'}} ></div>
+          <div className={ 'color' + (this.state.recurringTask.color === 'rgb(181, 111, 240)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(181, 111, 240)'}} ></div>
+          <div className={ 'color' + (this.state.recurringTask.color === 'rgb(175, 96, 26)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(175, 96, 26)'}} ></div>
+          <div className={ 'color' + (this.state.recurringTask.color === 'rgb(210, 206, 200)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(210, 206, 200)'}} ></div>
+        </div>
+        { HandyTools.renderFieldError([], []) }
+      </div>
+    );
   }
 
   renderButtons() {
