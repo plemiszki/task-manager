@@ -2,7 +2,7 @@ Rails.application.routes.draw do
 
   root to: "static_pages#root"
   resources :future_tasks, only: [:index]
-  resources :recurring_tasks, only: [:index]
+  resources :recurring_tasks, only: [:index, :show]
 
   namespace :api, defaults: { format: :json } do
     get '/user' => '/api/users#show'
@@ -17,7 +17,7 @@ Rails.application.routes.draw do
     delete '/tasks' => '/api/tasks#delete'
 
     resources :future_tasks, only: [:index, :create, :destroy]
-    resources :recurring_tasks, only: [:index, :create, :update, :destroy]
+    resources :recurring_tasks, only: [:index, :create, :show, :update, :destroy]
   end
 
 end

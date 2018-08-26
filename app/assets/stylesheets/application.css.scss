@@ -27,11 +27,4 @@
  @import 'nav-bar';
  @import 'homepage';
  @import 'future-tasks';
-
-#recurring-tasks-index table {
-  table-layout: fixed;
-
-  th:first-of-type {
-    width: 30%;
-  }
-}
+ @import 'recurring-tasks';

@@ -50,6 +50,14 @@ var ServerActions = {
       weekendTasks: response.weekendTasks,
       monthlyTasks: response.monthlyTasks
     });
+  },
+
+  receiveRecurringTask: function(response) {
+    AppDispatcher.dispatch({
+      actionType: "RECURRING_TASK_RECEIVED",
+      recurringTasks: response.recurringTasks,
+      users: response.users
+    });
   }
 };
 

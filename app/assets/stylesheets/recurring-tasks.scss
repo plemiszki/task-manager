@@ -1,0 +1,29 @@
+#recurring-tasks-index table {
+  table-layout: fixed;
+
+  th:first-of-type {
+    width: 30%;
+  }
+
+  tr:not(.below-header) {
+
+    td {
+      cursor: pointer
+    }
+  }
+}
+
+.recurrence-field-column {
+
+  input {
+    width: calc(100% - 50px);
+    margin-right: 15px;
+  }
+
+  a {
+    margin-top: 28px;
+    color: #5F5F5F;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}

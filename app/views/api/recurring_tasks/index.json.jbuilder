@@ -6,6 +6,7 @@ json.dailyTasks @daily_recurring_tasks do |task|
   json.expires task.expires
   json.addToEnd task.add_to_end
   json.order task.order
+  json.jointUserId task.joint_user_id
 end
 json.weekendTasks @weekend_recurring_tasks do |task|
   json.id task.id
@@ -15,6 +16,7 @@ json.weekendTasks @weekend_recurring_tasks do |task|
   json.expires task.expires
   json.addToEnd task.add_to_end
   json.order task.order
+  json.jointUserId task.joint_user_id
 end
 json.monthlyTasks @monthly_recurring_tasks do |task|
   json.id task.id
@@ -24,4 +26,5 @@ json.monthlyTasks @monthly_recurring_tasks do |task|
   json.expires task.expires
   json.addToEnd task.add_to_end
   json.order task.order
+  json.jointUserId task.joint_user_id
 end

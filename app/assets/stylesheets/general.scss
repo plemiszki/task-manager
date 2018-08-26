@@ -21,6 +21,10 @@ body {
   border-radius: 4px;
   font-size: 12px;
   font-family: 'TeachableSans-SemiBold';
+
+  &.standard-width {
+    width: 175px;
+  }
 }
 
 .white-box {
@@ -51,16 +55,40 @@ body {
  }
 }
 
-.index-component {
+.component {
+  font-family: 'TeachableSans-Regular';
+}
 
-  h1 {
-    font-family: 'Helvetica Neue';
-    font-size: 20px;
-    color: #2C2F33;
-    letter-spacing: 1.08px;
-    margin-bottom: 24px;
-    font-weight: 500;
+h1 {
+  font-family: 'Helvetica Neue';
+  font-size: 20px;
+  color: #2C2F33;
+  letter-spacing: 1.08px;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.colors {
+
+  .color {
+    margin-top: 4px;
+    display: inline-block;
+    border-radius: 3px;
+    width: calc((100% - 80px) / 9);
+    height: 34px;
+    cursor: pointer;
+
+    &:not(:last-of-type) {
+      margin-right: 10px;
+    }
+
+    &.selected {
+      border: solid 2px black;
+    }
   }
+}
+
+.index-component {
 
   hr {
     margin-left: -25px;

@@ -1,7 +1,40 @@
 var AppDispatcher = require('../dispatcher/dispatcher.js');
 var ServerActions = require('../actions/server-actions.js');
+import HandyTools from 'handy-tools';
 
 var ClientActions = {
+
+  standardFetch: function(directory, id) {
+    $.ajax({
+      url: `/api/${directory}/${id}`,
+      type: 'GET',
+      success: function(response) {
+        switch (directory) {
+        case 'recurring_tasks':
+          ServerActions.receiveRecurringTask(response);
+        }
+      }
+    });
+  },
+
+  standardUpdate: function(directory, objKey, obj) {
+    $.ajax({
+      url: `/api/${directory}/${obj.id}`,
+      type: 'PATCH',
+      data: {
+        [objKey]: HandyTools.convertObjectKeysToUnderscore(obj)
+      },
+      success: function(response) {
+        switch (directory) {
+        case 'recurring_tasks':
+          ServerActions.receiveRecurringTask(response);
+        }
+      },
+      error: function(response) {
+        ServerActions.receiveErrors(response);
+      }
+    });
+  },
 
   fetchUser: function() {
     $.ajax({
@@ -166,8 +199,24 @@ var ClientActions = {
       url: '/api/recurring_tasks/' + id,
       type: 'DELETE',
       success: function(response) {
-        console.log(response);
         ServerActions.receiveRecurringTasks(response);
+      }
+    });
+  },
+
+  updateRecurringTask: function(recurringTask) {
+    delete recurringTask.recurrence;
+    $.ajax({
+      url: `/api/recurring_tasks/${recurringTask.id}`,
+      type: 'PATCH',
+      data: {
+        recurring_task: HandyTools.convertObjectKeysToUnderscore(recurringTask)
+      },
+      success: function(response) {
+        ServerActions.receiveRecurringTask(response);
+      },
+      error: function(response) {
+        ServerActions.receiveErrors(response);
       }
     });
   }

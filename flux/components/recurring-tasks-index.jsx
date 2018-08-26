@@ -50,7 +50,7 @@ var RecurringTasksIndex = React.createClass({
     });
   },
 
-  clickAddNewButton: function() {
+  clickNew: function() {
     this.setState({
       modalOpen: true
     }, function() {
@@ -59,11 +59,15 @@ var RecurringTasksIndex = React.createClass({
     });
   },
 
-  clickXButton: function(e) {
-    this.setState({
-      fetching: true
-    });
-    ClientActions.deleteRecurringTask(e.target.dataset.id);
+  clickTask: function(e) {
+    if (e.target.classList.contains('x-button')) {
+      this.setState({
+        fetching: true
+      });
+      ClientActions.deleteRecurringTask(e.target.parentElement.dataset.id);
+    } else {
+      window.location.pathname = `/recurring_tasks/${e.target.parentElement.dataset.id}`
+    }
   },
 
   handleModalClose: function() {
@@ -100,7 +104,7 @@ var RecurringTasksIndex = React.createClass({
               { this.renderTable('daily') }
               { this.renderTable('weekend') }
               { this.renderTable('monthly') }
-              <div className="btn btn-primary" onClick={ this.clickAddNewButton }>Add New</div>
+              <div className="btn btn-primary" onClick={ this.clickNew }>Add New</div>
             </div>
           </div>
         </div>
@@ -126,14 +130,15 @@ var RecurringTasksIndex = React.createClass({
           <tbody>
             <tr className="below-header"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
             { this.state[timeframe.toLowerCase() + "Tasks"].map(function(task) {
+              var backgroundColor = (task.jointUserId ? 'rgb(0,0,0)' : task.color);
               return(
-                <tr key={ task.id }>
+                <tr key={ task.id } onClick={ this.clickTask } data-id={ task.id }>
                   <td>{ task.text }</td>
                   <td>{ task.recurrence }</td>
                   <td>{ task.addToEnd ? "End" : "Beginning" }</td>
                   <td>{ task.expires ? "Yes" : "No" }</td>
-                  <td><div className="swatch" style={ { backgroundColor: task.color } }></div></td>
-                  <td><div className="x-button" onClick={ this.clickXButton } data-id={ task.id }></div></td>
+                  <td><div className="swatch" style={ { backgroundColor } }></div></td>
+                  <td><div className="x-button"></div></td>
                 </tr>
               );
             }.bind(this)) }
