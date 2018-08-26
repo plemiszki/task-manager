@@ -64,7 +64,7 @@ var RecurringTasksIndex = React.createClass({
       this.setState({
         fetching: true
       });
-      ClientActions.deleteRecurringTask(e.target.parentElement.dataset.id);
+      ClientActions.deleteRecurringTask(e.target.parentElement.parentElement.dataset.id);
     } else {
       window.location.pathname = `/recurring_tasks/${e.target.parentElement.dataset.id}`
     }
