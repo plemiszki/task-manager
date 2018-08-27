@@ -68,6 +68,30 @@ export default class _Details extends React.Component {
     });
   }
 
+  convertToEnglish(input) {
+    input = JSON.parse(input);
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    if (input.every) {
+      if (input.every === 'day') {
+        if (input.interval) {
+          return `Every ${input.interval} days`;
+        } else {
+          return 'Daily';
+        }
+      } else if (input.every === 'week') {
+        return `${HandyTools.capitalize(input.on)}s`;
+      } else if (input.every === 'month') {
+        return 'Monthly';
+      } else if (input.every === 'year') {
+        return `Every ${months[input.month[0] - 1]}`;
+      } else {
+        return 'Custom';
+      }
+    } else {
+      return 'Custom';
+    }
+  }
+
   renderColorField() {
     return(
       <div className={ "col-xs-4" + (this.state.recurringTask.jointUserId ? ' hidden' : '') }>

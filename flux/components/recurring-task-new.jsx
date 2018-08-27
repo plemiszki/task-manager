@@ -15,7 +15,7 @@ export default class RecurringTaskNew extends DetailsComponent {
         timeframe: 'Day',
         addToEnd: false,
         color: 'rgb(210, 206, 200)',
-        recurrence: "---\n:every: :day\n",
+        recurrence: "{\"every\":\"day\"}",
         expires: true,
         jointUserId: '',
         jointText: ''
@@ -88,7 +88,7 @@ export default class RecurringTaskNew extends DetailsComponent {
             <div className="row">
               <div className="col-xs-4 recurrence-field-column">
                 <h2>Recurrence</h2>
-                <input className={ HandyTools.errorClass([], []) } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.recurrence || "" } readOnly={ true } data-entity="recurringTask" data-field="recurrence" />
+                <input className={ HandyTools.errorClass([], []) } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.recurrence ? this.convertToEnglish(this.state.recurringTask.recurrence) : "" } readOnly={ true } data-entity="recurringTask" data-field="recurrence" />
                 <a>Edit</a>
                 { HandyTools.renderFieldError([], []) }
               </div>

@@ -3,7 +3,7 @@ json.recurringTasks @recurring_tasks do |recurringTask|
   json.text recurringTask.text
   json.color recurringTask.color
   json.timeframe recurringTask.timeframe
-  json.recurrence convert(Montrose.r(YAML::load(recurringTask.recurrence)).to_hash)
+  json.recurrence Montrose.r(YAML::load(recurringTask.recurrence)).to_hash.to_json
   json.addToEnd recurringTask.add_to_end
   json.expires recurringTask.expires
   json.jointUserId recurringTask.joint_user_id.to_s || ""
