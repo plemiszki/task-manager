@@ -46,7 +46,8 @@ var RecurringTasksIndex = React.createClass({
       modalOpen: false,
       dailyTasks: RecurringTasksStore.dailyTasks(),
       weekendTasks: RecurringTasksStore.weekendTasks(),
-      monthlyTasks: RecurringTasksStore.monthlyTasks()
+      monthlyTasks: RecurringTasksStore.monthlyTasks(),
+      users: RecurringTasksStore.users()
     });
   },
 
