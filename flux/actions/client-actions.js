@@ -224,7 +224,6 @@ var ClientActions = {
   },
 
   updateRecurringTask: function(recurringTask) {
-    delete recurringTask.recurrence;
     $.ajax({
       url: `/api/recurring_tasks/${recurringTask.id}`,
       type: 'PATCH',

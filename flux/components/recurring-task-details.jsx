@@ -1,4 +1,5 @@
 import React from 'react';
+import Modal from 'react-modal';
 import HandyTools from 'handy-tools';
 import ClientActions from '../actions/client-actions.js';
 import RecurringTasksStore from '../stores/recurring-tasks-store.js';
@@ -107,7 +108,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
               <div className="col-xs-4 recurrence-field-column">
                 <h2>Recurrence</h2>
                 <input className={ HandyTools.errorClass([], []) } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.recurrence ? this.convertToEnglish(this.state.recurringTask.recurrence) : "" } readOnly={ true } data-entity="recurringTask" data-field="recurrence" />
-                <a>Edit</a>
+                <a onClick={ this.editRecurrence.bind(this) }>Edit</a>
                 { HandyTools.renderFieldError([], []) }
               </div>
               <div className="col-xs-2">
@@ -139,6 +140,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
             { this.renderButtons() }
           </div>
         </div>
+        { this.renderRecurrenceModal() }
       </div>
     );
   }
