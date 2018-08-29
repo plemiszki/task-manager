@@ -30,7 +30,7 @@ const RecurrenceModalStyles = {
     background: '#FFFFFF',
     margin: 'auto',
     maxWidth: 300,
-    height: 217,
+    height: 310,
     border: 'solid 1px black',
     borderRadius: '6px',
     padding: 0
@@ -86,8 +86,12 @@ export default class _Details extends React.Component {
   }
 
   updateRecurrence(recurrence) {
+    let result;
     if (recurrence.type === 'Daily') {
       result = "{\"every\":\"day\"}";
+    } else if (recurrence.type === 'Weekly') {
+      let n = HandyTools.WEEKDAYS.indexOf(recurrence.weekday);
+      result = `{\"every\":\"week\",\"day\":[${n}],\"on\":\"${recurrence.weekday.toLowerCase()}\"}`;
     } else if (recurrence.type === 'Monthly') {
       result = "{\"every\":\"month\",\"mday\":[1]}";
     }
@@ -105,7 +109,7 @@ export default class _Details extends React.Component {
 
   convertToEnglish(input) {
     input = JSON.parse(input);
-    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var months = HandyTools.MONTHS;
     if (input.every) {
       if (input.every === 'day') {
         if (input.interval) {

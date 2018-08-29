@@ -21,7 +21,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
   componentDidMount() {
     this.errorsListener = ErrorsStore.addListener(this.getErrors.bind(this));
     this.recurringTasksListener = RecurringTasksStore.addListener(this.getRecurringTask.bind(this));
-    ClientActions.standardFetch('recurring_tasks', window.location.pathname.split("/")[2]);
+    ClientActions.standardFetch('recurring_tasks', window.location.pathname.split('/')[2]);
   }
 
   componentWillUnmount() {
