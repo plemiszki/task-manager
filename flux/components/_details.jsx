@@ -94,6 +94,9 @@ export default class _Details extends React.Component {
       result = `{\"every\":\"week\",\"day\":[${n}],\"on\":\"${recurrence.weekday.toLowerCase()}\"}`;
     } else if (recurrence.type === 'Monthly') {
       result = "{\"every\":\"month\",\"mday\":[1]}";
+    } else if (recurrence.type === 'Yearly') {
+      let n = HandyTools.MONTHS.indexOf(recurrence.month);
+      result = `{\"every\":\"year\",\"mday\":[1],\"month\":[${n + 1}]}`;
     }
     let recurringTask = this.state.recurringTask;
     recurringTask.recurrence = result;
