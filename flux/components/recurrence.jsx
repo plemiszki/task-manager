@@ -52,7 +52,11 @@ export default class Recurrence extends React.Component {
   }
 
   updateRecurrence() {
-    this.props.updateRecurrence(this.state.recurrence);
+    if (this.state.recurrence.type === 'Daily (Interval)' && +this.state.recurrence.interval <= 1) {
+      window.alert('Invalid Interval');
+    } else {
+      this.props.updateRecurrence(this.state.recurrence);
+    }
   }
 
   render() {
