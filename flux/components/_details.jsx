@@ -30,7 +30,7 @@ const RecurrenceModalStyles = {
     background: '#FFFFFF',
     margin: 'auto',
     maxWidth: 300,
-    height: 310,
+    height: 328,
     border: 'solid 1px black',
     borderRadius: '6px',
     padding: 0
@@ -89,6 +89,8 @@ export default class _Details extends React.Component {
     let result;
     if (recurrence.type === 'Daily') {
       result = "{\"every\":\"day\"}";
+    } else if (recurrence.type === 'Daily (Interval)') {
+      result = `{\"every\":\"day\",\"starts\":\"${recurrence.starts}\",\"interval\":${recurrence.interval}}`;
     } else if (recurrence.type === 'Weekly') {
       let n = HandyTools.WEEKDAYS.indexOf(recurrence.weekday);
       result = `{\"every\":\"week\",\"day\":[${n}],\"on\":\"${recurrence.weekday.toLowerCase()}\"}`;
@@ -104,9 +106,11 @@ export default class _Details extends React.Component {
       recurrenceModalOpen: false,
       recurringTask: recurringTask
     }, function() {
-      this.setState({
-        changesToSave: this.checkForChanges()
-      });
+      if (this.checkForChanges) {
+        this.setState({
+          changesToSave: this.checkForChanges()
+        });
+      }
     });
   }
 

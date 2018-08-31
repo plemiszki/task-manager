@@ -7,12 +7,21 @@ export default class Recurrence extends React.Component {
     super(props);
 
     let recurrence = JSON.parse(this.props.recurringTask.recurrence);
+    let today = new Date;
     let result = {
       weekday: 'Sunday',
-      month: 'January'
+      month: 'January',
+      starts: `${today.getFullYear()}-${('0' + (today.getMonth() + 1)).slice(-2)}-${('0' + today.getDate()).slice(-2)}T00:00:00.000-05:00`,
+      interval: 2
     };
     if (recurrence.every === 'day') {
-      result.type = 'Daily';
+      if (recurrence.interval) {
+        result.type = 'Daily (Interval)';
+        result.starts = recurrence.starts;
+        result.interval = recurrence.interval.toString();
+      } else {
+        result.type = 'Daily';
+      }
     } else if (recurrence.every === 'week') {
       result.type = 'Weekly';
       result.weekday = HandyTools.capitalize(recurrence.on);
@@ -47,6 +56,7 @@ export default class Recurrence extends React.Component {
   }
 
   render() {
+    console.log(this.state.recurrence);
     return(
       <div className="admin-modal recurrence-modal">
         <div className="white-box">
@@ -55,12 +65,15 @@ export default class Recurrence extends React.Component {
               <h2>Type</h2>
               <select onChange={ function() {} } value={ this.state.recurrence.type } data-entity="recurrence" data-field="type">
                 <option value={ "Daily" }>Daily</option>
+                <option value={ "Daily (Interval)" }>Daily (Interval)</option>
                 <option value={ "Weekly" }>Weekly</option>
                 <option value={ "Monthly" }>Monthly</option>
                 <option value={ "Yearly" }>Yearly</option>
               </select>
               { HandyTools.renderDropdownFieldError([], []) }
             </div>
+          </div>
+          <div className="row">
             { this.renderSecondRow() }
           </div>
           <div className="text-center">
@@ -72,7 +85,15 @@ export default class Recurrence extends React.Component {
   }
 
   renderSecondRow() {
-    if (this.state.recurrence.type === 'Weekly') {
+    if (this.state.recurrence.type === 'Daily (Interval)') {
+      return(
+        <div className="col-xs-12 second-row">
+          <h2>Interval</h2>
+          <input type="number" value={ this.state.recurrence.interval } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } data-entity="recurrence" data-field="interval" />
+          { HandyTools.renderFieldError([], []) }
+        </div>
+      );
+    } else if (this.state.recurrence.type === 'Weekly') {
       return(
         <div className="col-xs-12 second-row select-scroll-2">
           <h2>Weekday</h2>
@@ -111,7 +132,7 @@ export default class Recurrence extends React.Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    if (nextState.recurrence.type === 'Daily' || nextState.recurrence.type === 'Monthly') {
+    if (['Daily', 'Daily (Interval)', 'Monthly'].indexOf(nextState.recurrence.type) > -1) {
       var $dropDownsToDestroy = $('.recurrence-modal .second-row select');
       $dropDownsToDestroy.niceSelect('destroy');
     }
