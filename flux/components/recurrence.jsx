@@ -12,7 +12,8 @@ export default class Recurrence extends React.Component {
       weekday: 'Sunday',
       month: 'January',
       starts: `${today.getFullYear()}-${('0' + (today.getMonth() + 1)).slice(-2)}-${('0' + today.getDate()).slice(-2)}`,
-      interval: 2
+      interval: 2,
+      monthday: 1
     };
     if (recurrence.every === 'day') {
       if (recurrence.interval) {
@@ -30,8 +31,8 @@ export default class Recurrence extends React.Component {
     } else if (recurrence.every === 'year') {
       result.type = 'Yearly';
       result.month = HandyTools.MONTHS[+recurrence.month - 1];
+      result.monthday = recurrence.mday[0];
     }
-
     this.state = {
       recurrence: result
     };
@@ -91,7 +92,7 @@ export default class Recurrence extends React.Component {
   renderSecondRow() {
     if (this.state.recurrence.type === 'Daily (Interval)') {
       return(
-        <div className="col-xs-12 second-row">
+        <div className="col-xs-5 second-row">
           <h2>Interval</h2>
           <input type="number" value={ this.state.recurrence.interval } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } data-entity="recurrence" data-field="interval" />
           { HandyTools.renderFieldError([], []) }
@@ -113,16 +114,23 @@ export default class Recurrence extends React.Component {
       );
     } else if (this.state.recurrence.type === 'Yearly') {
       return(
-        <div className="col-xs-12 second-row select-scroll-2">
-          <h2>Month</h2>
-          <select onChange={ function() {} } value={ this.state.recurrence.month } data-entity="recurrence" data-field="month">
-            { HandyTools.MONTHS.map(function(month, index) {
-              return(
-                <option key={ index } value={ month }>{ month }</option>
-              );
-            }) }
-          </select>
-          { HandyTools.renderDropdownFieldError([], []) }
+        <div>
+          <div className="col-xs-7 second-row select-scroll-2">
+            <h2>Month</h2>
+            <select onChange={ function() {} } value={ this.state.recurrence.month } data-entity="recurrence" data-field="month">
+              { HandyTools.MONTHS.map(function(month, index) {
+                return(
+                  <option key={ index } value={ month }>{ month }</option>
+                );
+              }) }
+            </select>
+            { HandyTools.renderDropdownFieldError([], []) }
+          </div>
+          <div className="col-xs-5 second-row select-scroll-2">
+            <h2>Day</h2>
+            <input type="number" value={ this.state.recurrence.monthday } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } data-entity="recurrence" data-field="monthday" />
+            { HandyTools.renderFieldError([], []) }
+          </div>
         </div>
       );
     } else {

@@ -97,7 +97,7 @@ export default class _Details extends React.Component {
       result = "{\"every\":\"month\",\"mday\":[1]}";
     } else if (recurrence.type === 'Yearly') {
       let n = HandyTools.MONTHS.indexOf(recurrence.month);
-      result = `{\"every\":\"year\",\"mday\":[1],\"month\":[${n + 1}]}`;
+      result = `{\"every\":\"year\",\"mday\":[${recurrence.monthday}],\"month\":[${n + 1}]}`;
     }
     let recurringTask = this.state.recurringTask;
     recurringTask.recurrence = result;
@@ -128,7 +128,11 @@ export default class _Details extends React.Component {
       } else if (input.every === 'month') {
         return 'Monthly';
       } else if (input.every === 'year') {
-        return `Every ${months[input.month[0] - 1]}`;
+        if (input.mday[0] !== 1) {
+          return `Every ${months[input.month[0] - 1]} ${input.mday[0]}`;
+        } else {
+          return `Every ${months[input.month[0] - 1]}`;
+        }
       } else {
         return 'Custom';
       }

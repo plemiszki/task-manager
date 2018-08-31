@@ -14,7 +14,11 @@ module ApplicationHelper
       elsif hash[:every] == :month
         "Monthly"
       elsif hash[:every] == :year
-        "Every #{months[hash[:month][0] - 1]}"
+        if hash[:mday][0] != 1
+          "Every #{months[hash[:month][0] - 1]} #{hash[:mday][0]}"
+        else
+          "Every #{months[hash[:month][0] - 1]}"
+        end
       else
         "Custom"
       end
