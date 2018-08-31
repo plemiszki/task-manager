@@ -92,8 +92,7 @@ export default class _Details extends React.Component {
     } else if (recurrence.type === 'Daily (Interval)') {
       result = `{\"every\":\"day\",\"starts\":\"${recurrence.starts}\",\"interval\":${recurrence.interval}}`;
     } else if (recurrence.type === 'Weekly') {
-      let n = HandyTools.WEEKDAYS.indexOf(recurrence.weekday);
-      result = `{\"every\":\"week\",\"day\":[${n}],\"on\":\"${recurrence.weekday.toLowerCase()}\"}`;
+      result = `{\"every\":\"week\",\"on\":\"${recurrence.weekday.toLowerCase()}\"}`;
     } else if (recurrence.type === 'Monthly') {
       result = "{\"every\":\"month\",\"mday\":[1]}";
     } else if (recurrence.type === 'Yearly') {

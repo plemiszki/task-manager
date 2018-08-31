@@ -11,7 +11,7 @@ export default class Recurrence extends React.Component {
     let result = {
       weekday: 'Sunday',
       month: 'January',
-      starts: `${today.getFullYear()}-${('0' + (today.getMonth() + 1)).slice(-2)}-${('0' + today.getDate()).slice(-2)}T00:00:00.000-05:00`,
+      starts: `${today.getFullYear()}-${('0' + (today.getMonth() + 1)).slice(-2)}-${('0' + today.getDate()).slice(-2)}`,
       interval: 2
     };
     if (recurrence.every === 'day') {
