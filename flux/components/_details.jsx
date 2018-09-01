@@ -129,7 +129,7 @@ export default class _Details extends React.Component {
         return 'Monthly';
       } else if (input.every === 'year') {
         if (input.mday[0] !== 1) {
-          return `Every ${months[input.month[0] - 1]} ${input.mday[0]}`;
+          return `Every ${months[input.month[0] - 1]} ${HandyTools.ordinatize(input.mday[0])}`;
         } else {
           return `Every ${months[input.month[0] - 1]}`;
         }

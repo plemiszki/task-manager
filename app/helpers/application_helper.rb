@@ -15,7 +15,7 @@ module ApplicationHelper
         "Monthly"
       elsif hash[:every] == :year
         if hash[:mday][0] != 1
-          "Every #{months[hash[:month][0] - 1]} #{hash[:mday][0]}"
+          "Every #{months[hash[:month][0] - 1]} #{hash[:mday][0].ordinalize}"
         else
           "Every #{months[hash[:month][0] - 1]}"
         end
