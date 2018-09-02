@@ -5,6 +5,14 @@ body {
   background-color: #F5F6F7;
 }
 
+.grabbed-element {
+  background-color: #A9F5BC;
+}
+
+.grabbing {
+  cursor: grabbing !important;
+}
+
 .admin-modal {
   font-family: 'TeachableSans-Regular';
 }
@@ -141,7 +149,7 @@ h1 {
       border-bottom: solid 1px #DADEE2;
     }
 
-    tbody tr:not(.below-header):hover {
+    tbody tr:not(.below-header):not(.grabbed-element):hover {
       background-color: #F5F5F5;
     }
 

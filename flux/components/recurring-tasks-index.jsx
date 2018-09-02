@@ -1,10 +1,8 @@
 var React = require('react');
 var Modal = require('react-modal');
 var HandyTools = require('handy-tools');
-var Moment = require('moment');
 var ClientActions = require('../actions/client-actions.js');
 var RecurringTasksStore = require('../stores/recurring-tasks-store.js');
-var ErrorsStore = require('../stores/errors-store.js');
 import RecurringTaskNew from './recurring-task-new';
 
 var ModalStyles = {
@@ -35,7 +33,6 @@ var RecurringTasksIndex = React.createClass({
 
   componentDidMount: function() {
     this.tasksListener = RecurringTasksStore.addListener(this.getRecurringTasks);
-    this.errorsListener = ErrorsStore.addListener(this.getErrors);
     ClientActions.fetchRecurringTasks();
   },
 
@@ -76,23 +73,20 @@ var RecurringTasksIndex = React.createClass({
     }
   },
 
-  getErrors: function() {
-    this.setState({
-      modalFetching: false,
-      errors: ErrorsStore.all()
-    });
+  mouseDownHandle: function(e) {
+    $('*').addClass('grabbing');
+    let row = e.target.parentElement.parentElement;
+    row.classList.add('grabbed-element');
+    let section = e.target.parentElement.parentElement.parentElement.parentElement;
+    section.classList.add('grab-section');
   },
 
-  clearError: function(e) {
-    var errors = this.state.errors;
-    if (e.target.dataset.field == "date") {
-      HandyTools.removeFromArray(errors, "Date is not a valid date");
-    } else if (e.target.dataset.field == "text") {
-      HandyTools.removeFromArray(errors, "Text can't be blank");
-    }
-    this.setState({
-      errors: errors
-    });
+  mouseUpHandle: function(e) {
+    $('*').removeClass('grabbing');
+    let row = e.target.parentElement.parentElement;
+    row.classList.remove('grabbed-element');
+    let section = e.target.parentElement.parentElement.parentElement.parentElement;
+    section.classList.remove('grab-section');
   },
 
   render: function() {
@@ -146,7 +140,7 @@ var RecurringTasksIndex = React.createClass({
                   <td>{ task.addToEnd ? "End" : "Beginning" }</td>
                   <td>{ task.expires ? "Yes" : "No" }</td>
                   <td><div className="swatch" style={ { backgroundColor } }></div></td>
-                  <td><div className="handle"></div></td>
+                  <td><div className="handle" onMouseDown={ this.mouseDownHandle } onMouseUp={ this.mouseUpHandle }></div></td>
                   <td><div className="x-button"></div></td>
                 </tr>
               );
