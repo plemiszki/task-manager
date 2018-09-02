@@ -36,6 +36,12 @@ var RecurringTasksIndex = React.createClass({
     ClientActions.fetchRecurringTasks();
   },
 
+  dragEndHandler: function() {
+    $('*').removeClass('grabbing');
+    $('body').removeAttr('style');
+    $('tr.grabbed-element').removeClass('grabbed-element');
+  },
+
   getRecurringTasks: function() {
     this.setState({
       fetching: false,
@@ -158,6 +164,15 @@ var RecurringTasksIndex = React.createClass({
         <hr />
       );
     }
+  },
+
+  componentDidUpdate: function() {
+    $('tr').draggable({
+      cursor: '-webkit-grabbing',
+      handle: '.handle',
+      helper: function() { return '<div></div>'; },
+      stop: this.dragEndHandler
+    });
   }
 });
 
