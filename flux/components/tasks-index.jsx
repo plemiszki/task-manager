@@ -1,24 +1,25 @@
-var React = require('react');
-var HandyTools = require('handy-tools');
-var Common = require('../../app/assets/javascripts/common.jsx');
-var ClientActions = require('../actions/client-actions.js');
-var TasksStore = require('../stores/tasks-store.js');
-var UserStore = require('../stores/user-store.js');
-var ErrorStore = require('../stores/error-store.js');
-var TasksIndexItem = require('./tasks-index-item.jsx');
+import React from 'react';
+import HandyTools from 'handy-tools';
+import Common from '../../app/assets/javascripts/common.jsx';
+import ClientActions from '../actions/client-actions.js';
+import TasksStore from '../stores/tasks-store.js';
+import UserStore from '../stores/user-store.js';
+import ErrorStore from '../stores/error-store.js';
+import TasksIndexItem from './tasks-index-item.jsx';
 
-var TasksIndex = React.createClass({
+export default class TasksIndex extends React.Component {
 
-  getInitialState: function() {
-    return({
+  constructor(props) {
+    super(props);
+    this.state = {
       fetching: true,
       rootTasks: [],
       tasks: [],
       longWeekend: false
-    });
-  },
+    }
+  }
 
-  componentDidMount: function() {
+  componentDidMount() {
     $('#' + this.props.timeframe + '-top-drop').droppable({
       accept: Common.canIDrop,
       tolerance: 'pointer',
@@ -26,70 +27,70 @@ var TasksIndex = React.createClass({
       out: Common.dragOutHandler,
       drop: this.dropHandler
     });
-    this.tasksListener = TasksStore.addListener(this.getTasks);
-    this.errorListener = ErrorStore.addListener(this.getError);
+    this.tasksListener = TasksStore.addListener(this.getTasks.bind(this));
+    this.errorListener = ErrorStore.addListener(this.getError.bind(this));
     if (this.props.timeframe == "life") {
       ClientActions.fetchTasks(this.props.timeframe);
     }
     if (this.props.timeframe == "weekend") {
-      this.userListener = UserStore.addListener(this.getUser);
+      this.userListener = UserStore.addListener(this.getUser.bind(this));
     }
-  },
+  }
 
-  componentDidUpdate: function() {
+  componentDidUpdate() {
     $('.match-height').matchHeight();
-  },
+  }
 
-  getTasks: function() {
+  getTasks() {
     this.setState({
       fetching: false,
       rootTasks: TasksStore.rootTasks(this.props.timeframe),
       tasks: TasksStore.all(this.props.timeframe)
     });
-  },
+  }
 
-  getUser: function() {
+  getUser() {
     this.setState({
       longWeekend: UserStore.user().long_weekend
     });
-  },
+  }
 
-  getError: function() {
+  getError() {
     this.setState({
       fetching: false
     });
-  },
+  }
 
-  clickAddButton: function(event) {
-    event.preventDefault();
+  clickAdd(e) {
+    e.preventDefault();
     this.setState({
       fetching: true
     });
     ClientActions.addTask(this.props.timeframe);
-  },
+  }
 
-  updateTask: function(task) {
+  updateTask(task) {
     this.setState({
       fetching: true
     });
     ClientActions.updateTask(task);
-  },
+  }
 
-  addSubTask: function(task) {
+  addSubTask(task) {
     this.setState({
       fetching: true
     });
     ClientActions.addTask(this.props.timeframe, task.id);
-  },
+  }
 
-  deleteTask: function(task) {
+  deleteTask(task) {
     this.setState({
       fetching: true
     });
     ClientActions.deleteTask(task);
-  },
+  }
 
-  dropHandler: function(e, ui) {
+  dropHandler(e, ui) {
     var draggedTimeFrame = ui.draggable.attr('id').split('-')[0];
     var droppedTimeFrame = e.target.getAttribute('id').split('-')[0];
     var draggedIndex = this.getIndexFromId(ui.draggable.attr('id'));
@@ -144,9 +145,9 @@ var TasksIndex = React.createClass({
       newHash = this.rearrangeOtherFields(hash, dropZoneIndex);
       ClientActions.addTask(dropZoneTimeFrame, null, task, newHash);
     }
-  },
+  }
 
-  rearrangeFields: function(hash, draggedIndex, dropZoneIndex) {
+  rearrangeFields(hash, draggedIndex, dropZoneIndex) {
     var result = {};
     var draggedTaskId;
     if (dropZoneIndex == -1) {
@@ -162,9 +163,9 @@ var TasksIndex = React.createClass({
       }
     }
     return result;
-  },
+  }
 
-  rearrangeOtherFields: function(hash, dropZoneIndex) {
+  rearrangeOtherFields(hash, dropZoneIndex) {
     var result = {};
     var draggedTaskId;
     var n = 0;
@@ -178,38 +179,38 @@ var TasksIndex = React.createClass({
       }
     }
     return result;
-  },
+  }
 
-  getIndexFromId: function(id) {
+  getIndexFromId(id) {
     var array = id.split('-');
     return array[array.length - 1];
-  },
+  }
 
-  clickWeekend: function() {
+  clickWeekend() {
     var user = UserStore.user();
     user.long_weekend = !user.long_weekend;
     ClientActions.updateUser(user);
-  },
+  }
 
-  render: function() {
+  render() {
     return(
       <div className="tasks-index match-height" data-index={ this.props.timeframe }>
         { HandyTools.renderSpinner(this.state.fetching) }
         { HandyTools.renderGrayedOut(this.state.fetching, -10, -15) }
         { this.renderHeader() }
-        <a href="" onClick={ this.clickAddButton }>Add Task</a>
+        <a href="" onClick={ this.clickAdd.bind(this) }>Add Task</a>
         <hr />
         <div id={ this.props.timeframe + '-top-drop' } className="drop-area"></div>
         { this.state.rootTasks.map(function(task, index) {
           return(
-            <TasksIndexItem key={ index } index={ index } task={ task } level={ "0" } updateTask={ this.updateTask } addSubTask={ this.addSubTask } deleteTask={ this.deleteTask } dropHandler={ this.dropHandler } />
+            <TasksIndexItem key={ index } index={ index } task={ task } level={ "0" } updateTask={ this.updateTask.bind(this) } addSubTask={ this.addSubTask.bind(this) } deleteTask={ this.deleteTask.bind(this) } dropHandler={ this.dropHandler.bind(this) } />
           )
         }.bind(this)) }
       </div>
     )
-  },
+  }
 
-  renderHeader: function() {
+  renderHeader() {
     switch (this.props.timeframe) {
       case "day":
         return(
@@ -234,6 +235,4 @@ var TasksIndex = React.createClass({
         )
     }
   }
-});
-
-module.exports = TasksIndex;
+};

@@ -5,23 +5,6 @@ import ClientActions from '../actions/client-actions.js';
 import ErrorsStore from '../stores/errors-store';
 import Recurrence from './recurrence.jsx';
 
-const ConfirmDeleteModalStyles = {
-  overlay: {
-    background: 'rgba(0, 0, 0, 0.50)'
-  },
-  content: {
-    background: '#FFFFFF',
-    margin: 'auto',
-    maxWidth: 500,
-    height: 217,
-    border: 'solid 1px black',
-    borderRadius: '6px',
-    textAlign: 'center',
-    color: '#5F5F5F',
-    padding: '26px 20px'
-  }
-};
-
 const RecurrenceModalStyles = {
   overlay: {
     background: 'rgba(0, 0, 0, 0.50)'
@@ -179,33 +162,11 @@ export default class _Details extends React.Component {
     );
   }
 
-  // renderModal(entity) {
-  //   return(
-  //     <Modal isOpen={ this.state.deleteModalOpen } onRequestClose={ this.closeModal.bind(this) } contentLabel="Modal" style={ ConfirmDeleteModalStyles }>
-  //       <div className="admin-modal">
-  //         <div className="confirm-delete">
-  //           <h1>Are you sure you want to permanently delete this { entity }&#63;</h1>
-  //           <a className="btn red-button" onClick={ this.confirmDelete.bind(this) }>
-  //             Yes
-  //           </a>
-  //           <a className="btn gray-outline-button" onClick={ this.closeModal.bind(this) }>
-  //             No
-  //           </a>
-  //         </div>
-  //       </div>
-  //     </Modal>
-  //   );
-  // }
-
   renderRecurrenceModal() {
     return(
       <Modal isOpen={ this.state.recurrenceModalOpen } onRequestClose={ this.closeModal.bind(this) } contentLabel="Modal" style={ RecurrenceModalStyles }>
         <Recurrence recurringTask={ this.state.recurringTask } updateRecurrence={ this.updateRecurrence.bind(this) } />
       </Modal>
     );
-  }
-
-  componentDidUpdate() {
-    // $('.match-height-layout').matchHeight();
   }
 }

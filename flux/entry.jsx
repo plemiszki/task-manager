@@ -1,10 +1,10 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
-var ReactModal = require('react-modal');
-var CurrentUser = require('./components/current-user.jsx');
-var TasksIndex = require('./components/tasks-index.jsx');
-var FutureTasksIndex = require('./components/future-tasks-index.jsx');
-var RecurringTasksIndex = require('./components/recurring-tasks-index.jsx');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import ReactModal from 'react-modal';
+import CurrentUser from './components/current-user.jsx';
+import TasksIndex from './components/tasks-index.jsx';
+import FutureTasksIndex from './components/future-tasks-index.jsx';
+import RecurringTasksIndex from './components/recurring-tasks-index.jsx';
 import RecurringTaskDetails from './components/recurring-task-details.jsx';
 
 $(document).ready(function() {

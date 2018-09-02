@@ -1,11 +1,11 @@
-var React = require('react');
-var Modal = require('react-modal');
-var HandyTools = require('handy-tools');
-var ClientActions = require('../actions/client-actions.js');
-var RecurringTasksStore = require('../stores/recurring-tasks-store.js');
+import React from 'react';
+import Modal from 'react-modal';
+import HandyTools from 'handy-tools';
+import ClientActions from '../actions/client-actions.js';
+import RecurringTasksStore from '../stores/recurring-tasks-store.js';
 import RecurringTaskNew from './recurring-task-new';
 
-var ModalStyles = {
+const ModalStyles = {
   overlay: {
     background: 'rgba(0, 0, 0, 0.50)'
   },
@@ -18,31 +18,32 @@ var ModalStyles = {
   }
 };
 
-var RecurringTasksIndex = React.createClass({
+export default class RecurringTasksIndex extends React.Component {
 
-  getInitialState: function() {
-    return({
+  constructor(props) {
+    super(props);
+    this.state = {
       modalOpen: false,
       fetching: true,
       dailyTasks: [],
       weekendTasks: [],
       monthlyTasks: [],
       users: []
-    });
-  },
+    }
+  }
 
-  componentDidMount: function() {
-    this.tasksListener = RecurringTasksStore.addListener(this.getRecurringTasks);
+  componentDidMount() {
+    this.tasksListener = RecurringTasksStore.addListener(this.getRecurringTasks.bind(this));
     ClientActions.fetchRecurringTasks();
-  },
+  }
 
-  dragEndHandler: function() {
+  dragEndHandler() {
     $('*').removeClass('grabbing');
     $('body').removeAttr('style');
     $('tr.grabbed-element').removeClass('grabbed-element');
-  },
+  }
 
-  getRecurringTasks: function() {
+  getRecurringTasks() {
     this.setState({
       fetching: false,
       modalFetching: false,
@@ -52,21 +53,21 @@ var RecurringTasksIndex = React.createClass({
       monthlyTasks: RecurringTasksStore.monthlyTasks(),
       users: RecurringTasksStore.users()
     });
-  },
+  }
 
-  clickNew: function() {
+  clickNew() {
     this.setState({
       modalOpen: true
     });
-  },
+  }
 
-  closeModal: function() {
+  closeModal() {
     this.setState({
       modalOpen: false
     });
-  },
+  }
 
-  clickTask: function(e) {
+  clickTask(e) {
     if (e.target.classList.contains('x-button')) {
       this.setState({
         fetching: true
@@ -77,25 +78,25 @@ var RecurringTasksIndex = React.createClass({
     } else {
       window.location.pathname = `/recurring_tasks/${e.target.parentElement.dataset.id}`
     }
-  },
+  }
 
-  mouseDownHandle: function(e) {
+  mouseDownHandle(e) {
     $('*').addClass('grabbing');
     let row = e.target.parentElement.parentElement;
     row.classList.add('grabbed-element');
     let section = e.target.parentElement.parentElement.parentElement.parentElement;
     section.classList.add('grab-section');
-  },
+  }
 
-  mouseUpHandle: function(e) {
+  mouseUpHandle(e) {
     $('*').removeClass('grabbing');
     let row = e.target.parentElement.parentElement;
     row.classList.remove('grabbed-element');
     let section = e.target.parentElement.parentElement.parentElement.parentElement;
     section.classList.remove('grab-section');
-  },
+  }
 
-  render: function() {
+  render() {
     return(
       <div className="container widened-container index-component">
         <div className="row">
@@ -106,7 +107,7 @@ var RecurringTasksIndex = React.createClass({
               { this.renderTable('daily') }
               { this.renderTable('weekend') }
               { this.renderTable('monthly') }
-              <div className="btn btn-success" onClick={ this.clickNew }>Add New</div>
+              <div className="btn btn-success" onClick={ this.clickNew.bind(this) }>Add New</div>
             </div>
           </div>
         </div>
@@ -115,9 +116,9 @@ var RecurringTasksIndex = React.createClass({
         </Modal>
       </div>
     );
-  },
+  }
 
-  renderTable: function(timeframe) {
+  renderTable(timeframe) {
     return(
       <div>
         <h1>{ HandyTools.capitalize(timeframe) } Recurring Tasks</h1>
@@ -139,14 +140,14 @@ var RecurringTasksIndex = React.createClass({
             { this.state[timeframe.toLowerCase() + "Tasks"].map(function(task) {
               var backgroundColor = (task.jointUserId ? 'rgb(0,0,0)' : task.color);
               return(
-                <tr key={ task.id } onClick={ this.clickTask } data-id={ task.id }>
+                <tr key={ task.id } onClick={ this.clickTask.bind(this) } data-id={ task.id }>
                   <td>{ task.text }</td>
                   <td>{ task.order }</td>
                   <td>{ task.recurrence }</td>
                   <td>{ task.addToEnd ? "End" : "Beginning" }</td>
                   <td>{ task.expires ? "Yes" : "No" }</td>
                   <td><div className="swatch" style={ { backgroundColor } }></div></td>
-                  <td><div className="handle" onMouseDown={ this.mouseDownHandle } onMouseUp={ this.mouseUpHandle }></div></td>
+                  <td><div className="handle" onMouseDown={ this.mouseDownHandle.bind(this) } onMouseUp={ this.mouseUpHandle.bind(this) }></div></td>
                   <td><div className="x-button"></div></td>
                 </tr>
               );
@@ -156,24 +157,22 @@ var RecurringTasksIndex = React.createClass({
         { this.renderLine(timeframe === "daily" || timeframe === "weekend") }
       </div>
     );
-  },
+  }
 
-  renderLine: function(condition) {
+  renderLine(condition) {
     if (condition) {
       return(
         <hr />
       );
     }
-  },
+  }
 
-  componentDidUpdate: function() {
+  componentDidUpdate() {
     $('tr').draggable({
       cursor: '-webkit-grabbing',
       handle: '.handle',
       helper: function() { return '<div></div>'; },
-      stop: this.dragEndHandler
+      stop: this.dragEndHandler.bind(this)
     });
   }
-});
-
-module.exports = RecurringTasksIndex;
+};

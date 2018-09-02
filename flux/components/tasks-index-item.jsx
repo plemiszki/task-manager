@@ -1,23 +1,24 @@
-var React = require('react');
-var ClientActions = require('../actions/client-actions.js');
-var TasksStore = require('../stores/tasks-store.js');
+import React from 'react';
+import ClientActions from '../actions/client-actions.js';
+import TasksStore from '../stores/tasks-store.js';
 
-var TaskIndexItem = React.createClass({
+export default class TaskIndexItem extends React.Component {
 
-  getInitialState: function() {
-    return({
+  constructor(props) {
+    super(props);
+    this.state = {
       editing: false,
       task: this.props.task,
       subtasks: TasksStore.subTasks(this.props.task)
-    });
-  },
+    }
+  }
 
-  componentDidMount: function() {
+  componentDidMount() {
     this.attachDragHandler();
     this.attachDropZoneHandlers();
-  },
+  }
 
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps(nextProps) {
     $('.color-picker').addClass('hidden');
     this.setState({
       task: nextProps.task,
@@ -26,9 +27,9 @@ var TaskIndexItem = React.createClass({
       this.attachDragHandler();
       this.attachDropZoneHandlers();
     });
-  },
+  }
 
-  attachDragHandler: function() {
+  attachDragHandler() {
     $('#' + this.createTaskId()).draggable({
       cursor: '-webkit-grabbing',
       handle: '.handle',
@@ -36,9 +37,9 @@ var TaskIndexItem = React.createClass({
       start: this.dragStartHandler,
       stop: this.dragEndHandler
     });
-  },
+  }
 
-  attachDropZoneHandlers: function() {
+  attachDropZoneHandlers() {
     $('#' + this.createDropAreaId() + ', #' + this.createSubtaskTopDropAreaId()).droppable({
       accept: Common.canIDrop,
       tolerance: 'pointer',
@@ -46,37 +47,37 @@ var TaskIndexItem = React.createClass({
       out: Common.dragOutHandler,
       drop: this.props.dropHandler
     });
-  },
+  }
 
-  clickText: function(event) {
-    event.preventDefault();
-    if ($(event.target.parentElement.parentElement).hasClass('duplicate') === false) {
-      event.target.classList.remove('handle');
+  clickText(e) {
+    e.preventDefault();
+    if ($(e.target.parentElement.parentElement).hasClass('duplicate') === false) {
+      e.target.classList.remove('handle');
       this.setState({
         editing: true
       });
     }
-  },
+  }
 
-  changeText: function(event) {
+  changeText(e) {
     var task = this.state.task;
-    task.text = event.target.value;
+    task.text = e.target.value;
     this.setState({
       task: task
     });
-  },
+  }
 
-  clickEnter: function(event) {
-    if (event.key == 'Enter') {
-      event.target.parentElement.children[0].classList.add('handle');
+  clickEnter(e) {
+    if (e.key == 'Enter') {
+      e.target.parentElement.children[0].classList.add('handle');
       this.setState({
         editing: false
       });
       this.props.updateTask(this.state.task);
     }
-  },
+  }
 
-  clickExpand: function(event) {
+  clickExpand() {
     var task = this.state.task;
     task.expanded = !task.expanded;
     this.setState({
@@ -84,15 +85,15 @@ var TaskIndexItem = React.createClass({
     }, function() {
       this.props.updateTask(this.state.task);
     });
-  },
+  }
 
-  deleteTask: function(event) {
-    event.preventDefault();
+  deleteTask(e) {
+    e.preventDefault();
     this.props.deleteTask(this.state.task);
-  },
+  }
 
-  finishedTask: function(event) {
-    event.preventDefault();
+  finishedTask(e) {
+    e.preventDefault();
     var task = this.state.task;
     task.complete = !task.complete;
     this.setState({
@@ -100,15 +101,15 @@ var TaskIndexItem = React.createClass({
     }, function() {
       this.props.updateTask(this.state.task);
     });
-  },
+  }
 
-  clickColorPicker: function(event) {
-    event.preventDefault();
-    $(event.target.parentElement.parentElement.children[1]).toggleClass('hidden');
-  },
+  clickColorPicker(e) {
+    e.preventDefault();
+    $(e.target.parentElement.parentElement.children[1]).toggleClass('hidden');
+  }
 
-  pickColor: function(event) {
-    var style = event.target.getAttribute('style');
+  pickColor(e) {
+    var style = e.target.getAttribute('style');
     var color = style.split('(')[1].slice(0, -2);
     var task = this.state.task;
     task.color = color;
@@ -117,105 +118,103 @@ var TaskIndexItem = React.createClass({
     }, function() {
       this.props.updateTask(this.state.task);
     })
-  },
+  }
 
-  addSubTask: function(event) {
-    event.preventDefault();
+  addSubTask(e) {
+    e.preventDefault();
     this.props.addSubTask(this.state.task);
-  },
+  }
 
-  dragStartHandler: function(e) {
+  dragStartHandler(e) {
     $('.task').addClass('dragging');
     $('.task, a, input').addClass('grabbing');
     e.target.classList.add('dragging-this');
-  },
+  }
 
-  dragEndHandler: function(e) {
+  dragEndHandler(e) {
     $('.dragging').removeClass('dragging');
     $('.task, a, input').removeClass('grabbing');
     $('.dragging-this').removeClass('dragging-this');
     $('.highlight-black').removeClass('highlight-black');
     $('.highlight-blue').removeClass('highlight-blue');
-  },
+  }
 
-  createTaskId: function() {
+  createTaskId() {
     var currentId = this.props.parentId || this.props.task.timeframe;
     return currentId + "-" + this.props.index;
-  },
+  }
 
-  createDropAreaId: function() {
+  createDropAreaId() {
     var currentId = this.props.parentId || this.props.task.timeframe;
     return currentId + "-" + this.props.index + "-drop";
-  },
+  }
 
-  createSubtaskTopDropAreaId: function() {
+  createSubtaskTopDropAreaId() {
     return this.props.parentId + "-top-drop";
-  },
+  }
 
-  taskStyle: function() {
+  taskStyle() {
     if (this.state.task.duplicate_id) {
       return {background: 'rgba(' + this.state.task.color + ', 0.5)'};
     } else {
       return {background: 'rgb(' + this.state.task.color + ')'};
     }
-  },
+  }
 
-  render: function() {
+  render() {
     return(
       <div className="group">
-        <div id={this.createTaskId()} className={"task" + (this.state.task.expanded ? " expanded" : "") + (this.state.task.duplicate_id ? " duplicate" : "") + (this.state.task.joint_id ? " joint" : "")} style={this.taskStyle()} data-taskid={this.props.task.id}>
-          <div className={"controls" + (this.state.editing ? " hidden" : "")}>
-            <a href="" className={"delete-button" + (this.state.task.duplicate_id && this.state.task.parent_id ? " hidden" : "")} onClick={this.deleteTask}></a>
-            <a href="" className="done-button" onClick={this.finishedTask}></a>
-            <a href="" className={"add-subtask-button" + (this.state.task.duplicate_id ? " hidden" : "")} onClick={this.addSubTask}></a>
-            <a href="" className={"color-button" + ((this.state.task.duplicate_id || this.state.task.parent_id) ? " hidden" : "")} onClick={this.clickColorPicker}></a>
+        <div id={ this.createTaskId() } className={ "task" + (this.state.task.expanded ? " expanded" : "") + (this.state.task.duplicate_id ? " duplicate" : "") + (this.state.task.joint_id ? " joint" : "") } style={ this.taskStyle() } data-taskid={ this.props.task.id }>
+          <div className={ "controls" + (this.state.editing ? " hidden" : "") }>
+            <a href="" className={ "delete-button" + (this.state.task.duplicate_id && this.state.task.parent_id ? " hidden" : "") } onClick={ this.deleteTask.bind(this) }></a>
+            <a href="" className="done-button" onClick={ this.finishedTask.bind(this) }></a>
+            <a href="" className={ "add-subtask-button" + (this.state.task.duplicate_id ? " hidden" : "")} onClick={ this.addSubTask.bind(this) }></a>
+            <a href="" className={ "color-button" + ((this.state.task.duplicate_id || this.state.task.parent_id) ? " hidden" : "") } onClick={ this.clickColorPicker.bind(this) }></a>
           </div>
           <div className="hidden color-picker">
-            <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(234, 30, 30)'}}></div>
-            <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(255, 175, 163)'}}></div>
-            <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(255, 175, 36)'}}></div>
-            <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(238, 244, 66)'}}></div>
-            <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(92, 184, 92)'}}></div>
-            <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(111, 138, 240)'}}></div>
-            <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(181, 111, 240)'}}></div>
-            <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(175, 96, 26)'}}></div>
-            <div onClick={this.pickColor} style={{'backgroundColor': 'rgb(210, 206, 200)'}}></div>
+            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(234, 30, 30)'}}></div>
+            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(255, 175, 163)'}}></div>
+            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(255, 175, 36)'}}></div>
+            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(238, 244, 66)'}}></div>
+            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(92, 184, 92)'}}></div>
+            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(111, 138, 240)'}}></div>
+            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(181, 111, 240)'}}></div>
+            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(175, 96, 26)'}}></div>
+            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(210, 206, 200)'}}></div>
           </div>
-          <div className={((this.state.editing) ? "hidden" : (this.state.task.complete ? "check" : (this.state.subtasks == 0 ? "hidden" : (this.state.task.expanded ? "minus" : "plus"))))} onClick={this.clickExpand}>
+          <div className={ ((this.state.editing) ? "hidden" : (this.state.task.complete ? "check" : (this.state.subtasks == 0 ? "hidden" : (this.state.task.expanded ? "minus" : "plus")))) } onClick={ this.clickExpand.bind(this) }>
           </div>
-          <div className="click-area" onClick={this.clickText}>
+          <div className="click-area" onClick={ this.clickText.bind(this) }>
             <div className="handle"></div>
-            <input className={this.state.editing ? "" : "disabled"} disabled={!this.state.editing} value={this.state.task.text} onChange={this.changeText} onKeyPress={this.clickEnter} />
+            <input className={ this.state.editing ? "" : "disabled" } disabled={ !this.state.editing } value={ this.state.task.text } onChange={ this.changeText.bind(this) } onKeyPress={ this.clickEnter.bind(this) } />
           </div>
         </div>
-        {this.renderBottomDropArea()}
-        {this.renderSubTasks()}
+        { this.renderBottomDropArea() }
+        { this.renderSubTasks() }
       </div>
     );
-  },
+  }
 
-  renderBottomDropArea: function() {
+  renderBottomDropArea() {
     if (!this.state.task.expanded) {
       return(
-        <div id={this.createDropAreaId()} className="drop-area"></div>
-      )
+        <div id={ this.createDropAreaId() } className="drop-area"></div>
+      );
     }
-  },
+  }
 
-  renderSubTasks: function() {
+  renderSubTasks() {
     if (this.state.task.expanded) {
       return(
         <div id={"subtasks-" + this.createTaskId()} className="subtasks">
           <div id={this.createTaskId() + '-top-drop'} className="drop-area"></div>
           {this.state.subtasks.map(function(task, index) {
             return(
-              <TaskIndexItem key={index} index={index} task={task} parentId={this.createTaskId()} updateTask={this.props.updateTask} addSubTask={this.props.addSubTask} deleteTask={this.props.deleteTask} dropHandler={this.props.dropHandler} />
+              <TaskIndexItem key={ index } index={ index } task={ task } parentId={ this.createTaskId() } updateTask={ this.props.updateTask.bind(this) } addSubTask={ this.props.addSubTask.bind(this) } deleteTask={ this.props.deleteTask.bind(this) } dropHandler={ this.props.dropHandler.bind(this) } />
             );
           }.bind(this))}
         </div>
       )
     }
   }
-});
-
-module.exports = TaskIndexItem;
+};

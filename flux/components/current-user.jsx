@@ -1,39 +1,40 @@
-var React = require('react');
-var ClientActions = require('../actions/client-actions.js');
-var UserStore = require('../stores/user-store.js');
-var CongressStore = require('../stores/congress-store.js');
+import React from 'react';
+import ClientActions from '../actions/client-actions.js';
+import UserStore from '../stores/user-store.js';
+import CongressStore from '../stores/congress-store.js';
 
-var CurrentUser = React.createClass({
+export default class CurrentUser extends React.Component {
 
-  getInitialState: function() {
-    return({
+  constructor(props) {
+    super(props);
+    this.state = {
       user: null,
       congressObj: {
         senate: {},
         house: {}
       }
-    });
-  },
+    }
+  }
 
-  componentDidMount: function() {
-    this.userListener = UserStore.addListener(this.getUser);
-    this.congressListener = CongressStore.addListener(this.getCongress);
+  componentDidMount() {
+    this.userListener = UserStore.addListener(this.getUser.bind(this));
+    this.congressListener = CongressStore.addListener(this.getCongress.bind(this));
     ClientActions.fetchUser();
-  },
+  }
 
-  getUser: function() {
+  getUser() {
     this.setState({
       user: UserStore.user()
     });
-  },
+  }
 
-  getCongress: function() {
+  getCongress() {
     this.setState({
       congressObj: CongressStore.obj()
     });
-  },
+  }
 
-  render: function() {
+  render() {
     return(
       <div className="container widened-container">
         <div className="row">
@@ -62,6 +63,4 @@ var CurrentUser = React.createClass({
       </div>
     );
   }
-});
-
-module.exports = CurrentUser;
+}

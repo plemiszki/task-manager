@@ -1,12 +1,12 @@
-var React = require('react');
-var Modal = require('react-modal');
-var Moment = require('moment');
-var HandyTools = require('handy-tools');
-var ClientActions = require('../actions/client-actions.js');
-var FutureTasksStore = require('../stores/future-tasks-store.js');
+import React from 'react';
+import Modal from 'react-modal';
+import Moment from 'moment';
+import HandyTools from 'handy-tools';
+import ClientActions from '../actions/client-actions.js';
+import FutureTasksStore from '../stores/future-tasks-store.js';
 import FutureTaskNew from './future-task-new.jsx';
 
-var ModalStyles = {
+const ModalStyles = {
   overlay: {
     background: 'rgba(0, 0, 0, 0.50)'
   },
@@ -19,55 +19,56 @@ var ModalStyles = {
   }
 };
 
-var FutureTasksIndex = React.createClass({
+export default class FutureTasksIndex extends React.Component {
 
-  getInitialState: function() {
-    return({
+  constructor(props) {
+    super(props);
+    this.state = {
       modalOpen: false,
       fetching: true,
-      modalFetching: false,
-      tasks: [],
-      errors: []
-    });
-  },
+      tasks: []
+    }
+  }
 
-  componentDidMount: function() {
-    this.tasksListener = FutureTasksStore.addListener(this.getFutureTasks);
+  componentDidMount() {
+    this.tasksListener = FutureTasksStore.addListener(this.getFutureTasks.bind(this));
     ClientActions.fetchFutureTasks();
-  },
+  }
 
-  getFutureTasks: function() {
+  getFutureTasks() {
     this.setState({
       fetching: false,
       modalFetching: false,
       modalOpen: false,
       tasks: FutureTasksStore.all()
     });
-  },
+  }
 
-  clickAddNewButton: function() {
+  clickAddNewButton() {
     this.setState({
       modalOpen: true
     });
-  },
+  }
 
-  clickXButton: function(e) {
+  clickXButton(e) {
     this.setState({
       fetching: true
     });
     ClientActions.deleteFutureTask(e.target.dataset.id);
-  },
+  }
 
-  closeModal: function() {
-    this.setState({ modalOpen: false, errors: [] });
-  },
+  closeModal() {
+    this.setState({
+      modalOpen: false
+    });
+  }
 
-  clickColor: function(e) {
+  clickColor(e) {
     $('.color').removeClass('selected');
     e.target.classList.add('selected');
-  },
+  }
 
-  render: function() {
+  render() {
     return(
       <div className="container widened-container index-component">
         <div className="row">
@@ -97,22 +98,20 @@ var FutureTasksIndex = React.createClass({
                         <td>{ task.timeframe }</td>
                         <td>{ task.addToEnd ? "End" : "Beginning" }</td>
                         <td><div className="swatch" style={ { backgroundColor: task.color } }></div></td>
-                        <td><div className="x-button" onClick={ this.clickXButton } data-id={ task.id }></div></td>
+                        <td><div className="x-button" onClick={ this.clickXButton.bind(this) } data-id={ task.id }></div></td>
                       </tr>
                     );
                   }.bind(this)) }
                 </tbody>
               </table>
-              <div className="btn btn-info" onClick={ this.clickAddNewButton }>Add New</div>
+              <div className="btn btn-info" onClick={ this.clickAddNewButton.bind(this) }>Add New</div>
             </div>
           </div>
         </div>
-        <Modal isOpen={ this.state.modalOpen } onRequestClose={ this.closeModal } contentLabel="Modal" style={ ModalStyles }>
+        <Modal isOpen={ this.state.modalOpen } onRequestClose={ this.closeModal.bind(this) } contentLabel="Modal" style={ ModalStyles }>
           <FutureTaskNew />
         </Modal>
       </div>
     );
   }
-});
-
-module.exports = FutureTasksIndex;
+}
