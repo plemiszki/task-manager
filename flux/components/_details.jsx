@@ -153,7 +153,7 @@ export default class _Details extends React.Component {
           <div className={ 'color' + (entity.color === 'rgb(255, 175, 163)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(255, 175, 163)'}} ></div>
           <div className={ 'color' + (entity.color === 'rgb(255, 175, 36)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(255, 175, 36)'}} ></div>
           <div className={ 'color' + (entity.color === 'rgb(238, 244, 66)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(238, 244, 66)'}} ></div>
-          <div className={ 'color' + (entity.color === 'rgb(30, 124, 33)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(30, 124, 33)'}} ></div>
+          <div className={ 'color' + (entity.color === 'rgb(92, 184, 92)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(92, 184, 92)'}} ></div>
           <div className={ 'color' + (entity.color === 'rgb(111, 138, 240)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(111, 138, 240)'}} ></div>
           <div className={ 'color' + (entity.color === 'rgb(181, 111, 240)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(181, 111, 240)'}} ></div>
           <div className={ 'color' + (entity.color === 'rgb(175, 96, 26)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(175, 96, 26)'}} ></div>
