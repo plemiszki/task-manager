@@ -69,6 +69,8 @@ var RecurringTasksIndex = React.createClass({
         fetching: true
       });
       ClientActions.deleteRecurringTask(e.target.parentElement.parentElement.dataset.id);
+    } else if (e.target.classList.contains('handle')) {
+      // do nothing
     } else {
       window.location.pathname = `/recurring_tasks/${e.target.parentElement.dataset.id}`
     }
@@ -129,6 +131,7 @@ var RecurringTasksIndex = React.createClass({
               <th>Expires</th>
               <th>Color</th>
               <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -143,6 +146,7 @@ var RecurringTasksIndex = React.createClass({
                   <td>{ task.addToEnd ? "End" : "Beginning" }</td>
                   <td>{ task.expires ? "Yes" : "No" }</td>
                   <td><div className="swatch" style={ { backgroundColor } }></div></td>
+                  <td><div className="handle"></div></td>
                   <td><div className="x-button"></div></td>
                 </tr>
               );

@@ -5,6 +5,10 @@
     width: 30%;
   }
 
+  th:nth-of-type(7) {
+    width: 40px;
+  }
+
   tr:not(.below-header) {
 
     td {
@@ -30,4 +34,12 @@
 
 .update-recurrence-button {
   margin-top: 5px;
+}
+
+td .handle {
+  background-image: asset-url('handle.png');;
+  background-size: 17px;
+  background-position: 50%;
+  height: 17px;
+  cursor: grab;
 }

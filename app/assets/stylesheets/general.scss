@@ -116,7 +116,7 @@ h1 {
       }
 
       &:last-of-type {
-        width: 27px;
+        width: 40px;
       }
     }
 
@@ -148,11 +148,9 @@ h1 {
     td:last-of-type {
 
       .x-button {
-        top: 10px;
-        margin-right: 10px;
         background-image: asset-url('gray-x.png');
-        background-size: contain;
-        width: 17px;
+        background-size: 17px;
+        background-position: 50%;
         height: 17px;
         cursor: pointer;
       }
