@@ -28,6 +28,8 @@ var ClientActions = {
         switch (directory) {
         case 'recurring_tasks':
           ServerActions.receiveRecurringTasks(response);
+        case 'future_tasks':
+          ServerActions.receiveFutureTasks(response);
         }
       },
       error: function(response) {

@@ -72,7 +72,6 @@ export default class RecurringTaskDetails extends DetailsComponent {
   }
 
   render() {
-    console.log(this.state.recurringTask);
     return(
       <div className="container widened-container">
         <div className="recurring-task-details component">
@@ -103,7 +102,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
                 </select>
                 { HandyTools.renderFieldError([], []) }
               </div>
-              { this.renderColorField() }
+              { this.renderColorField(4) }
             </div>
             <div className="row">
               <div className="col-xs-4 recurrence-field-column">

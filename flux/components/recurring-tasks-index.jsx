@@ -123,6 +123,7 @@ var RecurringTasksIndex = React.createClass({
           <thead>
             <tr>
               <th>Text</th>
+              <th>Order</th>
               <th>Frequency</th>
               <th>Position</th>
               <th>Expires</th>
@@ -137,6 +138,7 @@ var RecurringTasksIndex = React.createClass({
               return(
                 <tr key={ task.id } onClick={ this.clickTask } data-id={ task.id }>
                   <td>{ task.text }</td>
+                  <td>{ task.order }</td>
                   <td>{ task.recurrence }</td>
                   <td>{ task.addToEnd ? "End" : "Beginning" }</td>
                   <td>{ task.expires ? "Yes" : "No" }</td>

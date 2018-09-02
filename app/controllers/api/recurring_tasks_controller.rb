@@ -11,7 +11,8 @@ class Api::RecurringTasksController < ActionController::Base
   end
 
   def create
-    @recurring_task = RecurringTask.new(recurring_task_params)
+    current_length = RecurringTask.where(user_id: current_user.id, timeframe: recurring_task_params[:timeframe]).length
+    @recurring_task = RecurringTask.new(recurring_task_params.merge({ order: current_length }))
     @recurring_task.user_id = current_user.id
     if @recurring_task.save
       @daily_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Day').order(:order)
@@ -51,7 +52,7 @@ class Api::RecurringTasksController < ActionController::Base
   private
 
   def recurring_task_params
-    params[:recurring_task].permit(:text, :color, :timeframe, :recurrence, :add_to_end, :expires, :joint_user_id, :joint_text)
+    params[:recurring_task].permit(:text, :color, :timeframe, :recurrence, :add_to_end, :expires, :joint_user_id, :joint_text, :order)
   end
 
 end

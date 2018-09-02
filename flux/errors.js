@@ -4,5 +4,8 @@ export const ERRORS = {
   ],
   jointText: [
     "Joint text can't be blank"
+  ],
+  date: [
+    "Date is not a valid date"
   ]
 };

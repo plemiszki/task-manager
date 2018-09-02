@@ -83,7 +83,7 @@ export default class RecurringTaskNew extends DetailsComponent {
                 </select>
                 { HandyTools.renderFieldError([], []) }
               </div>
-              { this.renderColorField() }
+              { this.renderColorField(4) }
             </div>
             <div className="row">
               <div className="col-xs-4 recurrence-field-column">
