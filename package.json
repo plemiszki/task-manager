@@ -19,16 +19,17 @@
   "license": "ISC",
   "dependencies": {
     "babel-core": "^6.21.0",
-    "babel-loader": "^6.2.10",
+    "babel-loader": "^7.1.5",
     "babel-preset-es2015-without-strict": "0.0.4",
     "babel-preset-react": "^6.16.0",
     "flux": "^3.1.2",
     "handy-tools": "^1.7.0",
     "moment": "^2.20.1",
-    "react": "^15.4.1",
-    "react-dom": "^15.4.1",
-    "react-modal": "^1.6.4",
-    "webpack": "^1.14.0"
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "react-modal": "^3.5.1",
+    "webpack": "4.16.5",
+    "webpack-cli": "^3.1.0"
   },
   "engines": {
     "node": "4.1.1",
