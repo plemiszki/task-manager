@@ -149,7 +149,7 @@ h1 {
       border-bottom: solid 1px #DADEE2;
     }
 
-    tbody tr:not(.below-header):not(.grabbed-element):hover {
+    tbody tr:not(.below-header):not(.drop-zone):not(.grabbing):hover {
       background-color: #F5F5F5;
     }
 

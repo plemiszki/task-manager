@@ -1,6 +1,15 @@
 #recurring-tasks-index table {
   table-layout: fixed;
 
+  td {
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+
+  tr.below-header td {
+    padding: 0;
+  }
+
   th:first-of-type {
     width: 30%;
   }
@@ -9,10 +18,16 @@
     width: 40px;
   }
 
-  tr:not(.below-header) {
+  tr:not(.below-header):not(.drop-zone) td {
+    cursor: pointer;
+  }
 
-    td {
-      cursor: pointer
+  tr.drop-zone {
+    height: 7px;
+
+    &.highlight {
+      height: 5px;
+      border: dashed 1px black;
     }
   }
 }

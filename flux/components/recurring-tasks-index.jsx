@@ -37,12 +37,6 @@ export default class RecurringTasksIndex extends React.Component {
     ClientActions.fetchRecurringTasks();
   }
 
-  dragEndHandler() {
-    $('*').removeClass('grabbing');
-    $('body').removeAttr('style');
-    $('tr.grabbed-element').removeClass('grabbed-element');
-  }
-
   getRecurringTasks() {
     this.setState({
       fetching: false,
@@ -96,6 +90,41 @@ export default class RecurringTasksIndex extends React.Component {
     section.classList.remove('grab-section');
   }
 
+  canIDrop($e) {
+    let draggedRow = $e[0];
+    let draggedIndex = +draggedRow.dataset.index;
+    let draggedSection = draggedRow.dataset.section;
+    if (draggedSection !== this.dataset.section) {
+      return false;
+    }
+    let dropZoneIndex = +this.dataset.index;
+    let difference = Math.abs(draggedIndex - dropZoneIndex);
+    if (difference >= 2 || (difference === 1 && draggedIndex < dropZoneIndex)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  dragOverHandler(e) {
+    e.target.classList.add('highlight');
+  }
+
+  dragOutHandler(e) {
+    e.target.classList.remove('highlight');
+  }
+
+  dragEndHandler() {
+    $('*').removeClass('grabbing');
+    $('body').removeAttr('style');
+    $('tr.grabbed-element').removeClass('grabbed-element');
+    $('tr.highlight').removeClass('highlight');
+  }
+
+  dropHandler(e, ui) {
+    console.log('drop handler');
+  }
+
   render() {
     return(
       <div className="container widened-container index-component">
@@ -136,11 +165,12 @@ export default class RecurringTasksIndex extends React.Component {
             </tr>
           </thead>
           <tbody>
-            <tr className="below-header"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            { this.state[timeframe.toLowerCase() + "Tasks"].map(function(task) {
+            <tr className="below-header"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr className="drop-zone" data-index="-1" data-section={ timeframe }><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            { this.state[timeframe.toLowerCase() + "Tasks"].map(function(task, index) {
               var backgroundColor = (task.jointUserId ? 'rgb(0,0,0)' : task.color);
-              return(
-                <tr key={ task.id } onClick={ this.clickTask.bind(this) } data-id={ task.id }>
+              return([
+                <tr key={ task.id } onClick={ this.clickTask.bind(this) } data-id={ task.id } data-index={ index } data-section={ timeframe }>
                   <td>{ task.text }</td>
                   <td>{ task.order }</td>
                   <td>{ task.recurrence }</td>
@@ -149,8 +179,11 @@ export default class RecurringTasksIndex extends React.Component {
                   <td><div className="swatch" style={ { backgroundColor } }></div></td>
                   <td><div className="handle" onMouseDown={ this.mouseDownHandle.bind(this) } onMouseUp={ this.mouseUpHandle.bind(this) }></div></td>
                   <td><div className="x-button"></div></td>
+                </tr>,
+                <tr key={ `${task.id}-drop` } className="drop-zone" data-index={ index } data-section={ timeframe }>
+                  <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                 </tr>
-              );
+              ]);
             }.bind(this)) }
           </tbody>
         </table>
@@ -168,11 +201,18 @@ export default class RecurringTasksIndex extends React.Component {
   }
 
   componentDidUpdate() {
-    $('tr').draggable({
+    $("tr:not('drop-zone')").draggable({
       cursor: '-webkit-grabbing',
       handle: '.handle',
       helper: function() { return '<div></div>'; },
       stop: this.dragEndHandler.bind(this)
+    });
+    $('tr.drop-zone').droppable({
+      accept: this.canIDrop,
+      tolerance: 'pointer',
+      over: this.dragOverHandler,
+      out: this.dragOutHandler,
+      drop: this.dropHandler
     });
   }
 };
