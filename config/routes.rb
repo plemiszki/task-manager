@@ -17,6 +17,7 @@ Rails.application.routes.draw do
     delete '/tasks' => '/api/tasks#delete'
 
     resources :future_tasks, only: [:index, :create, :destroy]
+    patch '/recurring_tasks/rearrange' => '/api/recurring_tasks#rearrange'
     resources :recurring_tasks, only: [:index, :create, :show, :update, :destroy]
   end
 

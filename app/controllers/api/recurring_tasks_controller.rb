@@ -49,6 +49,18 @@ class Api::RecurringTasksController < ActionController::Base
     render 'index.json.jbuilder'
   end
 
+  def rearrange
+    params[:new_order].each do |index, id|
+      recurring_task = RecurringTask.find(id)
+      recurring_task.update(order: index)
+    end
+    @daily_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Day').order(:order)
+    @weekend_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Weekend').order(:order)
+    @monthly_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Month').order(:order)
+    @users = User.where.not(id: current_user.id)
+    render 'index.json.jbuilder'
+  end
+
   private
 
   def recurring_task_params

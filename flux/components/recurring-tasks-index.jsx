@@ -122,7 +122,28 @@ export default class RecurringTasksIndex extends React.Component {
   }
 
   dropHandler(e, ui) {
-    console.log('drop handler');
+    let draggedIndex = ui.draggable[0].dataset.index;
+    let dropZoneIndex = e.target.dataset.index;
+    let currentOrder = {};
+    switch (e.target.dataset.section) {
+      case 'daily':
+        this.state.dailyTasks.forEach(function(task) {
+          console.log(task);
+          currentOrder[task.order] = task.id;
+        });
+        break;
+      case 'weekend':
+        this.state.weekendTasks.forEach(function(task) {
+          currentOrder[task.order] = task.id;
+        });
+        break;
+      case 'monthly':
+        this.state.monthlyTasks.forEach(function(task) {
+          currentOrder[task.order] = task.id;
+        });
+    }
+    let newOrder = HandyTools.rearrangeFields(currentOrder, draggedIndex, dropZoneIndex);
+    ClientActions.rearrangeRecurringTasks(newOrder);
   }
 
   render() {
@@ -212,7 +233,7 @@ export default class RecurringTasksIndex extends React.Component {
       tolerance: 'pointer',
       over: this.dragOverHandler,
       out: this.dragOutHandler,
-      drop: this.dropHandler
+      drop: this.dropHandler.bind(this)
     });
   }
 };

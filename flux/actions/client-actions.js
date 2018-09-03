@@ -239,6 +239,19 @@ var ClientActions = {
         ServerActions.receiveErrors(response);
       }
     });
+  },
+
+  rearrangeRecurringTasks: function(newOrder) {
+    $.ajax({
+      url: '/api/recurring_tasks/rearrange',
+      method: 'PATCH',
+      data: {
+        new_order: newOrder
+      },
+      success: function(response) {
+        ServerActions.receiveRecurringTasks(response);
+      }
+    });
   }
 };
 
