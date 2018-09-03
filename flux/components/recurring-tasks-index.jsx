@@ -176,7 +176,6 @@ export default class RecurringTasksIndex extends React.Component {
           <thead>
             <tr>
               <th>Text</th>
-              <th>Order</th>
               <th>Frequency</th>
               <th>Position</th>
               <th>Expires</th>
@@ -186,14 +185,13 @@ export default class RecurringTasksIndex extends React.Component {
             </tr>
           </thead>
           <tbody>
-            <tr className="below-header"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr className="drop-zone" data-index="-1" data-section={ timeframe }><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr className="below-header"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr className="drop-zone" data-index="-1" data-section={ timeframe }><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
             { this.state[timeframe.toLowerCase() + "Tasks"].map(function(task, index) {
               var backgroundColor = (task.jointUserId ? 'rgb(0,0,0)' : task.color);
               return([
                 <tr key={ task.id } onClick={ this.clickTask.bind(this) } data-id={ task.id } data-index={ index } data-section={ timeframe }>
                   <td>{ task.text }</td>
-                  <td>{ task.order }</td>
                   <td>{ task.recurrence }</td>
                   <td>{ task.addToEnd ? "End" : "Beginning" }</td>
                   <td>{ task.expires ? "Yes" : "No" }</td>
@@ -202,7 +200,7 @@ export default class RecurringTasksIndex extends React.Component {
                   <td><div className="x-button"></div></td>
                 </tr>,
                 <tr key={ `${task.id}-drop` } className="drop-zone" data-index={ index } data-section={ timeframe }>
-                  <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                  <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                 </tr>
               ]);
             }.bind(this)) }
