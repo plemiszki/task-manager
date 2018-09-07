@@ -25,7 +25,7 @@ export default class TasksIndex extends React.Component {
       tolerance: 'pointer',
       over: Common.dragOverHandler,
       out: Common.dragOutHandler,
-      drop: this.dropHandler
+      drop: this.dropHandler.bind(this)
     });
     this.tasksListener = TasksStore.addListener(this.getTasks.bind(this));
     this.errorListener = ErrorStore.addListener(this.getError.bind(this));
