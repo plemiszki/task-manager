@@ -65,22 +65,49 @@ class Api::TasksController < ActionController::Base
           color: params[:task][:color]
         )
       else
-        @task.update(task_params)
-        if @task.joint_id
-          joint_task = Task.find(@task.joint_id)
-          joint_task.update!(
-            complete: params[:task][:complete]
-          )
+        regex = Regexp.new('\$-- (?<text>.*)\$(?<n>\d+)')
+        match_data = regex.match(params[:task][:text])
+        if match_data && @task.parent_id
+          n = match_data[:n].to_i
+          text = match_data[:text]
+          duplicates = @task.duplicates
+          @task.update(task_params.merge({ text: "#{text}1" }))
+          duplicates.each do |duplicate|
+            duplicate.update({ text: "#{text}1" })
+          end
+          current_length = @task.parent.subtasks.length
+          (n - 1).times do |index|
+            extra_task = Task.new(task_params.merge({ text: "#{text}#{index + 2}", order: current_length + index }))
+            extra_task.user_id = current_user.id
+            extra_task.save!
+            duplicates.each do |duplicate|
+              duplicate_extra_task = Task.new(task_params.merge({ timeframe: duplicate.timeframe, duplicate_id: extra_task.id ,parent_id: duplicate.parent_id, text: "#{text}#{index + 2}", order: current_length + index }))
+              duplicate_extra_task.user_id = current_user.id
+              duplicate_extra_task.save!
+            end
+          end
+        else
+          @task.update(task_params)
+          if @task.joint_id
+            joint_task = Task.find(@task.joint_id)
+            joint_task.update!(
+              complete: params[:task][:complete]
+            )
+          end
+          if @task.duplicate_id
+            mark_master_complete(@task.duplicate_id, params[:task][:complete])
+          end
+          update_subtask_colors(@task) if (original_color != @task.color)
         end
-        if @task.duplicate_id
-          mark_master_complete(@task.duplicate_id, params[:task][:complete])
-        end
-        update_subtask_colors(@task) if (original_color != @task.color)
       end
-      check_if_all_siblings_complete(@task)
-      @dup_task = Task.where(duplicate_id: id).first
-      id = @dup_task ? @dup_task.id : nil
-      updating_dups = true
+      if match_data # <-- if this is a multiple subtask creation, duplicates are dealt with above
+        id = nil
+      else
+        check_if_all_siblings_complete(@task)
+        @dup_task = Task.where(duplicate_id: id).first
+        id = @dup_task ? @dup_task.id : nil
+        updating_dups = true
+      end
     end
     render json: Task.where(user_id: current_user.id).order(:order)
   end

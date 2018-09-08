@@ -131,7 +131,7 @@ export default class TaskIndexItem extends React.Component {
     e.target.classList.add('dragging-this');
   }
 
-  dragEndHandler(e) {
+  dragEndHandler() {
     $('.dragging').removeClass('dragging');
     $('.task, a, input').removeClass('grabbing');
     $('.dragging-this').removeClass('dragging-this');
@@ -155,9 +155,9 @@ export default class TaskIndexItem extends React.Component {
 
   taskStyle() {
     if (this.state.task.duplicate_id) {
-      return {background: 'rgba(' + this.state.task.color + ', 0.5)'};
+      return { background: 'rgba(' + this.state.task.color + ', 0.5)' };
     } else {
-      return {background: 'rgb(' + this.state.task.color + ')'};
+      return { background: 'rgb(' + this.state.task.color + ')' };
     }
   }
 
@@ -172,15 +172,15 @@ export default class TaskIndexItem extends React.Component {
             <a href="" className={ "color-button" + ((this.state.task.duplicate_id || this.state.task.parent_id) ? " hidden" : "") } onClick={ this.clickColorPicker.bind(this) }></a>
           </div>
           <div className="hidden color-picker">
-            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(234, 30, 30)'}}></div>
-            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(255, 175, 163)'}}></div>
-            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(255, 175, 36)'}}></div>
-            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(238, 244, 66)'}}></div>
-            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(92, 184, 92)'}}></div>
-            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(111, 138, 240)'}}></div>
-            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(181, 111, 240)'}}></div>
-            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(175, 96, 26)'}}></div>
-            <div onClick={ this.pickColor.bind(this) } style={{'backgroundColor': 'rgb(210, 206, 200)'}}></div>
+            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(234, 30, 30)' } }></div>
+            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(255, 175, 163)' } }></div>
+            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(255, 175, 36)' } }></div>
+            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(238, 244, 66)' } }></div>
+            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(92, 184, 92)' } }></div>
+            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(111, 138, 240)' } }></div>
+            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(181, 111, 240)' } }></div>
+            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(175, 96, 26)' } }></div>
+            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(210, 206, 200)' } }></div>
           </div>
           <div className={ ((this.state.editing) ? "hidden" : (this.state.task.complete ? "check" : (this.state.subtasks == 0 ? "hidden" : (this.state.task.expanded ? "minus" : "plus")))) } onClick={ this.clickExpand.bind(this) }>
           </div>
@@ -206,13 +206,13 @@ export default class TaskIndexItem extends React.Component {
   renderSubTasks() {
     if (this.state.task.expanded) {
       return(
-        <div id={"subtasks-" + this.createTaskId()} className="subtasks">
-          <div id={this.createTaskId() + '-top-drop'} className="drop-area"></div>
-          {this.state.subtasks.map(function(task, index) {
+        <div id={ "subtasks-" + this.createTaskId() } className="subtasks">
+          <div id={ this.createTaskId() + '-top-drop' } className="drop-area"></div>
+          { this.state.subtasks.map(function(task, index) {
             return(
               <TaskIndexItem key={ index } index={ index } task={ task } parentId={ this.createTaskId() } updateTask={ this.props.updateTask.bind(this) } addSubTask={ this.props.addSubTask.bind(this) } deleteTask={ this.props.deleteTask.bind(this) } dropHandler={ this.props.dropHandler.bind(this) } />
             );
-          }.bind(this))}
+          }.bind(this)) }
         </div>
       )
     }
