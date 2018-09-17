@@ -72,15 +72,16 @@
 
     .check {
       width: 30px;
-      background: asset-data-url("checkmark-padded.png") center center no-repeat;
+      background: asset-data-url("checkmark.svg") center center no-repeat;
+      background-size: 70%;
+      margin-left: 4px;
     }
 
     &.joint {
       background-color: black !important;
 
       .check {
-        width: 30px;
-        background: asset-data-url("checkmark-padded-white.png") center center no-repeat;
+        background: asset-data-url("checkmark-white.svg") center center no-repeat;
       }
 
       a.color-button, a.add-subtask-button {
@@ -88,7 +89,7 @@
       }
 
       a.done-button {
-        background: asset-data-url("checkmark-white.png") 45% 40% no-repeat;
+        background: asset-data-url("checkmark-white.svg") 75% 30% no-repeat;
         background-size: 70%;
       }
 
@@ -123,7 +124,7 @@
       }
 
       .done-button {
-        background: asset-data-url("checkmark.png") 45% 40% no-repeat;
+        background: asset-data-url("checkmark.svg") 75% 30% no-repeat;
         background-size: 70%;
       }
 

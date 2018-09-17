@@ -128,7 +128,6 @@ export default class RecurringTasksIndex extends React.Component {
     switch (e.target.dataset.section) {
       case 'daily':
         this.state.dailyTasks.forEach(function(task) {
-          console.log(task);
           currentOrder[task.order] = task.id;
         });
         break;
