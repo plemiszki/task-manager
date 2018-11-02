@@ -160,7 +160,7 @@ export default class RecurringTasksIndex extends React.Component {
             </div>
           </div>
         </div>
-        <Modal isOpen={ this.state.modalOpen } onRequestClose={ this.closeModal } contentLabel="Modal" style={ ModalStyles }>
+        <Modal isOpen={ this.state.modalOpen } onRequestClose={ this.closeModal.bind(this) } contentLabel="Modal" style={ ModalStyles }>
           <RecurringTaskNew users={ this.state.users } />
         </Modal>
       </div>

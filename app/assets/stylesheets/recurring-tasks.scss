@@ -35,7 +35,7 @@
 .recurrence-field-column {
 
   input {
-    width: calc(100% - 50px);
+    width: calc(100% - 50px) !important;
     margin-right: 15px;
   }
 
