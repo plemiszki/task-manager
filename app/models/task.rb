@@ -139,7 +139,7 @@ class Task < ActiveRecord::Base
 
   def self.convert_joint_tasks(joint_tasks, user, timeframe)
     joint_tasks.select { |task| task[:user_id] == user.id && task[:timeframe] == timeframe.downcase }.each do |task|
-      new_task = Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task[:text], template: false, color: task[:color].gsub(/[rgb\(\)]/, ""), joint_id: task[:joint_id])
+      new_task = Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task[:text], template: task[:template], color: task[:color].gsub(/[rgb\(\)]/, ""), joint_id: task[:joint_id])
       Task.find_by_id(task[:joint_id]).update({ joint_id: new_task.id })
     end
   end
