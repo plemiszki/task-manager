@@ -34,6 +34,16 @@ export default class CurrentUser extends React.Component {
     });
   }
 
+  houseClass(chamber) {
+    if (this.state.congressObj[chamber].dems == this.state.congressObj[chamber].repubs) {
+      return '';
+    } else if (this.state.congressObj[chamber].dems > this.state.congressObj[chamber].repubs) {
+      return 'd-majority';
+    } else {
+      return 'r-majority';
+    }
+  }
+
   render() {
     return(
       <div className="container widened-container">
@@ -50,10 +60,10 @@ export default class CurrentUser extends React.Component {
               <div className="widget congress">
                 <img src={ Images.democrat } />
                 <div>
-                  <p>{ this.state.congressObj.senate.dems } - Senate - { this.state.congressObj.senate.repubs }</p>
+                  <p className={ this.houseClass('senate') }>{ this.state.congressObj.senate.dems } - Senate - { this.state.congressObj.senate.repubs }</p>
                   <p className="elections">{ this.state.congressObj.senate.dems_up } - 2018 Elections - { this.state.congressObj.senate.repubs_up }</p>
                   <hr />
-                  <p>{ this.state.congressObj.house.dems } - House - { this.state.congressObj.house.repubs }</p>
+                  <p className={ this.houseClass('house') }>{ this.state.congressObj.house.dems } - House - { this.state.congressObj.house.repubs }</p>
                 </div>
                 <img src={ Images.republican } />
               </div>
