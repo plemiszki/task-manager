@@ -10,7 +10,11 @@ module ApplicationHelper
           "Daily"
         end
       elsif hash[:every] == :week
-        "#{hash[:on].to_s.capitalize}s"
+        if hash.has_key?(:interval)
+          "Every #{hash[:interval]} weeks on #{hash[:on].to_s.capitalize}s"
+        else
+          "#{hash[:on].to_s.capitalize}s"
+        end
       elsif hash[:every] == :month
         "Monthly"
       elsif hash[:every] == :year
