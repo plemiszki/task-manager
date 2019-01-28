@@ -43,7 +43,7 @@ class Task < ActiveRecord::Base
       existing_day_tasks = Task.where(user_id: user.id, timeframe: "day", parent_id: nil).order(:order).to_a
       joint_tasks += Task.convert_recurring_tasks(day_tasks, user, "Day", "beginning")
       Task.convert_future_tasks(day_tasks, user, "Day", "beginning")
-      Task.convert_joint_tasks(joint_tasks, user, "Day")
+      day_tasks += Task.convert_joint_tasks(joint_tasks, user, "Day")
       day_tasks += existing_day_tasks
       joint_tasks += Task.convert_recurring_tasks(day_tasks, user, "Day", "end")
       Task.convert_future_tasks(day_tasks, user, "Day", "end")
@@ -138,10 +138,13 @@ class Task < ActiveRecord::Base
   end
 
   def self.convert_joint_tasks(joint_tasks, user, timeframe)
+    created_tasks = []
     joint_tasks.select { |task| task[:user_id] == user.id && task[:timeframe] == timeframe.downcase }.each do |task|
       new_task = Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task[:text], template: task[:template], color: task[:color].gsub(/[rgb\(\)]/, ""), joint_id: task[:joint_id])
       Task.find_by_id(task[:joint_id]).update({ joint_id: new_task.id })
+      created_tasks << new_task
     end
+    created_tasks
   end
 
 end
