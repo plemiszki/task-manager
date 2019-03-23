@@ -1,12 +1,11 @@
 {
   "name": "task-manager",
-  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/plemiszki/task-manager.git"
   },
   "scripts": {
-    "heroku-postbuild": "webpack --config webpack.config.prod.js"
+    "heroku-postbuild": "webpack --mode production"
   },
   "dependencies": {
     "@babel/core": "7.4.0",
