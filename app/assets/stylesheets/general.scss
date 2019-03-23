@@ -37,6 +37,15 @@ body {
   &.standard-width {
     width: 175px;
   }
+
+  &.recipe-button {
+    $recipe-button-color: rgb(255, 175, 163);
+    background-color: $recipe-button-color;
+
+    &:hover {
+      background-color: darken($recipe-button-color, 10%);
+    }
+  }
 }
 
 .white-box {
@@ -123,26 +132,46 @@ h1 {
         padding-left: 10px;
       }
 
-      &:last-of-type {
+      &.x-button-column {
         width: 40px;
       }
     }
 
-    td {
-      padding: 6px 0;
+    &.with-links {
 
-      &:first-of-type {
-        padding-left: 10px;
-      }
+      td {
 
-      .swatch {
-        width: 14px;
-        height: 14px;
+        a {
+          display: inline-block;
+          width: 100%;
+          padding: 6px 0;
+        }
+
+        &:first-of-type a {
+          padding-left: 10px;
+        }
       }
+    }
+
+    &:not(.with-links) {
+
+      td {
+        padding: 6px 0;
+
+        &:first-of-type {
+          padding-left: 10px;
+        }
+      }
+    }
+
+    td .swatch {
+      width: 14px;
+      height: 14px;
     }
 
     tr.below-header td {
       padding-top: 0;
+      padding-bottom: 6px;
     }
 
     thead {

@@ -6,12 +6,16 @@ var ClientActions = {
 
   standardFetch: function(directory, id) {
     $.ajax({
-      url: `/api/${directory}/${id}`,
+      url: id ? `/api/${directory}/${id}` : `/api/${directory}`,
       type: 'GET',
       success: function(response) {
         switch (directory) {
         case 'recurring_tasks':
           ServerActions.receiveRecurringTask(response);
+          break;
+        case 'recipes':
+          ServerActions.receiveRecipes(response);
+          break;
         }
       }
     });
@@ -30,6 +34,8 @@ var ClientActions = {
           ServerActions.receiveRecurringTasks(response);
         case 'future_tasks':
           ServerActions.receiveFutureTasks(response);
+        case 'recipes':
+          ServerActions.receiveRecipes(response);
         }
       },
       error: function(response) {
@@ -49,10 +55,28 @@ var ClientActions = {
         switch (directory) {
         case 'recurring_tasks':
           ServerActions.receiveRecurringTask(response);
+          break;
+        case 'recipes':
+          ServerActions.receiveRecipes(response);
+          break;
         }
       },
       error: function(response) {
         ServerActions.receiveErrors(response);
+      }
+    });
+  },
+
+  standardDelete: function(directory, id) {
+    $.ajax({
+      url: `/api/${directory}/${id}`,
+      type: 'DELETE',
+      success: function(response) {
+        switch (directory) {
+        case 'recipes':
+          ServerActions.receiveRecipes(response);
+          break;
+        }
       }
     });
   },

@@ -138,7 +138,7 @@ class Api::TasksController < ActionController::Base
     render json: Task.where(user_id: current_user.id).order(:order)
   end
 
-  def delete
+  def destroy
     @task = Task.find(params[:id])
     Task.delete_task_and_subs_and_dups(@task)
     render json: Task.where(user_id: current_user.id).order(:order)

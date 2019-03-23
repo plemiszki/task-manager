@@ -85,7 +85,7 @@ export default class FutureTasksIndex extends React.Component {
                     <th>Time Frame</th>
                     <th>Position</th>
                     <th>Color</th>
-                    <th></th>
+                    <th className="x-button-column"></th>
                   </tr>
                 </thead>
                 <tbody>

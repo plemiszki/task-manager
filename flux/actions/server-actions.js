@@ -59,6 +59,13 @@ var ServerActions = {
       recurringTasks: response.recurringTasks,
       users: response.users
     });
+  },
+
+  receiveRecipes: function(response) {
+    AppDispatcher.dispatch({
+      actionType: "RECIPES_RECEIVED",
+      recipes: response.recipes
+    });
   }
 };
 

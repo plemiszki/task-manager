@@ -6,6 +6,8 @@ import TasksIndex from './components/tasks-index.jsx';
 import FutureTasksIndex from './components/future-tasks-index.jsx';
 import RecurringTasksIndex from './components/recurring-tasks-index.jsx';
 import RecurringTaskDetails from './components/recurring-task-details.jsx';
+import RecipesIndex from './components/recipes-index.jsx';
+import RecipeDetails from './components/recipe-details.jsx';
 
 $(document).ready(function() {
   ReactModal.setAppElement(document.body);
@@ -35,5 +37,11 @@ $(document).ready(function() {
   }
   if ($('#recurring-task-details')[0]) {
     ReactDOM.render(<RecurringTaskDetails />, document.getElementById("recurring-task-details"));
+  }
+  if ($('#recipes-index')[0]) {
+    ReactDOM.render(<RecipesIndex />, document.getElementById("recipes-index"));
+  }
+  if ($('#recipe-details')[0]) {
+    ReactDOM.render(<RecipeDetails />, document.getElementById("recipe-details"));
   }
 });

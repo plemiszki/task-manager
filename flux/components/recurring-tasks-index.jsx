@@ -180,7 +180,7 @@ export default class RecurringTasksIndex extends React.Component {
               <th>Expires</th>
               <th>Color</th>
               <th></th>
-              <th></th>
+              <th className="x-button-column"></th>
             </tr>
           </thead>
           <tbody>
