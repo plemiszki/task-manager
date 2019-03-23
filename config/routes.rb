@@ -9,8 +9,9 @@ Rails.application.routes.draw do
     get '/user' => '/api/users#show'
     post '/user' => '/api/users#update'
     get '/congress' => '/api/congress#show'
+    resources :tasks, only: [:index, :create, :destroy]
+    patch '/tasks' => '/api/tasks#update'
     patch '/tasks/rearrange' => '/api/tasks#rearrange'
-    resources :tasks, only: [:index, :create, :update, :destroy]
     resources :future_tasks, only: [:index, :create, :destroy]
     patch '/recurring_tasks/rearrange' => '/api/recurring_tasks#rearrange'
     resources :recurring_tasks, only: [:index, :create, :show, :update, :destroy]
