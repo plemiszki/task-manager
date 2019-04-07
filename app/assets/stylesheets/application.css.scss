@@ -13,6 +13,8 @@
  *= require_self
  */
 
+ $highlight-color: black;
+
  @import 'bootstrap-sprockets';
  @import 'bootstrap';
  @import 'library/nice-select';
@@ -21,7 +23,8 @@
  @import 'handy-tools/styles/fonts';
  @import 'handy-tools/styles/general';
  @import 'handy-tools/styles/sign-in';
- @import 'handy-tools/styles/admin-layout';
+
+ @import 'handy-components/styles/admin-layout'; // <-- spinner styles
 
  @import 'general';
  @import 'nav-bar';

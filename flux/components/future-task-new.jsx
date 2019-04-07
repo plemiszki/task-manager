@@ -1,10 +1,11 @@
-import React from 'react';
-import Moment from 'moment';
-import ErrorsStore from '../stores/errors-store.js';
-import ClientActions from '../actions/client-actions.js';
-import DetailsComponent from './_details.jsx';
-import HandyTools from 'handy-tools';
-import { ERRORS } from '../errors.js';
+import React from 'react'
+import Moment from 'moment'
+import { Common, Details } from 'handy-components'
+import HandyTools from 'handy-tools'
+import ErrorsStore from '../stores/errors-store.js'
+import ClientActions from '../actions/client-actions.js'
+import DetailsComponent from './_details.jsx'
+import { ERRORS } from '../errors.js'
 
 export default class FutureTaskNew extends DetailsComponent {
   constructor(props) {
@@ -24,7 +25,7 @@ export default class FutureTaskNew extends DetailsComponent {
 
   componentDidMount() {
     this.errorsListener = ErrorsStore.addListener(this.getErrors.bind(this));
-    HandyTools.setUpNiceSelect({ selector: 'select', func: HandyTools.changeField.bind(this, this.changeFieldArgs()) });
+    HandyTools.setUpNiceSelect({ selector: 'select', func: Details.changeField.bind(this, this.changeFieldArgs()) });
   }
 
   componentWillUnmount() {
@@ -56,18 +57,18 @@ export default class FutureTaskNew extends DetailsComponent {
     return(
       <div id="future-task-new" className="admin-modal">
           <div className="white-box">
-            { HandyTools.renderSpinner(this.state.fetching) }
-            { HandyTools.renderGrayedOut(this.state.fetching, -26, -26, 6) }
+            { Common.renderSpinner(this.state.fetching) }
+            { Common.renderGrayedOut(this.state.fetching, -26, -26, 6) }
             <div className="row">
               <div className="col-xs-3">
                 <h2>Date</h2>
-                <input className={ HandyTools.errorClass(this.state.errors, ERRORS.date) } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.futureTask.date || "" } data-entity="futureTask" data-field="date" />
-                { HandyTools.renderFieldError(this.state.errors, ERRORS.date) }
+                <input className={ Details.errorClass(this.state.errors, ERRORS.date) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.futureTask.date || "" } data-entity="futureTask" data-field="date" />
+                { Details.renderFieldError(this.state.errors, ERRORS.date) }
               </div>
               <div className="col-xs-9">
                 <h2>Text</h2>
-                <input className={ HandyTools.errorClass(this.state.errors, ERRORS.text) } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.futureTask.text || "" } data-entity="futureTask" data-field="text" />
-                { HandyTools.renderFieldError(this.state.errors, ERRORS.text) }
+                <input className={ Details.errorClass(this.state.errors, ERRORS.text) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.futureTask.text || "" } data-entity="futureTask" data-field="text" />
+                { Details.renderFieldError(this.state.errors, ERRORS.text) }
               </div>
             </div>
             <div className="row">
@@ -79,7 +80,7 @@ export default class FutureTaskNew extends DetailsComponent {
                   <option>Month</option>
                   <option>Year</option>
                 </select>
-                { HandyTools.renderFieldError([], []) }
+                { Details.renderFieldError([], []) }
               </div>
               <div className="col-xs-3">
                 <h2>Position</h2>
@@ -87,7 +88,7 @@ export default class FutureTaskNew extends DetailsComponent {
                   <option value={ "f" }>Beginning</option>
                   <option value={ "t" }>End</option>
                 </select>
-                { HandyTools.renderFieldError([], []) }
+                { Details.renderFieldError([], []) }
               </div>
               { this.renderColorField(5) }
             </div>

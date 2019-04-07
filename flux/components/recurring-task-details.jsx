@@ -1,11 +1,12 @@
-import React from 'react';
-import Modal from 'react-modal';
-import HandyTools from 'handy-tools';
-import ClientActions from '../actions/client-actions.js';
-import RecurringTasksStore from '../stores/recurring-tasks-store.js';
-import ErrorsStore from '../stores/errors-store';
-import DetailsComponent from './_details.jsx';
-import { ERRORS } from '../errors.js';
+import React from 'react'
+import Modal from 'react-modal'
+import { Common, Details } from 'handy-components'
+import HandyTools from 'handy-tools'
+import ClientActions from '../actions/client-actions.js'
+import RecurringTasksStore from '../stores/recurring-tasks-store.js'
+import ErrorsStore from '../stores/errors-store'
+import DetailsComponent from './_details.jsx'
+import { ERRORS } from '../errors.js'
 
 export default class RecurringTaskDetails extends DetailsComponent {
 
@@ -43,8 +44,8 @@ export default class RecurringTaskDetails extends DetailsComponent {
   }
 
   beforeSave(key, value) {
-    if (value.jointUserId == "") {
-      value.jointText = "";
+    if (value.jointUserId == '') {
+      value.jointText = '';
       HandyTools.removeFieldError(ERRORS, this.state.errors, 'jointText');
     }
     return { key, value }
@@ -59,7 +60,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
       recurringTaskSaved: HandyTools.deepCopy(recurringTask),
       users: RecurringTasksStore.users()
     }, function() {
-      HandyTools.setUpNiceSelect({ selector: 'select', func: HandyTools.changeField.bind(this, this.changeFieldArgs()) });
+      HandyTools.setUpNiceSelect({ selector: 'select', func: Details.changeField.bind(this, this.changeFieldArgs()) });
     });
   }
 
@@ -77,13 +78,13 @@ export default class RecurringTaskDetails extends DetailsComponent {
         <div className="recurring-task-details component">
           <h1>Edit Recurring Task</h1>
           <div className="white-box">
-            { HandyTools.renderSpinner(this.state.fetching) }
-            { HandyTools.renderGrayedOut(this.state.fetching, -26, -26, 6) }
+            { Common.renderSpinner(this.state.fetching) }
+            { Common.renderGrayedOut(this.state.fetching, -26, -26, 6) }
             <div className="row">
               <div className="col-xs-4">
                 <h2>Text</h2>
-                <input className={ HandyTools.errorClass(this.state.errors, ERRORS.text) } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.text || "" } data-entity="recurringTask" data-field="text" />
-                { HandyTools.renderFieldError(this.state.errors, ERRORS.text) }
+                <input className={ Details.errorClass(this.state.errors, ERRORS.text) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.text || "" } data-entity="recurringTask" data-field="text" />
+                { Details.renderFieldError(this.state.errors, ERRORS.text) }
               </div>
               <div className="col-xs-2">
                 <h2>Time Frame</h2>
@@ -92,7 +93,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
                   <option value={ "Weekend" }>Weekend</option>
                   <option value={ "Month" }>Month</option>
                 </select>
-                { HandyTools.renderFieldError([], []) }
+                { Details.renderFieldError([], []) }
               </div>
               <div className="col-xs-2">
                 <h2>Position</h2>
@@ -100,16 +101,16 @@ export default class RecurringTaskDetails extends DetailsComponent {
                   <option value={ "f" }>Beginning</option>
                   <option value={ "t" }>End</option>
                 </select>
-                { HandyTools.renderFieldError([], []) }
+                { Details.renderFieldError([], []) }
               </div>
               { this.renderColorField(4) }
             </div>
             <div className="row">
               <div className="col-xs-4 recurrence-field-column">
                 <h2>Recurrence</h2>
-                <input className={ HandyTools.errorClass([], []) } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.recurrence ? this.convertToEnglish(this.state.recurringTask.recurrence) : "" } readOnly={ true } data-entity="recurringTask" data-field="recurrence" />
+                <input className={ Details.errorClass([], []) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.recurrence ? this.convertToEnglish(this.state.recurringTask.recurrence) : "" } readOnly={ true } data-entity="recurringTask" data-field="recurrence" />
                 <a onClick={ this.editRecurrence.bind(this) }>Edit</a>
-                { HandyTools.renderFieldError([], []) }
+                { Details.renderFieldError([], []) }
               </div>
               <div className="col-xs-2">
                 <h2>Expires</h2>
@@ -117,7 +118,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
                   <option value={ "t" }>Yes</option>
                   <option value={ "f" }>No</option>
                 </select>
-                { HandyTools.renderFieldError([], []) }
+                { Details.renderFieldError([], []) }
               </div>
               <div className="col-xs-3">
                 <h2>Joint User</h2>
@@ -129,12 +130,12 @@ export default class RecurringTaskDetails extends DetailsComponent {
                     );
                   }) }
                 </select>
-                { HandyTools.renderFieldError([], []) }
+                { Details.renderFieldError([], []) }
               </div>
-              <div className={ "col-xs-3" + (this.state.recurringTask.jointUserId ? "" : " hidden") }>
+              <div className={ "col-xs-3" + (this.state.recurringTask.jointUserId ? '' : ' hidden') }>
                 <h2>Joint Text</h2>
-                <input className={ HandyTools.errorClass(this.state.errors, ERRORS.jointText) } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.jointText || "" } data-entity="recurringTask" data-field="jointText" />
-                { HandyTools.renderFieldError(this.state.errors, ERRORS.jointText) }
+                <input className={ Details.errorClass(this.state.errors, ERRORS.jointText) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.jointText || "" } data-entity="recurringTask" data-field="jointText" />
+                { Details.renderFieldError(this.state.errors, ERRORS.jointText) }
               </div>
             </div>
             { this.renderButtons() }
@@ -153,7 +154,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
     }
     return(
       <div>
-        <a className={ "standard-width btn btn-success save-button" + HandyTools.renderDisabledButtonClass(this.state.fetching || !this.state.changesToSave) } onClick={ this.clickSave.bind(this) }>
+        <a className={ "standard-width btn btn-success save-button" + Common.renderDisabledButtonClass(this.state.fetching || !this.state.changesToSave) } onClick={ this.clickSave.bind(this) }>
           { buttonText }
         </a>
       </div>

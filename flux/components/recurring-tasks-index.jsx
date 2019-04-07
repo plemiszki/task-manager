@@ -1,9 +1,10 @@
-import React from 'react';
-import Modal from 'react-modal';
-import HandyTools from 'handy-tools';
-import ClientActions from '../actions/client-actions.js';
-import RecurringTasksStore from '../stores/recurring-tasks-store.js';
-import RecurringTaskNew from './recurring-task-new';
+import React from 'react'
+import Modal from 'react-modal'
+import { Common, Index } from 'handy-components'
+import HandyTools from 'handy-tools'
+import ClientActions from '../actions/client-actions.js'
+import RecurringTasksStore from '../stores/recurring-tasks-store.js'
+import RecurringTaskNew from './recurring-task-new'
 
 const ModalStyles = {
   overlay: {
@@ -151,8 +152,8 @@ export default class RecurringTasksIndex extends React.Component {
         <div className="row">
           <div className="col-xs-12">
             <div className="white-box">
-              { HandyTools.renderSpinner(this.state.fetching) }
-              { HandyTools.renderGrayedOut(this.state.fetching, -26, -26, 6) }
+              { Common.renderSpinner(this.state.fetching) }
+              { Common.renderGrayedOut(this.state.fetching, -26, -26, 6) }
               { this.renderTable('daily') }
               { this.renderTable('weekend') }
               { this.renderTable('monthly') }

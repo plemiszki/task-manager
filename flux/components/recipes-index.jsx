@@ -1,9 +1,10 @@
-import React from 'react';
-import Modal from 'react-modal';
-import HandyTools from 'handy-tools';
-import ClientActions from '../actions/client-actions.js';
-import RecipesStore from '../stores/recipes-store.js';
-import RecipeNew from './recipe-new.jsx';
+import React from 'react'
+import Modal from 'react-modal'
+import { Common, Index } from 'handy-components'
+import HandyTools from 'handy-tools'
+import ClientActions from '../actions/client-actions.js'
+import RecipesStore from '../stores/recipes-store.js'
+import RecipeNew from './recipe-new.jsx'
 
 const ModalStyles = {
   overlay: {
@@ -68,8 +69,8 @@ export default class RecipesIndex extends React.Component {
         <div className="row">
           <div className="col-xs-12">
             <div className="white-box">
-              { HandyTools.renderSpinner(this.state.fetching) }
-              { HandyTools.renderGrayedOut(this.state.fetching, -26, -26, 6) }
+              { Common.renderSpinner(this.state.fetching) }
+              { Common.renderGrayedOut(this.state.fetching, -26, -26, 6) }
               <h1>Recipes</h1>
               <table className="with-links">
                 <thead>

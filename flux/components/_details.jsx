@@ -1,9 +1,10 @@
-import React from 'react';
-import Modal from 'react-modal';
-import HandyTools from 'handy-tools';
-import ClientActions from '../actions/client-actions.js';
-import ErrorsStore from '../stores/errors-store';
-import Recurrence from './recurrence.jsx';
+import React from 'react'
+import Modal from 'react-modal'
+import { Common, Details } from 'handy-components'
+import HandyTools from 'handy-tools'
+import ClientActions from '../actions/client-actions.js'
+import ErrorsStore from '../stores/errors-store'
+import Recurrence from './recurrence.jsx'
 
 const RecurrenceModalStyles = {
   overlay: {
@@ -142,7 +143,7 @@ export default class _Details extends React.Component {
           <div className={ 'color' + (entity.color === 'rgb(175, 96, 26)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(175, 96, 26)'}} ></div>
           <div className={ 'color' + (entity.color === 'rgb(210, 206, 200)' ? ' selected' : '') } onClick={ this.clickColor.bind(this) } style={{'backgroundColor': 'rgb(210, 206, 200)'}} ></div>
         </div>
-        { HandyTools.renderFieldError([], []) }
+        { Details.renderFieldError([], []) }
       </div>
     );
   }

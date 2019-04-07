@@ -1,10 +1,11 @@
-import React from 'react';
-import Modal from 'react-modal';
-import Moment from 'moment';
-import HandyTools from 'handy-tools';
-import ClientActions from '../actions/client-actions.js';
-import FutureTasksStore from '../stores/future-tasks-store.js';
-import FutureTaskNew from './future-task-new.jsx';
+import React from 'react'
+import Modal from 'react-modal'
+import Moment from 'moment'
+import { Common, Index } from 'handy-components'
+import HandyTools from 'handy-tools'
+import ClientActions from '../actions/client-actions.js'
+import FutureTasksStore from '../stores/future-tasks-store.js'
+import FutureTaskNew from './future-task-new.jsx'
 
 const ModalStyles = {
   overlay: {
@@ -44,7 +45,7 @@ export default class FutureTasksIndex extends React.Component {
     });
   }
 
-  clickAddNewButton() {
+  clickNew() {
     this.setState({
       modalOpen: true
     });
@@ -74,8 +75,8 @@ export default class FutureTasksIndex extends React.Component {
         <div className="row">
           <div className="col-xs-12">
             <div className="white-box">
-              { HandyTools.renderSpinner(this.state.fetching) }
-              { HandyTools.renderGrayedOut(this.state.fetching, -26, -26, 6) }
+              { Common.renderSpinner(this.state.fetching) }
+              { Common.renderGrayedOut(this.state.fetching, -26, -26, 6) }
               <h1>Future Tasks</h1>
               <table>
                 <thead>
@@ -104,7 +105,7 @@ export default class FutureTasksIndex extends React.Component {
                   }.bind(this)) }
                 </tbody>
               </table>
-              <div className="btn btn-info" onClick={ this.clickAddNewButton.bind(this) }>Add New</div>
+              <div className="btn btn-info" onClick={ this.clickNew.bind(this) }>Add New</div>
             </div>
           </div>
         </div>

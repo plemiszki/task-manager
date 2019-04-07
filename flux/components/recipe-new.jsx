@@ -1,9 +1,10 @@
-import React from 'react';
-import ErrorsStore from '../stores/errors-store.js';
-import ClientActions from '../actions/client-actions.js';
-import DetailsComponent from './_details.jsx';
-import HandyTools from 'handy-tools';
-import { ERRORS } from '../errors.js';
+import React from 'react'
+import { Common, Details } from 'handy-components'
+import HandyTools from 'handy-tools'
+import ErrorsStore from '../stores/errors-store.js'
+import ClientActions from '../actions/client-actions.js'
+import DetailsComponent from './_details.jsx'
+import { ERRORS } from '../errors.js'
 
 export default class RecipeNew extends DetailsComponent {
   constructor(props) {
@@ -53,30 +54,30 @@ export default class RecipeNew extends DetailsComponent {
     return(
       <div id="future-task-new" className="admin-modal">
           <div className="white-box">
-            { HandyTools.renderSpinner(this.state.fetching) }
-            { HandyTools.renderGrayedOut(this.state.fetching, -26, -26, 6) }
+            { Common.renderSpinner(this.state.fetching) }
+            { Common.renderGrayedOut(this.state.fetching, -26, -26, 6) }
             <div className="row">
               <div className="col-xs-6">
                 <h2>Name</h2>
-                <input className={ HandyTools.errorClass(this.state.errors, ERRORS.name) } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recipe.name || "" } data-entity="recipe" data-field="name" />
-                { HandyTools.renderFieldError(this.state.errors, ERRORS.name) }
+                <input className={ Details.errorClass(this.state.errors, ERRORS.name) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recipe.name || "" } data-entity="recipe" data-field="name" />
+                { Details.renderFieldError(this.state.errors, ERRORS.name) }
               </div>
               <div className="col-xs-6">
                 <h2>Category</h2>
-                <input className={ HandyTools.errorClass(this.state.errors, []) } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recipe.category || "" } data-entity="recipe" data-field="category" />
-                { HandyTools.renderFieldError(this.state.errors, []) }
+                <input className={ Details.errorClass(this.state.errors, []) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recipe.category || "" } data-entity="recipe" data-field="category" />
+                { Details.renderFieldError(this.state.errors, []) }
               </div>
             </div>
             <div className="row">
               <div className="col-xs-6">
                 <h2>Ingredients</h2>
-                <textarea rows={ 10 } className={ HandyTools.errorClass(this.state.errors, []) } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recipe.ingredients } data-entity="recipe" data-field="ingredients"></textarea>
-                { HandyTools.renderFieldError(this.state.errors, []) }
+                <textarea rows={ 10 } className={ Details.errorClass(this.state.errors, []) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recipe.ingredients } data-entity="recipe" data-field="ingredients"></textarea>
+                { Details.renderFieldError(this.state.errors, []) }
               </div>
               <div className="col-xs-6">
                 <h2>Preparation</h2>
-                <textarea rows={ 10 } className={ HandyTools.errorClass(this.state.errors, []) } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recipe.prep } data-entity="recipe" data-field="prep"></textarea>
-                { HandyTools.renderFieldError(this.state.errors, []) }
+                <textarea rows={ 10 } className={ Details.errorClass(this.state.errors, []) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recipe.prep } data-entity="recipe" data-field="prep"></textarea>
+                { Details.renderFieldError(this.state.errors, []) }
               </div>
             </div>
             <div className="row">

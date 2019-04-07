@@ -1,5 +1,6 @@
-import React from 'react';
-import HandyTools from 'handy-tools';
+import React from 'react'
+import { Common, Details } from 'handy-components'
+import HandyTools from 'handy-tools'
 
 export default class Recurrence extends React.Component {
 
@@ -41,7 +42,7 @@ export default class Recurrence extends React.Component {
   componentDidMount() {
     HandyTools.setUpNiceSelect({
       selector: '.recurrence-modal select',
-      func: HandyTools.changeField.bind(this, this.changeFieldArgs())
+      func: Details.changeField.bind(this, this.changeFieldArgs())
     });
   }
 
@@ -75,7 +76,7 @@ export default class Recurrence extends React.Component {
                 <option value={ "Monthly" }>Monthly</option>
                 <option value={ "Yearly" }>Yearly</option>
               </select>
-              { HandyTools.renderDropdownFieldError([], []) }
+              { Details.renderDropdownFieldError([], []) }
             </div>
           </div>
           <div className="row">
@@ -94,8 +95,8 @@ export default class Recurrence extends React.Component {
       return(
         <div className="col-xs-5 second-row">
           <h2>Interval</h2>
-          <input type="number" value={ this.state.recurrence.interval } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } data-entity="recurrence" data-field="interval" />
-          { HandyTools.renderFieldError([], []) }
+          <input type="number" value={ this.state.recurrence.interval } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } data-entity="recurrence" data-field="interval" />
+          { Details.renderFieldError([], []) }
         </div>
       );
     } else if (this.state.recurrence.type === 'Weekly') {
@@ -109,7 +110,7 @@ export default class Recurrence extends React.Component {
               );
             }) }
           </select>
-          { HandyTools.renderDropdownFieldError([], []) }
+          { Details.renderDropdownFieldError([], []) }
         </div>
       );
     } else if (this.state.recurrence.type === 'Yearly') {
@@ -124,12 +125,12 @@ export default class Recurrence extends React.Component {
                 );
               }) }
             </select>
-            { HandyTools.renderDropdownFieldError([], []) }
+            { Details.renderDropdownFieldError([], []) }
           </div>
           <div className="col-xs-5 second-row select-scroll-2">
             <h2>Day</h2>
-            <input type="number" value={ this.state.recurrence.monthday } onChange={ HandyTools.changeField.bind(this, this.changeFieldArgs()) } data-entity="recurrence" data-field="monthday" />
-            { HandyTools.renderFieldError([], []) }
+            <input type="number" value={ this.state.recurrence.monthday } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } data-entity="recurrence" data-field="monthday" />
+            { Details.renderFieldError([], []) }
           </div>
         </div>
       );
@@ -153,7 +154,7 @@ export default class Recurrence extends React.Component {
   componentDidUpdate() {
     HandyTools.setUpNiceSelect({
       selector: '.recurrence-modal .second-row select',
-      func: HandyTools.changeField.bind(this, this.changeFieldArgs())
+      func: Details.changeField.bind(this, this.changeFieldArgs())
     });
   }
 }

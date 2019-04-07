@@ -1,11 +1,12 @@
-import React from 'react';
-import HandyTools from 'handy-tools';
-import Common from '../../app/assets/javascripts/common.jsx';
-import ClientActions from '../actions/client-actions.js';
-import TasksStore from '../stores/tasks-store.js';
-import UserStore from '../stores/user-store.js';
-import ErrorStore from '../stores/error-store.js';
-import TasksIndexItem from './tasks-index-item.jsx';
+import React from 'react'
+import { Common, Index } from 'handy-components'
+import HandyTools from 'handy-tools'
+import TasksCommon from '../../app/assets/javascripts/common.jsx'
+import ClientActions from '../actions/client-actions.js'
+import TasksStore from '../stores/tasks-store.js'
+import UserStore from '../stores/user-store.js'
+import ErrorStore from '../stores/error-store.js'
+import TasksIndexItem from './tasks-index-item.jsx'
 
 export default class TasksIndex extends React.Component {
 
@@ -21,10 +22,10 @@ export default class TasksIndex extends React.Component {
 
   componentDidMount() {
     $('#' + this.props.timeframe + '-top-drop').droppable({
-      accept: Common.canIDrop,
+      accept: TasksCommon.canIDrop,
       tolerance: 'pointer',
-      over: Common.dragOverHandler,
-      out: Common.dragOutHandler,
+      over: TasksCommon.dragOverHandler,
+      out: TasksCommon.dragOutHandler,
       drop: this.dropHandler.bind(this)
     });
     this.tasksListener = TasksStore.addListener(this.getTasks.bind(this));
@@ -195,8 +196,8 @@ export default class TasksIndex extends React.Component {
   render() {
     return(
       <div className="tasks-index match-height" data-index={ this.props.timeframe }>
-        { HandyTools.renderSpinner(this.state.fetching) }
-        { HandyTools.renderGrayedOut(this.state.fetching, -10, -15) }
+        { Common.renderSpinner(this.state.fetching) }
+        { Common.renderGrayedOut(this.state.fetching, -10, -15) }
         { this.renderHeader() }
         <a href="" onClick={ this.clickAdd.bind(this) }>Add Task</a>
         <hr />
