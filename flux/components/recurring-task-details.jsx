@@ -46,7 +46,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
   beforeSave(key, value) {
     if (value.jointUserId == '') {
       value.jointText = '';
-      HandyTools.removeFieldError(ERRORS, this.state.errors, 'jointText');
+      Details.removeFieldError(ERRORS, this.state.errors, 'jointText');
     }
     return { key, value }
   }
