@@ -69,18 +69,18 @@ export default class RecurringTaskNew extends DetailsComponent {
               </div>
               <div className="col-xs-2">
                 <h2>Time Frame</h2>
-                <select onChange={ function() {} } value={ this.state.recurringTask.timeframe || "" } data-entity="recurringTask" data-field="timeframe">
-                  <option value={ "Day" }>Day</option>
-                  <option value={ "Weekend" }>Weekend</option>
-                  <option value={ "Month" }>Month</option>
+                <select onChange={ () => {} } value={ this.state.recurringTask.timeframe || "" } data-entity="recurringTask" data-field="timeframe">
+                  <option value="Day">Day</option>
+                  <option value="Weekend">Weekend</option>
+                  <option value="Month">Month</option>
                 </select>
                 { Details.renderFieldError([], []) }
               </div>
               <div className="col-xs-2">
                 <h2>Position</h2>
-                <select onChange={ function() {} } value={ HandyTools.convertBooleanToTFString(this.state.recurringTask.addToEnd) } data-entity="recurringTask" data-field="addToEnd">
-                  <option value={ "f" }>Beginning</option>
-                  <option value={ "t" }>End</option>
+                <select onChange={ () => {} } value={ HandyTools.convertBooleanToTFString(this.state.recurringTask.addToEnd) } data-entity="recurringTask" data-field="addToEnd">
+                  <option value="f">Beginning</option>
+                  <option value="t">End</option>
                 </select>
                 { Details.renderFieldError([], []) }
               </div>
@@ -95,17 +95,17 @@ export default class RecurringTaskNew extends DetailsComponent {
               </div>
               <div className="col-xs-2">
                 <h2>Expires</h2>
-                <select onChange={ function() {} } value={ HandyTools.convertBooleanToTFString(this.state.recurringTask.expires) } data-entity="recurringTask" data-field="expires">
-                  <option value={ "t" }>Yes</option>
-                  <option value={ "f" }>No</option>
+                <select onChange={ () => {} } value={ HandyTools.convertBooleanToTFString(this.state.recurringTask.expires) } data-entity="recurringTask" data-field="expires">
+                  <option value="t">Yes</option>
+                  <option value="f">No</option>
                 </select>
                 { Details.renderFieldError([], []) }
               </div>
               <div className="col-xs-3">
                 <h2>Joint User</h2>
-                <select onChange={ function() {} } value={ this.state.recurringTask.jointUserId || "" } data-entity="recurringTask" data-field="jointUserId">
-                  <option value={ "" }>None</option>
-                  { this.props.users.map(function(user, index) {
+                <select onChange={ () => {} } value={ this.state.recurringTask.jointUserId || "" } data-entity="recurringTask" data-field="jointUserId">
+                  <option value="">None</option>
+                  { this.props.users.map((user, index) => {
                     return(
                       <option key={ index } value={ user.id }>{ user.email }</option>
                     );

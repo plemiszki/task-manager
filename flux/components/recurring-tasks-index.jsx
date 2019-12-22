@@ -128,17 +128,17 @@ export default class RecurringTasksIndex extends React.Component {
     let currentOrder = {};
     switch (e.target.dataset.section) {
       case 'daily':
-        this.state.dailyTasks.forEach(function(task) {
+        this.state.dailyTasks.forEach((task) => {
           currentOrder[task.order] = task.id;
         });
         break;
       case 'weekend':
-        this.state.weekendTasks.forEach(function(task) {
+        this.state.weekendTasks.forEach((task) => {
           currentOrder[task.order] = task.id;
         });
         break;
       case 'monthly':
-        this.state.monthlyTasks.forEach(function(task) {
+        this.state.monthlyTasks.forEach((task) => {
           currentOrder[task.order] = task.id;
         });
     }
@@ -187,7 +187,7 @@ export default class RecurringTasksIndex extends React.Component {
           <tbody>
             <tr className="below-header"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
             <tr className="drop-zone" data-index="-1" data-section={ timeframe }><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            { this.state[timeframe.toLowerCase() + "Tasks"].map(function(task, index) {
+            { this.state[timeframe.toLowerCase() + "Tasks"].map((task, index) => {
               var backgroundColor = (task.jointUserId ? 'rgb(0,0,0)' : task.color);
               return([
                 <tr key={ task.id } onClick={ this.clickTask.bind(this) } data-id={ task.id } data-index={ index } data-section={ timeframe }>
@@ -203,7 +203,7 @@ export default class RecurringTasksIndex extends React.Component {
                   <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                 </tr>
               ]);
-            }.bind(this)) }
+            }) }
           </tbody>
         </table>
         { this.renderLine(timeframe === "daily" || timeframe === "weekend") }
@@ -223,7 +223,7 @@ export default class RecurringTasksIndex extends React.Component {
     $("tr:not('drop-zone')").draggable({
       cursor: '-webkit-grabbing',
       handle: '.handle',
-      helper: function() { return '<div></div>'; },
+      helper: () => { '<div></div>' },
       stop: this.dragEndHandler.bind(this)
     });
     $('tr.drop-zone').droppable({

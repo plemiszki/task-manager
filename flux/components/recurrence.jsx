@@ -1,6 +1,7 @@
 import React from 'react'
 import { Common, Details } from 'handy-components'
 import HandyTools from 'handy-tools'
+import ChangeCase from 'change-case'
 
 export default class Recurrence extends React.Component {
 
@@ -10,7 +11,7 @@ export default class Recurrence extends React.Component {
     let recurrence = JSON.parse(this.props.recurringTask.recurrence);
     let today = new Date;
     let result = {
-      weekday: 'Sunday',
+      weekdays: [],
       month: 'January',
       starts: `${today.getFullYear()}-${('0' + (today.getMonth() + 1)).slice(-2)}-${('0' + today.getDate()).slice(-2)}`,
       interval: 2,
@@ -26,7 +27,12 @@ export default class Recurrence extends React.Component {
       }
     } else if (recurrence.every === 'week') {
       result.type = 'Weekly';
-      result.weekday = HandyTools.capitalize(recurrence.on);
+      result.weekdays = [];
+      if (typeof recurrence.on === 'string') {
+        result.weekdays.push(ChangeCase.titleCase(recurrence.on));
+      } else {
+        result.weekdays = recurrence.on.map((day) => ChangeCase.titleCase(day));
+      }
     } else if (recurrence.every === 'month') {
       result.type = 'Monthly';
     } else if (recurrence.every === 'year') {
@@ -53,28 +59,64 @@ export default class Recurrence extends React.Component {
     }
   }
 
+  clickWeekdayCheckbox(e) {
+    const ORDER = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    let clickedDay = e.target.dataset.day;
+    let clickedDayValue = ORDER.indexOf(clickedDay);
+    let recurrence = this.state.recurrence;
+    let newWeekdays = [];
+    if (e.target.checked) {
+      let insertedClickedDay = false;
+      recurrence.weekdays.forEach((day) => {
+        if (ORDER.indexOf(day) < clickedDayValue) {
+          newWeekdays.push(day);
+        } else {
+          if (!insertedClickedDay) {
+            newWeekdays.push(clickedDay);
+            insertedClickedDay = true;
+          }
+          newWeekdays.push(day);
+        }
+      })
+      if (!insertedClickedDay) {
+        newWeekdays.push(clickedDay);
+      }
+    } else {
+      recurrence.weekdays.forEach((day) => {
+        if (day !== clickedDay) {
+          newWeekdays.push(day);
+        }
+      })
+    }
+    recurrence.weekdays = newWeekdays;
+    this.setState({
+      recurrence
+    });
+  }
+
   updateRecurrence() {
     if (this.state.recurrence.type === 'Daily (Interval)' && +this.state.recurrence.interval <= 1) {
       window.alert('Invalid Interval');
+    } else if (this.state.recurrence.type === 'Weekly' && this.state.recurrence.weekdays.length === 0) {
+      window.alert('You must select at least one day of the week');
     } else {
       this.props.updateRecurrence(this.state.recurrence);
     }
   }
 
   render() {
-    console.log(this.state.recurrence);
     return(
       <div className="admin-modal recurrence-modal">
         <div className="white-box">
           <div className="row">
             <div className="col-xs-12">
               <h2>Type</h2>
-              <select onChange={ function() {} } value={ this.state.recurrence.type } data-entity="recurrence" data-field="type">
-                <option value={ "Daily" }>Daily</option>
-                <option value={ "Daily (Interval)" }>Daily (Interval)</option>
-                <option value={ "Weekly" }>Weekly</option>
-                <option value={ "Monthly" }>Monthly</option>
-                <option value={ "Yearly" }>Yearly</option>
+              <select onChange={ () => {} } value={ this.state.recurrence.type } data-entity="recurrence" data-field="type">
+                <option value="Daily">Daily</option>
+                <option value="Daily (Interval)">Daily (Interval)</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Monthly">Monthly</option>
+                <option value="Yearly">Yearly</option>
               </select>
               { Details.renderDropdownFieldError([], []) }
             </div>
@@ -102,15 +144,16 @@ export default class Recurrence extends React.Component {
     } else if (this.state.recurrence.type === 'Weekly') {
       return(
         <div className="col-xs-12 second-row select-scroll-2">
-          <h2>Weekday</h2>
-          <select onChange={ function() {} } value={ this.state.recurrence.weekday } data-entity="recurrence" data-field="weekday">
-            { HandyTools.WEEKDAYS.map(function(weekday, index) {
-              return(
-                <option key={ index } value={ weekday }>{ weekday }</option>
-              );
-            }) }
-          </select>
-          { Details.renderDropdownFieldError([], []) }
+          <h2>Weekdays</h2>
+          <div className="weekday-checkboxes">
+            <input id="sun" type="checkbox" checked={ this.state.recurrence.weekdays.indexOf("Sunday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Sunday" /><label htmlFor="sun">Sun</label>
+            <input id="mon" type="checkbox" checked={ this.state.recurrence.weekdays.indexOf("Monday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Monday" /><label htmlFor="mon">Mon</label>
+            <input id="tue" type="checkbox" checked={ this.state.recurrence.weekdays.indexOf("Tuesday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Tuesday" /><label htmlFor="tue">Tue</label>
+            <input id="wed" type="checkbox" checked={ this.state.recurrence.weekdays.indexOf("Wednesday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Wednesday" /><label htmlFor="wed">Wed</label><br />
+            <input id="thu" type="checkbox" checked={ this.state.recurrence.weekdays.indexOf("Thursday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Thursday" /><label htmlFor="thu">Thu</label>
+            <input id="fri" type="checkbox" checked={ this.state.recurrence.weekdays.indexOf("Friday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Friday" /><label htmlFor="fri">Fri</label>
+            <input id="sat" type="checkbox" checked={ this.state.recurrence.weekdays.indexOf("Saturday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Saturday" /><label htmlFor="sat">Sat</label>
+          </div>
         </div>
       );
     } else if (this.state.recurrence.type === 'Yearly') {
@@ -118,8 +161,8 @@ export default class Recurrence extends React.Component {
         <div>
           <div className="col-xs-7 second-row select-scroll-2">
             <h2>Month</h2>
-            <select onChange={ function() {} } value={ this.state.recurrence.month } data-entity="recurrence" data-field="month">
-              { HandyTools.MONTHS.map(function(month, index) {
+            <select onChange={ () => {} } value={ this.state.recurrence.month } data-entity="recurrence" data-field="month">
+              { HandyTools.MONTHS.map((month, index) => {
                 return(
                   <option key={ index } value={ month }>{ month }</option>
                 );
@@ -137,7 +180,7 @@ export default class Recurrence extends React.Component {
     } else {
       return(
         <div className="col-xs-6">
-          <div style={ { height: 104 } }>
+          <div style={ { height: 119 } }>
           </div>
         </div>
       );

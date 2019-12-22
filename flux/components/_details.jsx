@@ -5,6 +5,7 @@ import HandyTools from 'handy-tools'
 import ClientActions from '../actions/client-actions.js'
 import ErrorsStore from '../stores/errors-store'
 import Recurrence from './recurrence.jsx'
+import ChangeCase from 'change-case'
 
 const RecurrenceModalStyles = {
   overlay: {
@@ -55,7 +56,7 @@ export default class _Details extends React.Component {
     entity.color = e.target.style.backgroundColor;
     this.setState({
       [this.state.recurringTask ? 'recurringTask' : 'futureTask']: entity
-    }, function() {
+    }, () => {
       if (this.checkForChanges) {
         var changesToSave = this.checkForChanges();
         this.setState({
@@ -78,7 +79,7 @@ export default class _Details extends React.Component {
     } else if (recurrence.type === 'Daily (Interval)') {
       result = `{\"every\":\"day\",\"starts\":\"${recurrence.starts}\",\"interval\":${recurrence.interval}}`;
     } else if (recurrence.type === 'Weekly') {
-      result = `{\"every\":\"week\",\"on\":\"${recurrence.weekday.toLowerCase()}\"}`;
+      result = `{\"every\":\"week\",\"on\":[${recurrence.weekdays.map((day) => `\"${ChangeCase.lowerCase(day)}\"`).join(',')}]}`;
     } else if (recurrence.type === 'Monthly') {
       result = "{\"every\":\"month\",\"mday\":[1]}";
     } else if (recurrence.type === 'Yearly') {
@@ -90,7 +91,7 @@ export default class _Details extends React.Component {
     this.setState({
       recurrenceModalOpen: false,
       recurringTask: recurringTask
-    }, function() {
+    }, () => {
       if (this.checkForChanges) {
         this.setState({
           changesToSave: this.checkForChanges()
@@ -110,7 +111,11 @@ export default class _Details extends React.Component {
           return 'Daily';
         }
       } else if (input.every === 'week') {
-        return `${HandyTools.capitalize(input.on)}s`;
+        if (typeof input.on === 'string') {
+          return `${HandyTools.capitalize(input.on)}s`;
+        } else {
+          return input.on.map((day) => `${ChangeCase.titleCase(day)}s`).join(', ');
+        }
       } else if (input.every === 'month') {
         return 'Monthly';
       } else if (input.every === 'year') {
@@ -150,9 +155,9 @@ export default class _Details extends React.Component {
 
   renderButtons() {
     if (this.state.changesToSave) {
-      var buttonText = "Save";
+      let buttonText = 'Save';
     } else {
-      var buttonText = this.state.justSaved ? "Saved" : "No Changes";
+      let buttonText = this.state.justSaved ? 'Saved' : 'No Changes';
     }
     return(
       <div>

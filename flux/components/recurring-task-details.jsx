@@ -88,18 +88,18 @@ export default class RecurringTaskDetails extends DetailsComponent {
               </div>
               <div className="col-xs-2">
                 <h2>Time Frame</h2>
-                <select onChange={ function() {} } value={ this.state.recurringTask.timeframe || "" } data-entity="recurringTask" data-field="timeframe">
-                  <option value={ "Day" }>Day</option>
-                  <option value={ "Weekend" }>Weekend</option>
-                  <option value={ "Month" }>Month</option>
+                <select onChange={ () => {} } value={ this.state.recurringTask.timeframe || "" } data-entity="recurringTask" data-field="timeframe">
+                  <option value="Day">Day</option>
+                  <option value="Weekend">Weekend</option>
+                  <option value="Month">Month</option>
                 </select>
                 { Details.renderFieldError([], []) }
               </div>
               <div className="col-xs-2">
                 <h2>Position</h2>
-                <select onChange={ function() {} } value={ HandyTools.convertBooleanToTFString(this.state.recurringTask.addToEnd) } data-entity="recurringTask" data-field="addToEnd">
-                  <option value={ "f" }>Beginning</option>
-                  <option value={ "t" }>End</option>
+                <select onChange={ () => {} } value={ HandyTools.convertBooleanToTFString(this.state.recurringTask.addToEnd) } data-entity="recurringTask" data-field="addToEnd">
+                  <option value="f">Beginning</option>
+                  <option value="t">End</option>
                 </select>
                 { Details.renderFieldError([], []) }
               </div>
@@ -114,17 +114,17 @@ export default class RecurringTaskDetails extends DetailsComponent {
               </div>
               <div className="col-xs-2">
                 <h2>Expires</h2>
-                <select onChange={ function() {} } value={ HandyTools.convertBooleanToTFString(this.state.recurringTask.expires) } data-entity="recurringTask" data-field="expires">
-                  <option value={ "t" }>Yes</option>
-                  <option value={ "f" }>No</option>
+                <select onChange={ () => {} } value={ HandyTools.convertBooleanToTFString(this.state.recurringTask.expires) } data-entity="recurringTask" data-field="expires">
+                  <option value="t">Yes</option>
+                  <option value="f">No</option>
                 </select>
                 { Details.renderFieldError([], []) }
               </div>
               <div className="col-xs-3">
                 <h2>Joint User</h2>
-                <select onChange={ function() {} } value={ this.state.recurringTask.jointUserId || "" } data-entity="recurringTask" data-field="jointUserId">
-                  <option value={ "" }>None</option>
-                  { this.state.users.map(function(user, index) {
+                <select onChange={ () => {} } value={ this.state.recurringTask.jointUserId || '' } data-entity="recurringTask" data-field="jointUserId">
+                  <option value="">None</option>
+                  { this.state.users.map((user, index) => {
                     return(
                       <option key={ index } value={ user.id }>{ user.email }</option>
                     );
@@ -132,7 +132,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
                 </select>
                 { Details.renderFieldError([], []) }
               </div>
-              <div className={ "col-xs-3" + (this.state.recurringTask.jointUserId ? '' : ' hidden') }>
+              <div className={ 'col-xs-3' + (this.state.recurringTask.jointUserId ? '' : ' hidden') }>
                 <h2>Joint Text</h2>
                 <input className={ Details.errorClass(this.state.errors, ERRORS.jointText) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.jointText || "" } data-entity="recurringTask" data-field="jointText" />
                 { Details.renderFieldError(this.state.errors, ERRORS.jointText) }
@@ -148,9 +148,9 @@ export default class RecurringTaskDetails extends DetailsComponent {
 
   renderButtons() {
     if (this.state.changesToSave) {
-      var buttonText = "Save";
+      var buttonText = 'Save';
     } else {
-      var buttonText = this.state.justSaved ? "Saved" : "No Changes";
+      var buttonText = this.state.justSaved ? 'Saved' : 'No Changes';
     }
     return(
       <div>
