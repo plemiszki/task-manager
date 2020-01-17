@@ -174,7 +174,7 @@ export default class RecurringTasksIndex extends React.Component {
         <h1>{ HandyTools.capitalize(timeframe) } Recurring Tasks</h1>
         <table className="extra-margin">
           <thead>
-            <tr>
+            <tr className="headers">
               <th>Text</th>
               <th>Frequency</th>
               <th>Position</th>
@@ -220,7 +220,7 @@ export default class RecurringTasksIndex extends React.Component {
   }
 
   componentDidUpdate() {
-    $("tr:not('drop-zone')").draggable({
+    $("tr:not('.headers, .below-header, .drop-zone')").draggable({
       cursor: '-webkit-grabbing',
       handle: '.handle',
       helper: () => { '<div></div>' },
