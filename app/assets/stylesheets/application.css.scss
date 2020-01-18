@@ -25,7 +25,9 @@
  @import 'handy-tools/styles/general';
  @import 'handy-tools/styles/sign-in';
 
- @import 'handy-components/styles/admin-layout-rails'; // <-- spinner styles
+ // load admin layout for spinner styling
+ @import 'handy-components/styles/admin-layout';
+ @import 'handy-components/styles/admin-layout-rails';
 
  @import 'general';
  @import 'nav-bar';
