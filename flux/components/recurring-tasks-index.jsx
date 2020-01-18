@@ -180,13 +180,14 @@ export default class RecurringTasksIndex extends React.Component {
               <th>Position</th>
               <th>Expires</th>
               <th>Color</th>
+              <th>Order</th>
               <th></th>
               <th className="x-button-column"></th>
             </tr>
           </thead>
           <tbody>
-            <tr className="below-header"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-            <tr className="drop-zone" data-index="-1" data-section={ timeframe }><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr className="below-header"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr className="drop-zone" data-index="-1" data-section={ timeframe }><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
             { this.state[timeframe.toLowerCase() + "Tasks"].map((task, index) => {
               var backgroundColor = (task.jointUserId ? 'rgb(0,0,0)' : task.color);
               return([
@@ -196,6 +197,7 @@ export default class RecurringTasksIndex extends React.Component {
                   <td>{ task.addToEnd ? "End" : "Beginning" }</td>
                   <td>{ task.expires ? "Yes" : "No" }</td>
                   <td><div className="swatch" style={ { backgroundColor } }></div></td>
+                  <td>{ task.order }</td>
                   <td><div className="handle" onMouseDown={ this.mouseDownHandle.bind(this) } onMouseUp={ this.mouseUpHandle.bind(this) }></div></td>
                   <td><div className="x-button"></div></td>
                 </tr>,
@@ -223,7 +225,7 @@ export default class RecurringTasksIndex extends React.Component {
     $("tr:not('.headers, .below-header, .drop-zone')").draggable({
       cursor: '-webkit-grabbing',
       handle: '.handle',
-      helper: () => { '<div></div>' },
+      helper: function() { return '<div></div>'; },
       stop: this.dragEndHandler.bind(this)
     });
     $('tr.drop-zone').droppable({
