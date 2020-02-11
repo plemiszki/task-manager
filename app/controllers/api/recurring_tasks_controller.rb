@@ -42,7 +42,11 @@ class Api::RecurringTasksController < ActionController::Base
   end
 
   def destroy
-    RecurringTask.find(params[:id]).destroy
+    recurring_task = RecurringTask.find(params[:id])
+    recurring_task.destroy
+    other_recurring_tasks = RecurringTask.where(user_id: recurring_task.user_id, timeframe: recurring_task.timeframe).order(:order).each_with_index do |rt, i|
+      rt.update(order: i)
+    end
     @daily_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Day').order(:order)
     @weekend_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Weekend').order(:order)
     @monthly_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Month').order(:order)
