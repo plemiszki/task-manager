@@ -7,7 +7,7 @@ class Api::CongressController < ActionController::Base
     senate_url = endpoint + '116/senate/members.json'
     senate_response = HTTParty.get(senate_url, headers: { "X-API-Key" => ENV["CONGRESS_KEY"] })
     senators = senate_response.parsed_response["results"][0]["members"].select { |member| member["in_office"] == true }
-    senate_dems = senators.select { |member| ["D", "I"].include?(member["party"]) }
+    senate_dems = senators.select { |member| ["D", "ID"].include?(member["party"]) }
     senate_dems_up = senate_dems.select { |member| member["next_election"] == "2020" }
     senate_repubs = senators.select { |member| member["party"] == "R" }
     senate_repubs_up = senate_repubs.select { |member| member["next_election"] == "2020" }
