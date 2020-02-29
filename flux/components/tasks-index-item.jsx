@@ -161,6 +161,23 @@ export default class TaskIndexItem extends React.Component {
     }
   }
 
+  formatTaskText() {
+    let task = this.state.task;
+    let text = task.text;
+    if (this.state.editing) {
+      return text;
+    }
+    let alteredText = text;
+    if (text.indexOf('$cc') > -1 || text.indexOf('$tc') > -1) {
+      let completedChildren = this.state.subtasks.reduce((accum, current) => {
+        return accum + (current.complete ? 1 : 0)
+      }, 0)
+      alteredText = alteredText.split('$cc').join(completedChildren);
+      alteredText = alteredText.split('$tc').join(this.state.subtasks.length);
+    }
+    return alteredText;
+  }
+
   render() {
     return(
       <div className="group">
@@ -186,7 +203,7 @@ export default class TaskIndexItem extends React.Component {
           </div>
           <div className="click-area" onClick={ this.clickText.bind(this) }>
             <div className="handle"></div>
-            <input className={ this.state.editing ? "" : "disabled" } disabled={ !this.state.editing } value={ this.state.task.text } onChange={ this.changeText.bind(this) } onKeyPress={ this.clickEnter.bind(this) } />
+            <input className={ this.state.editing ? "" : "disabled" } disabled={ !this.state.editing } value={ this.formatTaskText.call(this) } onChange={ this.changeText.bind(this) } onKeyPress={ this.clickEnter.bind(this) } />
           </div>
         </div>
         { this.renderBottomDropArea() }
