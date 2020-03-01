@@ -8,6 +8,13 @@ import UserStore from '../stores/user-store.js'
 import ErrorStore from '../stores/error-store.js'
 import TasksIndexItem from './tasks-index-item.jsx'
 
+const nextShortestTimeframe = {
+  'lifetime': 'year',
+  'year': 'month',
+  'month': 'weekend',
+  'weekend': 'day'
+};
+
 export default class TasksIndex extends React.Component {
 
   constructor(props) {
@@ -67,7 +74,9 @@ export default class TasksIndex extends React.Component {
     this.setState({
       fetching: true
     });
-    ClientActions.addTask(this.props.timeframe);
+    ClientActions.addTask({
+      timeframe: this.props.timeframe
+    });
   }
 
   updateTask(task) {
@@ -81,7 +90,20 @@ export default class TasksIndex extends React.Component {
     this.setState({
       fetching: true
     });
-    ClientActions.addTask(this.props.timeframe, task.id);
+    ClientActions.addTask({
+      timeframe: this.props.timeframe,
+      parentId: task.id
+    });
+  }
+
+  copySubTask(task) {
+    this.setState({
+      fetching: true
+    });
+    ClientActions.addTask({
+      timeframe: nextShortestTimeframe[this.props.timeframe],
+      task
+    });
   }
 
   deleteTask(task) {
@@ -144,7 +166,11 @@ export default class TasksIndex extends React.Component {
       var task = TasksStore.find(taskid);
       task.order = +dropZoneIndex + 1;
       newHash = this.rearrangeOtherFields(hash, dropZoneIndex);
-      ClientActions.addTask(dropZoneTimeFrame, null, task, newHash);
+      ClientActions.addTask({
+        timeframe: dropZoneTimeFrame,
+        task,
+        newOrder: newHash
+      });
     }
   }
 
@@ -202,13 +228,23 @@ export default class TasksIndex extends React.Component {
         <a href="" onClick={ this.clickAdd.bind(this) }>Add Task</a>
         <hr />
         <div id={ this.props.timeframe + '-top-drop' } className="drop-area"></div>
-        { this.state.rootTasks.map(function(task, index) {
+        { this.state.rootTasks.map((task, index) => {
           return(
-            <TasksIndexItem key={ index } index={ index } task={ task } level={ "0" } updateTask={ this.updateTask.bind(this) } addSubTask={ this.addSubTask.bind(this) } deleteTask={ this.deleteTask.bind(this) } dropHandler={ this.dropHandler.bind(this) } />
-          )
-        }.bind(this)) }
+            <TasksIndexItem
+              key={ index }
+              index={ index }
+              task={ task }
+              level="0"
+              updateTask={ this.updateTask.bind(this) }
+              addSubTask={ this.addSubTask.bind(this) }
+              copySubTask={ this.copySubTask.bind(this) }
+              deleteTask={ this.deleteTask.bind(this) }
+              dropHandler={ this.dropHandler.bind(this) }
+            />
+          );
+        }) }
       </div>
-    )
+    );
   }
 
   renderHeader() {

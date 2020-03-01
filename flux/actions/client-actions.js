@@ -125,7 +125,8 @@ var ClientActions = {
     });
   },
 
-  addTask: function(timeframe, parent_id, task, newOrder) {
+  addTask: (args) => {
+    let { timeframe, parentId, task, newOrder } = args;
     if (task) {
       task = {
         text: task.text,
@@ -138,18 +139,18 @@ var ClientActions = {
     }
     $.ajax({
       url: '/api/tasks',
-      type: "POST",
+      type: 'POST',
       data: {
         timeframe: timeframe,
-        parent_id: parent_id,
+        parent_id: parentId,
         task: task,
         new_order: newOrder
       },
-      success: function(response) {
+      success: (response) => {
         ServerActions.receiveTasks(response);
       },
-      error: function() {
-        alert("A duplicate of this task already exists!");
+      error: () => {
+        alert('A duplicate of this task already exists!');
         ServerActions.receiveError();
       }
     });

@@ -13,6 +13,9 @@ class Api::TasksController < ActionController::Base
       else
         @task = Task.new(task_params)
         @task.user_id = current_user.id
+        unless params[:new_order]
+          @task.order = Task.where(user_id: current_user.id, timeframe: @task.timeframe).length
+        end
         @task.save!
         create_duplicate_subtasks(@task)
         rearrange(params[:new_order] || {})

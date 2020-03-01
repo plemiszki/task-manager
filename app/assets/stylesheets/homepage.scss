@@ -142,6 +142,14 @@
         background-position: center center;
         background-repeat: no-repeat;
       }
+
+      .copy-subtask-button {
+        background-image: asset-data-url("inverted-triangle.png");
+        background-size: 100%;
+        background-position: center center;
+        background-repeat: no-repeat;
+        transform: rotate(90deg);
+      }
     }
 
     .color-picker {

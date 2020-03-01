@@ -23,7 +23,7 @@ export default class TaskIndexItem extends React.Component {
     this.setState({
       task: nextProps.task,
       subtasks: TasksStore.subTasks(nextProps.task)
-    }, function() {
+    }, () => {
       this.attachDragHandler();
       this.attachDropZoneHandlers();
     });
@@ -82,7 +82,7 @@ export default class TaskIndexItem extends React.Component {
     task.expanded = !task.expanded;
     this.setState({
       task: task
-    }, function() {
+    }, () => {
       this.props.updateTask(this.state.task);
     });
   }
@@ -98,7 +98,7 @@ export default class TaskIndexItem extends React.Component {
     task.complete = !task.complete;
     this.setState({
       task: task
-    }, function() {
+    }, () => {
       this.props.updateTask(this.state.task);
     });
   }
@@ -115,7 +115,7 @@ export default class TaskIndexItem extends React.Component {
     task.color = color;
     this.setState({
       task: task
-    }, function() {
+    }, () => {
       this.props.updateTask(this.state.task);
     })
   }
@@ -123,6 +123,11 @@ export default class TaskIndexItem extends React.Component {
   addSubTask(e) {
     e.preventDefault();
     this.props.addSubTask(this.state.task);
+  }
+
+  copySubTask(e) {
+    e.preventDefault();
+    this.props.copySubTask(this.state.task);
   }
 
   dragStartHandler(e) {
@@ -179,14 +184,16 @@ export default class TaskIndexItem extends React.Component {
   }
 
   render() {
+    let { task, editing, subtasks } = this.state;
     return(
       <div className="group">
-        <div id={ this.createTaskId() } className={ "task" + (this.state.task.expanded ? " expanded" : "") + (this.state.task.duplicate_id ? " duplicate" : "") + (this.state.task.joint_id ? " joint" : "") } style={ this.taskStyle() } data-taskid={ this.props.task.id }>
-          <div className={ "controls" + (this.state.editing ? " hidden" : "") }>
-            <a href="" className={ "delete-button" + (this.state.task.duplicate_id && this.state.task.parent_id ? " hidden" : "") } onClick={ this.deleteTask.bind(this) }></a>
+        <div id={ this.createTaskId() } className={ "task" + (task.expanded ? " expanded" : "") + (task.duplicate_id ? " duplicate" : "") + (task.joint_id ? " joint" : "") } style={ this.taskStyle() } data-taskid={ this.props.task.id }>
+          <div className={ "controls" + (editing ? " hidden" : "") }>
+            <a href="" className={ "delete-button" + (task.duplicate_id && task.parent_id ? " hidden" : "") } onClick={ this.deleteTask.bind(this) }></a>
             <a href="" className="done-button" onClick={ this.finishedTask.bind(this) }></a>
-            <a href="" className={ "add-subtask-button" + (this.state.task.duplicate_id ? " hidden" : "")} onClick={ this.addSubTask.bind(this) }></a>
-            <a href="" className={ "color-button" + ((this.state.task.duplicate_id || this.state.task.parent_id) ? " hidden" : "") } onClick={ this.clickColorPicker.bind(this) }></a>
+            <a href="" className={ "add-subtask-button" + (task.duplicate_id ? " hidden" : "")} onClick={ this.addSubTask.bind(this) }></a>
+            <a href="" className={ "color-button" + ((task.duplicate_id || task.parent_id) ? " hidden" : "") } onClick={ this.clickColorPicker.bind(this) }></a>
+            <a href="" className={ "copy-subtask-button" + (((task.duplicate_id || task.parent_id) && task.timeframe !== 'day') ? "" : " hidden") } onClick={ this.copySubTask.bind(this) }></a>
           </div>
           <div className="hidden color-picker">
             <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(234, 30, 30)' } }></div>
@@ -199,11 +206,11 @@ export default class TaskIndexItem extends React.Component {
             <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(175, 96, 26)' } }></div>
             <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(210, 206, 200)' } }></div>
           </div>
-          <div className={ ((this.state.editing) ? "hidden" : (this.state.task.complete ? "check" : (this.state.subtasks == 0 ? "hidden" : (this.state.task.expanded ? "minus" : "plus")))) } onClick={ this.clickExpand.bind(this) }>
+          <div className={ (editing ? "hidden" : (task.complete ? "check" : (subtasks == 0 ? "hidden" : (task.expanded ? "minus" : "plus")))) } onClick={ this.clickExpand.bind(this) }>
           </div>
           <div className="click-area" onClick={ this.clickText.bind(this) }>
             <div className="handle"></div>
-            <input className={ this.state.editing ? "" : "disabled" } disabled={ !this.state.editing } value={ this.formatTaskText.call(this) } onChange={ this.changeText.bind(this) } onKeyPress={ this.clickEnter.bind(this) } />
+            <input className={ editing ? "" : "disabled" } disabled={ !editing } value={ this.formatTaskText.call(this) } onChange={ this.changeText.bind(this) } onKeyPress={ this.clickEnter.bind(this) } />
           </div>
         </div>
         { this.renderBottomDropArea() }
@@ -225,13 +232,23 @@ export default class TaskIndexItem extends React.Component {
       return(
         <div id={ "subtasks-" + this.createTaskId() } className="subtasks">
           <div id={ this.createTaskId() + '-top-drop' } className="drop-area"></div>
-          { this.state.subtasks.map(function(task, index) {
+          { this.state.subtasks.map((task, index) => {
             return(
-              <TaskIndexItem key={ index } index={ index } task={ task } parentId={ this.createTaskId() } updateTask={ this.props.updateTask.bind(this) } addSubTask={ this.props.addSubTask.bind(this) } deleteTask={ this.props.deleteTask.bind(this) } dropHandler={ this.props.dropHandler.bind(this) } />
+              <TaskIndexItem
+                key={ index }
+                index={ index }
+                task={ task }
+                parentId={ this.createTaskId() }
+                updateTask={ this.props.updateTask.bind(this) }
+                addSubTask={ this.props.addSubTask.bind(this) }
+                copySubTask={ this.props.copySubTask.bind(this) }
+                deleteTask={ this.props.deleteTask.bind(this) }
+                dropHandler={ this.props.dropHandler.bind(this) }
+              />
             );
-          }.bind(this)) }
+          }) }
         </div>
-      )
+      );
     }
   }
 };
