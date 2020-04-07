@@ -1,15 +1,16 @@
 source 'https://rubygems.org'
-ruby '2.6.4'
+ruby '2.6.6'
 
 gem 'rails', '5.2.2.1'
 gem 'pg', '~> 0.18'
 
 gem 'bootstrap-sass'
 gem 'clearance', '~> 1.11'
+gem 'google-api-client', require: 'google/apis/calendar_v3'
 gem 'httparty'
 gem 'jbuilder', '~> 2.5'
 gem 'jquery-rails'
-gem 'jquery-ui-rails' # (drag and drop)
+gem 'jquery-ui-rails'
 gem 'montrose'
 gem 'pry-rails'
 gem 'puma'

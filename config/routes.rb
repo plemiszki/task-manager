@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   resources :future_tasks, only: [:index]
   resources :recurring_tasks, only: [:index, :show]
   resources :recipes, only: [:index, :show]
+  get '/on_call_auth' => 'static_pages#on_call_auth'
+  get '/on_call_callback' => 'static_pages#on_call_callback'
 
   namespace :api, defaults: { format: :json } do
     get '/user' => '/api/users#show'
