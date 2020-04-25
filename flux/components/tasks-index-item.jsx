@@ -130,6 +130,11 @@ export default class TaskIndexItem extends React.Component {
     this.props.copySubTask(this.state.task);
   }
 
+  copySubTaskToDay(e) {
+    e.preventDefault();
+    this.props.copySubTaskToDay(this.state.task);
+  }
+
   dragStartHandler(e) {
     $('.task').addClass('dragging');
     $('.task, a, input').addClass('grabbing');
@@ -194,6 +199,7 @@ export default class TaskIndexItem extends React.Component {
             <a href="" className={ "add-subtask-button" + (task.duplicate_id ? " hidden" : "")} onClick={ this.addSubTask.bind(this) }></a>
             <a href="" className={ "color-button" + ((task.duplicate_id || task.parent_id) ? " hidden" : "") } onClick={ this.clickColorPicker.bind(this) }></a>
             <a href="" className={ "copy-subtask-button" + (((task.duplicate_id || task.parent_id) && task.timeframe !== 'day') ? "" : " hidden") } onClick={ this.copySubTask.bind(this) }></a>
+            <a href="" className={ "copy-subtask-to-day-button" + (((task.duplicate_id || task.parent_id) && task.timeframe === 'month') ? "" : " hidden") } onClick={ this.copySubTaskToDay.bind(this) }></a>
           </div>
           <div className="hidden color-picker">
             <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(234, 30, 30)' } }></div>
@@ -242,6 +248,7 @@ export default class TaskIndexItem extends React.Component {
                 updateTask={ this.props.updateTask.bind(this) }
                 addSubTask={ this.props.addSubTask.bind(this) }
                 copySubTask={ this.props.copySubTask.bind(this) }
+                copySubTaskToDay={ this.props.copySubTaskToDay.bind(this) }
                 deleteTask={ this.props.deleteTask.bind(this) }
                 dropHandler={ this.props.dropHandler.bind(this) }
               />

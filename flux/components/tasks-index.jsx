@@ -106,6 +106,16 @@ export default class TasksIndex extends React.Component {
     });
   }
 
+  copySubTaskToDay(task) {
+    this.setState({
+      fetching: true
+    });
+    ClientActions.addTask({
+      timeframe: 'day',
+      task
+    });
+  }
+
   deleteTask(task) {
     this.setState({
       fetching: true
@@ -238,6 +248,7 @@ export default class TasksIndex extends React.Component {
               updateTask={ this.updateTask.bind(this) }
               addSubTask={ this.addSubTask.bind(this) }
               copySubTask={ this.copySubTask.bind(this) }
+              copySubTaskToDay={ this.copySubTaskToDay.bind(this) }
               deleteTask={ this.deleteTask.bind(this) }
               dropHandler={ this.dropHandler.bind(this) }
             />
