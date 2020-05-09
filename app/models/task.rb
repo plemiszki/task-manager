@@ -116,7 +116,7 @@ class Task < ActiveRecord::Base
   end
 
   def self.convert_recurring_tasks(tasks_array, user, timeframe, position)
-    recurring_tasks = RecurringTask.where(user_id: user.id, timeframe: timeframe, add_to_end: position == "end").order(:order)
+    recurring_tasks = RecurringTask.where(active: true, user_id: user.id, timeframe: timeframe, add_to_end: position == "end").order(:order)
     joint_tasks = []
     recurring_tasks.each do |task|
       recurrence = Montrose.r(JSON.parse(task.recurrence))

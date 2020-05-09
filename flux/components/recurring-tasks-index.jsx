@@ -191,7 +191,7 @@ export default class RecurringTasksIndex extends React.Component {
             { this.state[timeframe.toLowerCase() + "Tasks"].map((task, index) => {
               var backgroundColor = (task.jointUserId ? 'rgb(0,0,0)' : task.color);
               return([
-                <tr key={ task.id } onClick={ this.clickTask.bind(this) } data-id={ task.id } data-index={ index } data-section={ timeframe }>
+                <tr key={ task.id } className={ task.active ? '' : 'inactive' } onClick={ this.clickTask.bind(this) } data-id={ task.id } data-index={ index } data-section={ timeframe }>
                   <td>{ task.text }</td>
                   <td>{ task.recurrence }</td>
                   <td>{ task.addToEnd ? "End" : "Beginning" }</td>
