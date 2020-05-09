@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_23_163215) do
+ActiveRecord::Schema.define(version: 2020_05_09_125447) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(version: 2019_03_23_163215) do
     t.boolean "expires", default: false
     t.integer "joint_user_id"
     t.string "joint_text"
+    t.boolean "active", default: true
   end
 
   create_table "tasks", id: :serial, force: :cascade do |t|

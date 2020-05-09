@@ -112,14 +112,8 @@ export default class RecurringTaskDetails extends DetailsComponent {
                 <a onClick={ this.editRecurrence.bind(this) }>Edit</a>
                 { Details.renderFieldError([], []) }
               </div>
-              <div className="col-xs-2">
-                <h2>Expires</h2>
-                <select onChange={ () => {} } value={ HandyTools.convertBooleanToTFString(this.state.recurringTask.expires) } data-entity="recurringTask" data-field="expires">
-                  <option value="t">Yes</option>
-                  <option value="f">No</option>
-                </select>
-                { Details.renderFieldError([], []) }
-              </div>
+              { Details.renderDropDown.bind(this)({ columnWidth: 1, boolean: true, entity: 'recurringTask', property: 'expires' }) }
+              { Details.renderDropDown.bind(this)({ columnWidth: 1, boolean: true, entity: 'recurringTask', property: 'active' }) }
               <div className="col-xs-3">
                 <h2>Joint User</h2>
                 <select onChange={ () => {} } value={ this.state.recurringTask.jointUserId || '' } data-entity="recurringTask" data-field="jointUserId">

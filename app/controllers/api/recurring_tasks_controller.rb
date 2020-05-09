@@ -68,7 +68,7 @@ class Api::RecurringTasksController < ActionController::Base
   private
 
   def recurring_task_params
-    params[:recurring_task].permit(:text, :color, :timeframe, :recurrence, :add_to_end, :expires, :joint_user_id, :joint_text, :order)
+    params[:recurring_task].permit(:text, :color, :timeframe, :recurrence, :add_to_end, :expires, :joint_user_id, :joint_text, :order, :active)
   end
 
 end

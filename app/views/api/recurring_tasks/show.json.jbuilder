@@ -8,6 +8,7 @@ json.recurringTasks @recurring_tasks do |recurringTask|
   json.expires recurringTask.expires
   json.jointUserId recurringTask.joint_user_id.to_s || ""
   json.jointText recurringTask.joint_text || ""
+  json.active recurringTask.active
 end
 json.users @users do |user|
   json.id user.id
