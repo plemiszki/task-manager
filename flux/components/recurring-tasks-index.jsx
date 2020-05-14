@@ -202,7 +202,7 @@ export default class RecurringTasksIndex extends React.Component {
                   <td><div className="x-button"></div></td>
                 </tr>,
                 <tr key={ `${task.id}-drop` } className="drop-zone" data-index={ index } data-section={ timeframe }>
-                  <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                  <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                 </tr>
               ]);
             }) }
