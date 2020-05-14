@@ -78,7 +78,7 @@ export default class TaskIndexItem extends React.Component {
   }
 
   clickExpand() {
-    var task = this.state.task;
+    let task = this.state.task;
     task.expanded = !task.expanded;
     this.setState({
       task: task
@@ -94,7 +94,7 @@ export default class TaskIndexItem extends React.Component {
 
   finishedTask(e) {
     e.preventDefault();
-    var task = this.state.task;
+    let task = this.state.task;
     task.complete = !task.complete;
     this.setState({
       task: task
@@ -109,9 +109,9 @@ export default class TaskIndexItem extends React.Component {
   }
 
   pickColor(e) {
-    var style = e.target.getAttribute('style');
-    var color = style.split('(')[1].slice(0, -2);
-    var task = this.state.task;
+    let style = e.target.getAttribute('style');
+    let color = style.split('(')[1].slice(0, -2);
+    let task = this.state.task;
     task.color = color;
     this.setState({
       task: task
@@ -150,12 +150,12 @@ export default class TaskIndexItem extends React.Component {
   }
 
   createTaskId() {
-    var currentId = this.props.parentId || this.props.task.timeframe;
+    let currentId = this.props.parentId || this.props.task.timeframe;
     return currentId + "-" + this.props.index;
   }
 
   createDropAreaId() {
-    var currentId = this.props.parentId || this.props.task.timeframe;
+    let currentId = this.props.parentId || this.props.task.timeframe;
     return currentId + "-" + this.props.index + "-drop";
   }
 

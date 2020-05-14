@@ -1,6 +1,6 @@
 var React = require('react');
 
-$(document).ready(function() {
+$(document).ready(() => {
   Common.initialize();
 });
 
@@ -35,7 +35,7 @@ Common = {
         return false;
       }
     } else {
-      var numbers = {day: 1, weekend: 2, month: 3, year: 4, life: 5};
+      const numbers = { day: 1, weekend: 2, month: 3, year: 4, life: 5, backlog: 6 };
       if (dropZoneParentId == "" && (numbers[draggedTimeFrame] > numbers[dropZoneTimeFrame])) {
         return true;
       }

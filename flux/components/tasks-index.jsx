@@ -9,7 +9,8 @@ import ErrorStore from '../stores/error-store.js'
 import TasksIndexItem from './tasks-index-item.jsx'
 
 const nextShortestTimeframe = {
-  'lifetime': 'year',
+  'backlog': 'life',
+  'life': 'year',
   'year': 'month',
   'month': 'weekend',
   'weekend': 'day'
@@ -124,16 +125,16 @@ export default class TasksIndex extends React.Component {
   }
 
   dropHandler(e, ui) {
-    var draggedTimeFrame = ui.draggable.attr('id').split('-')[0];
-    var droppedTimeFrame = e.target.getAttribute('id').split('-')[0];
-    var draggedIndex = this.getIndexFromId(ui.draggable.attr('id'));
-    var dropZoneArray = e.target.getAttribute('id').split('-');
-    var dropZoneIndex = dropZoneArray[dropZoneArray.length - 2];
+    let draggedTimeFrame = ui.draggable.attr('id').split('-')[0];
+    let droppedTimeFrame = e.target.getAttribute('id').split('-')[0];
+    let draggedIndex = this.getIndexFromId(ui.draggable.attr('id'));
+    let dropZoneArray = e.target.getAttribute('id').split('-');
+    let dropZoneIndex = dropZoneArray[dropZoneArray.length - 2];
     if (dropZoneIndex == "top") { dropZoneIndex = -1; }
 
-    var hash = {};
-    var parent = e.target.parentElement;
-    var parentId, $tasks, timeframe;
+    let hash = {};
+    let parent = e.target.parentElement;
+    let parentId, $tasks, timeframe;
     if (parent.classList[0] == "tasks-index") { // top drop zone
       parentId = parent.parentElement.getAttribute('id');
       $tasks = $('#' + parentId + ' > .tasks-index > .group > .task');
@@ -144,7 +145,7 @@ export default class TasksIndex extends React.Component {
       parentId = parent.getAttribute('id');
       $tasks = $('#' + parentId + ' .task'); // <-- this will grab all of the child tasks within the subtask, even grandchildren (etc.) not involved in the rearrange
       var properLevelsDeep = parentId.split('-').length - 1;
-      $tasks = $tasks.filter(function(index, task) {
+      $tasks = $tasks.filter((index, task) => {
         var levelsDeep = task.id.split('-').length - 1;
         return properLevelsDeep === levelsDeep;
       });
@@ -152,17 +153,17 @@ export default class TasksIndex extends React.Component {
       parentId = parent.parentElement.parentElement.children[0].getAttribute('id');
       $tasks = $('#subtasks-' + parentId + ' .task');
       var properLevelsDeep = parentId.split('-').length;
-      $tasks = $tasks.filter(function(index, task) {
+      $tasks = $tasks.filter((index, task) => {
         var levelsDeep = task.id.split('-').length - 1;
         return properLevelsDeep === levelsDeep;
       });
     }
 
-    $tasks.each(function(index, task) {
+    $tasks.each((index, task) => {
       var index = this.getIndexFromId(task.getAttribute('id'));
       var id = task.dataset.taskid;
       hash[index] = +id;
-    }.bind(this))
+    })
 
     var newHash;
     this.setState({
@@ -260,26 +261,30 @@ export default class TasksIndex extends React.Component {
 
   renderHeader() {
     switch (this.props.timeframe) {
-      case "day":
+      case 'day':
         return(
           <h1>Today</h1>
         )
-      case "weekend":
-        var text = this.state.longWeekend ? "Long Weekend" : "Weekend";
+      case 'weekend':
+        var text = this.state.longWeekend ? 'Long Weekend' : 'Weekend';
         return(
-          <h1 id="weekend-header" onClick={this.clickWeekend}>{text}</h1>
+          <h1 id="weekend-header" onClick={ this.clickWeekend }>{ text }</h1>
         )
-      case "month":
+      case 'month':
         return(
           <h1>This Month</h1>
         )
-      case "year":
+      case 'year':
         return(
           <h1>This Year</h1>
         )
-      case "life":
+      case 'life':
         return(
           <h1>Lifetime</h1>
+        )
+      case 'backlog':
+        return(
+          <h1>Backlog</h1>
         )
     }
   }
