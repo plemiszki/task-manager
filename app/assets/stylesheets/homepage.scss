@@ -129,7 +129,8 @@
       }
 
       .delete-button {
-        background: asset-data-url("delete.png") center center no-repeat;
+        background: asset-data-url("x.svg") center center no-repeat;
+        background-size: 100%;
       }
 
       .color-button {
