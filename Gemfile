@@ -1,12 +1,11 @@
 source 'https://rubygems.org'
-ruby '2.6.6'
+ruby '2.7.1'
 
 gem 'rails', '5.2.4.3'
 gem 'pg', '~> 0.18'
 
 gem 'bootstrap-sass'
 gem 'clearance', '~> 1.11'
-gem 'google-api-client', require: 'google/apis/calendar_v3'
 gem 'httparty'
 gem 'jbuilder', '~> 2.5'
 gem 'jquery-rails'
