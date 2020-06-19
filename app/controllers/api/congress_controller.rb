@@ -19,15 +19,17 @@ class Api::CongressController < ActionController::Base
     house_repubs = congressmen.select { |member| member["party"] == "R" }
 
     render json: {
-      senate: {
-        dems: senate_dems.length,
-        repubs: senate_repubs.length,
-        dems_up: senate_dems_up.length,
-        repubs_up: senate_repubs_up.length
-      },
-      house: {
-        dems: house_dems.length,
-        repubs: house_repubs.length
+      congress: {
+        senate: {
+          dems: senate_dems.length,
+          repubs: senate_repubs.length,
+          dems_up: senate_dems_up.length,
+          repubs_up: senate_repubs_up.length
+        },
+        house: {
+          dems: house_dems.length,
+          repubs: house_repubs.length
+        }
       }
     }
   end

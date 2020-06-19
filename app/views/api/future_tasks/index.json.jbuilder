@@ -1,4 +1,4 @@
-json.tasks @future_tasks do |task|
+json.futureTasks @future_tasks do |task|
   json.id task.id
   json.text task.text
   json.date task.date

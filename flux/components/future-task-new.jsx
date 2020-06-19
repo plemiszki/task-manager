@@ -1,13 +1,15 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import Moment from 'moment'
 import { Common, Details } from 'handy-components'
 import HandyTools from 'handy-tools'
-import ErrorsStore from '../stores/errors-store.js'
-import ClientActions from '../actions/client-actions.js'
 import DetailsComponent from './_details.jsx'
 import { ERRORS } from '../errors.js'
+import { createEntity } from '../actions/index'
 
-export default class FutureTaskNew extends DetailsComponent {
+class FutureTaskNew extends DetailsComponent {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -24,19 +26,7 @@ export default class FutureTaskNew extends DetailsComponent {
   }
 
   componentDidMount() {
-    this.errorsListener = ErrorsStore.addListener(this.getErrors.bind(this));
     HandyTools.setUpNiceSelect({ selector: 'select', func: Details.changeField.bind(this, this.changeFieldArgs()) });
-  }
-
-  componentWillUnmount() {
-    this.errorsListener.remove();
-  }
-
-  getErrors() {
-    this.setState({
-      fetching: false,
-      errors: ErrorsStore.all()
-    });
   }
 
   changeFieldArgs() {
@@ -50,7 +40,18 @@ export default class FutureTaskNew extends DetailsComponent {
     this.setState({
       fetching: true
     });
-    ClientActions.standardCreate('future_tasks', 'future_task', this.state.futureTask);
+    this.props.createEntity({
+      directory: 'future_tasks',
+      entityName: 'futureTask',
+      entity: this.state.futureTask
+    }).then(() => {
+      this.props.afterCreate(this.props.futureTasks);
+    }, () => {
+      this.setState({
+        fetching: false,
+        errors: this.props.errors
+      });
+    });
   }
 
   render() {
@@ -102,3 +103,13 @@ export default class FutureTaskNew extends DetailsComponent {
     );
   }
 }
+
+const mapStateToProps = (reducers) => {
+  return reducers.standardReducer;
+};
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ createEntity }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FutureTaskNew);

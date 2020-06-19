@@ -1,10 +1,11 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import Modal from 'react-modal'
 import { Common, Index } from 'handy-components'
 import HandyTools from 'handy-tools'
-import ClientActions from '../actions/client-actions.js'
-import RecipesStore from '../stores/recipes-store.js'
 import RecipeNew from './recipe-new.jsx'
+import { fetchEntities, deleteEntity } from '../actions/index'
 
 const ModalStyles = {
   overlay: {
@@ -19,7 +20,7 @@ const ModalStyles = {
   }
 };
 
-export default class RecipesIndex extends React.Component {
+class RecipesIndex extends React.Component {
 
   constructor(props) {
     super(props);
@@ -31,16 +32,12 @@ export default class RecipesIndex extends React.Component {
   }
 
   componentDidMount() {
-    this.recipesListener = RecipesStore.addListener(this.getRecipes.bind(this));
-    ClientActions.standardFetch('recipes');
-  }
-
-  getRecipes() {
-    this.setState({
-      fetching: false,
-      modalFetching: false,
-      modalOpen: false,
-      recipes: RecipesStore.all()
+    this.props.fetchEntities({ directory: 'recipes' }).then(() => {
+      this.setState({
+        fetching: false,
+        recipes: this.props.recipes,
+        modalOpen: false
+      });
     });
   }
 
@@ -60,7 +57,17 @@ export default class RecipesIndex extends React.Component {
     this.setState({
       fetching: true
     });
-    ClientActions.standardDelete('recipes', e.target.dataset.id);
+    this.props.deleteEntity({
+      directory: 'recipes',
+      id: e.target.dataset.id,
+      callback: (response) => {
+        this.setState({
+          fetching: false,
+          recipes: response.recipes,
+          modalOpen: false
+        });
+      }
+    });
   }
 
   render() {
@@ -82,7 +89,7 @@ export default class RecipesIndex extends React.Component {
                 </thead>
                 <tbody>
                   <tr className="below-header"><td></td><td></td><td></td></tr>
-                  { this.state.recipes.map(function(recipe) {
+                  { this.state.recipes.map((recipe) => {
                     return(
                       <tr key={ recipe.id }>
                         <td>
@@ -98,7 +105,7 @@ export default class RecipesIndex extends React.Component {
                         <td><div className="x-button" onClick={ this.clickX.bind(this) } data-id={ recipe.id }></div></td>
                       </tr>
                     );
-                  }.bind(this)) }
+                  }) }
                 </tbody>
               </table>
               <div className="btn btn-info recipe-button" onClick={ this.clickNew.bind(this) }>Add New</div>
@@ -112,3 +119,13 @@ export default class RecipesIndex extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (reducers) => {
+  return reducers.standardReducer;
+};
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ fetchEntities, deleteEntity }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RecipesIndex);

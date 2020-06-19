@@ -8,8 +8,8 @@ Rails.application.routes.draw do
   get '/on_call_callback' => 'static_pages#on_call_callback'
 
   namespace :api, defaults: { format: :json } do
-    get '/user' => '/api/users#show'
-    post '/user' => '/api/users#update'
+    get '/user' => '/api/user#show'
+    post '/user' => '/api/user#update'
     get '/congress' => '/api/congress#show'
     resources :tasks, only: [:index, :create]
     patch '/tasks' => '/api/tasks#update'

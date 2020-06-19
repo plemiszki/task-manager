@@ -1,14 +1,14 @@
-class Api::UsersController < ActionController::Base
+class Api::UserController < ActionController::Base
 
   include Clearance::Controller
 
   def show
-    render json: current_user
+    render json: { user: current_user }
   end
 
   def update
     current_user.update(user_params)
-    render json: current_user
+    render json: { user: current_user }
   end
 
   private

@@ -1,15 +1,15 @@
-import React from 'react';
-import ClientActions from '../actions/client-actions.js';
-import UserStore from '../stores/user-store.js';
-import CongressStore from '../stores/congress-store.js';
+import React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { fetchEntity } from '../actions/index'
 
-export default class CurrentUser extends React.Component {
+class CurrentUser extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
       user: null,
-      congressObj: {
+      congress: {
         senate: {},
         house: {}
       }
@@ -17,27 +17,22 @@ export default class CurrentUser extends React.Component {
   }
 
   componentDidMount() {
-    this.userListener = UserStore.addListener(this.getUser.bind(this));
-    this.congressListener = CongressStore.addListener(this.getCongress.bind(this));
-    ClientActions.fetchUser();
-  }
-
-  getUser() {
-    this.setState({
-      user: UserStore.user()
+    this.props.fetchEntity({ url: '/api/user' }).then(() => {
+      this.setState({
+        user: this.props.user
+      });
     });
-  }
-
-  getCongress() {
-    this.setState({
-      congressObj: CongressStore.obj()
+    this.props.fetchEntity({ url: '/api/congress' }).then(() => {
+      this.setState({
+        congress: this.props.congress
+      });
     });
   }
 
   houseClass(chamber) {
-    if (this.state.congressObj[chamber].dems == this.state.congressObj[chamber].repubs) {
+    if (this.state.congress[chamber].dems == this.state.congress[chamber].repubs) {
       return '';
-    } else if (this.state.congressObj[chamber].dems > this.state.congressObj[chamber].repubs) {
+    } else if (this.state.congress[chamber].dems > this.state.congress[chamber].repubs) {
       return 'd-majority';
     } else {
       return 'r-majority';
@@ -45,6 +40,7 @@ export default class CurrentUser extends React.Component {
   }
 
   render() {
+    console.log(this.state);
     return(
       <div className="container widened-container">
         <div className="row">
@@ -61,10 +57,10 @@ export default class CurrentUser extends React.Component {
               <div className="widget congress">
                 <img src={ Images.democrat } />
                 <div>
-                  <p className={ this.houseClass('senate') }>{ this.state.congressObj.senate.dems } - Senate - { this.state.congressObj.senate.repubs }</p>
-                  <p className="elections">{ this.state.congressObj.senate.dems_up } - 2020 Elections - { this.state.congressObj.senate.repubs_up }</p>
+                  <p className={ this.houseClass('senate') }>{ this.state.congress.senate.dems } - Senate - { this.state.congress.senate.repubs }</p>
+                  <p className="elections">{ this.state.congress.senate.dems_up } - 2020 Elections - { this.state.congress.senate.repubs_up }</p>
                   <hr />
-                  <p className={ this.houseClass('house') }>{ this.state.congressObj.house.dems } - House - { this.state.congressObj.house.repubs }</p>
+                  <p className={ this.houseClass('house') }>{ this.state.congress.house.dems } - House - { this.state.congress.house.repubs }</p>
                 </div>
                 <img src={ Images.republican } />
               </div>
@@ -75,3 +71,13 @@ export default class CurrentUser extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (reducers) => {
+  return reducers.standardReducer;
+};
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ fetchEntity }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CurrentUser);

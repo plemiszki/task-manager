@@ -1,18 +1,27 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import ReactModal from 'react-modal';
-import CurrentUser from './components/current-user.jsx';
-import TasksIndex from './components/tasks-index.jsx';
-import FutureTasksIndex from './components/future-tasks-index.jsx';
-import RecurringTasksIndex from './components/recurring-tasks-index.jsx';
-import RecurringTaskDetails from './components/recurring-task-details.jsx';
-import RecipesIndex from './components/recipes-index.jsx';
-import RecipeDetails from './components/recipe-details.jsx';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
+import ReactModal from 'react-modal'
+import CurrentUser from './components/current-user.jsx'
+import TasksIndex from './components/tasks-index.jsx'
+import FutureTasksIndex from './components/future-tasks-index.jsx'
+import RecurringTasksIndex from './components/recurring-tasks-index.jsx'
+import RecurringTaskDetails from './components/recurring-task-details.jsx'
+import RecipesIndex from './components/recipes-index.jsx'
+import RecipeDetails from './components/recipe-details.jsx'
+
+import configureStore from './store/store'
+let store = configureStore();
 
 $(document).ready(() => {
   ReactModal.setAppElement(document.body);
   if ($('#current-user')[0]) {
-    ReactDOM.render(<CurrentUser />, document.getElementById("current-user"));
+    ReactDOM.render(
+      <Provider store={ store }>
+        <CurrentUser />
+      </Provider>,
+      document.getElementById("current-user")
+    );
   }
   if ($('#tasks-index-day')[0]) {
     ReactDOM.render(<TasksIndex timeframe="day" />, document.getElementById("tasks-index-day"));
@@ -23,7 +32,12 @@ $(document).ready(() => {
     ReactDOM.render(<TasksIndex timeframe="backlog" />, document.getElementById("tasks-index-backlog"));
   }
   if ($('#future-tasks-index')[0]) {
-    ReactDOM.render(<FutureTasksIndex />, document.getElementById("future-tasks-index"));
+    ReactDOM.render(
+      <Provider store={ store }>
+        <FutureTasksIndex />
+      </Provider>,
+      document.getElementById("future-tasks-index")
+    );
   }
   if ($('#recurring-tasks-index')[0]) {
     ReactDOM.render(<RecurringTasksIndex />, document.getElementById("recurring-tasks-index"));
@@ -32,7 +46,12 @@ $(document).ready(() => {
     ReactDOM.render(<RecurringTaskDetails />, document.getElementById("recurring-task-details"));
   }
   if ($('#recipes-index')[0]) {
-    ReactDOM.render(<RecipesIndex />, document.getElementById("recipes-index"));
+    ReactDOM.render(
+      <Provider store={ store }>
+        <RecipesIndex />
+      </Provider>,
+      document.getElementById("recipes-index")
+    );
   }
   if ($('#recipe-details')[0]) {
     ReactDOM.render(<RecipeDetails />, document.getElementById("recipe-details"));

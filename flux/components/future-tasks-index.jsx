@@ -1,11 +1,12 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import Modal from 'react-modal'
 import Moment from 'moment'
 import { Common, Index } from 'handy-components'
 import HandyTools from 'handy-tools'
-import ClientActions from '../actions/client-actions.js'
-import FutureTasksStore from '../stores/future-tasks-store.js'
 import FutureTaskNew from './future-task-new.jsx'
+import { fetchEntities, deleteEntity } from '../actions/index'
 
 const ModalStyles = {
   overlay: {
@@ -20,28 +21,24 @@ const ModalStyles = {
   }
 };
 
-export default class FutureTasksIndex extends React.Component {
+class FutureTasksIndex extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
       modalOpen: false,
       fetching: true,
-      tasks: []
+      futureTasks: []
     }
   }
 
   componentDidMount() {
-    this.tasksListener = FutureTasksStore.addListener(this.getFutureTasks.bind(this));
-    ClientActions.fetchFutureTasks();
-  }
-
-  getFutureTasks() {
-    this.setState({
-      fetching: false,
-      modalFetching: false,
-      modalOpen: false,
-      tasks: FutureTasksStore.all()
+    this.props.fetchEntities({ directory: 'future_tasks' }).then(() => {
+      this.setState({
+        fetching: false,
+        futureTasks: this.props.futureTasks,
+        modalOpen: false
+      });
     });
   }
 
@@ -51,22 +48,26 @@ export default class FutureTasksIndex extends React.Component {
     });
   }
 
-  clickXButton(e) {
+  clickX(e) {
     this.setState({
       fetching: true
     });
-    ClientActions.deleteFutureTask(e.target.dataset.id);
+    this.props.deleteEntity({
+      directory: 'future_tasks',
+      id: e.target.dataset.id,
+      callback: (response) => {
+        this.setState({
+          fetching: false,
+          futureTasks: response.futureTasks
+        });
+      }
+    });
   }
 
   closeModal() {
     this.setState({
       modalOpen: false
     });
-  }
-
-  clickColor(e) {
-    $('.color').removeClass('selected');
-    e.target.classList.add('selected');
   }
 
   render() {
@@ -91,7 +92,7 @@ export default class FutureTasksIndex extends React.Component {
                 </thead>
                 <tbody>
                   <tr className="below-header"><td></td><td></td><td></td><td></td><td></td></tr>
-                  { this.state.tasks.map(function(task) {
+                  { this.state.futureTasks.map((task) => {
                     return(
                       <tr key={ task.id }>
                         <td>{ Moment(task.date).format('l') }</td>
@@ -99,10 +100,10 @@ export default class FutureTasksIndex extends React.Component {
                         <td>{ task.timeframe }</td>
                         <td>{ task.addToEnd ? "End" : "Beginning" }</td>
                         <td><div className="swatch" style={ { backgroundColor: task.color } }></div></td>
-                        <td><div className="x-button" onClick={ this.clickXButton.bind(this) } data-id={ task.id }></div></td>
+                        <td><div className="x-button" onClick={ this.clickX.bind(this) } data-id={ task.id }></div></td>
                       </tr>
                     );
-                  }.bind(this)) }
+                  }) }
                 </tbody>
               </table>
               <div className="btn btn-info" onClick={ this.clickNew.bind(this) }>Add New</div>
@@ -110,9 +111,19 @@ export default class FutureTasksIndex extends React.Component {
           </div>
         </div>
         <Modal isOpen={ this.state.modalOpen } onRequestClose={ this.closeModal.bind(this) } contentLabel="Modal" style={ ModalStyles }>
-          <FutureTaskNew />
+          <FutureTaskNew afterCreate={ (futureTasks) => { this.setState({ futureTasks, modalOpen: false }) } } />
         </Modal>
       </div>
     );
   }
 }
+
+const mapStateToProps = (reducers) => {
+  return reducers.standardReducer;
+};
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ fetchEntities, deleteEntity }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FutureTasksIndex);
