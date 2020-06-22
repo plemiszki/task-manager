@@ -224,7 +224,9 @@ class Api::TasksController < ActionController::Base
         end
       end
     end
-    render json: Task.where(user_id: current_user.id).order(:order)
+
+    get_timeframes
+    render 'index.json.jbuilder'
   end
 
   def destroy

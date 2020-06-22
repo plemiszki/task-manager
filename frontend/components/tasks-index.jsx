@@ -139,7 +139,7 @@ class TasksIndex extends React.Component {
   renderTimeframes() {
     return ['day', 'weekend', 'month', 'year', 'life', 'backlog'].map((timeframe) => {
       return(
-        <div key={ timeframe } className="col-xs-12 col-md-4">
+        <div key={ timeframe } id={ `tasks-index-${timeframe}` } className="col-xs-12 col-md-4">
           <TasksTimeframe
             fetching={ this.state.fetching }
             timeframe={ timeframe }

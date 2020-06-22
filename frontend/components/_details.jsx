@@ -2,8 +2,6 @@ import React from 'react'
 import Modal from 'react-modal'
 import { Common, Details } from 'handy-components'
 import HandyTools from 'handy-tools'
-import ClientActions from '../actions/client-actions.js'
-import ErrorsStore from '../stores/errors-store'
 import Recurrence from './recurrence.jsx'
 import ChangeCase from 'change-case'
 
@@ -35,13 +33,6 @@ export default class _Details extends React.Component {
       fetching: true,
       justSaved: false
     };
-  }
-
-  getErrors() {
-    this.setState({
-      fetching: false,
-      errors: ErrorsStore.all()
-    });
   }
 
   closeModal() {
