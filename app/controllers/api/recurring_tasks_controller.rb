@@ -26,7 +26,7 @@ class Api::RecurringTasksController < ActionController::Base
   end
 
   def show
-    @recurring_tasks = RecurringTask.where(id: params[:id])
+    @recurring_task = RecurringTask.find(params[:id])
     @users = User.where.not(id: current_user.id)
     render 'show.json.jbuilder'
   end
@@ -34,7 +34,6 @@ class Api::RecurringTasksController < ActionController::Base
   def update
     @recurring_task = RecurringTask.find(params[:id])
     if @recurring_task.update(recurring_task_params)
-      @recurring_tasks = RecurringTask.where(id: params[:id])
       render 'show.json.jbuilder'
     else
       render json: @recurring_task.errors.full_messages, status: 422
@@ -54,6 +53,17 @@ class Api::RecurringTasksController < ActionController::Base
   end
 
   def rearrange
+    record_ids = RecurringTask.where(user_id: current_user.id, timeframe: params[:timeframe]).pluck(:id).sort
+    param_ids = params[:new_order].to_unsafe_h.values.map(&:to_i).sort
+    if record_ids != param_ids
+      if (record_ids - param_ids).count > 0
+        render json: { message: "ERROR: Missing IDs in request: #{record_ids - param_ids}" }, status: 422
+      else
+        render json: { message: "ERROR: Extra IDs in request: #{param_ids - record_ids}" }, status: 422
+      end
+      return
+    end
+
     params[:new_order].each do |index, id|
       recurring_task = RecurringTask.find(id)
       recurring_task.update(order: index)
@@ -61,7 +71,6 @@ class Api::RecurringTasksController < ActionController::Base
     @daily_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Day').order(:order)
     @weekend_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Weekend').order(:order)
     @monthly_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Month').order(:order)
-    @users = User.where.not(id: current_user.id)
     render 'index.json.jbuilder'
   end
 

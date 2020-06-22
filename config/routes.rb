@@ -9,12 +9,11 @@ Rails.application.routes.draw do
 
   namespace :api, defaults: { format: :json } do
     get '/user' => '/api/user#show'
-    post '/user' => '/api/user#update'
+    patch '/user' => '/api/user#update'
     get '/congress' => '/api/congress#show'
-    resources :tasks, only: [:index, :create]
+    resources :tasks, only: [:index, :create, :destroy]
     patch '/tasks' => '/api/tasks#update'
     patch '/tasks/rearrange' => '/api/tasks#rearrange'
-    delete '/tasks' => '/api/tasks#destroy'
     resources :future_tasks, only: [:index, :create, :destroy]
     patch '/recurring_tasks/rearrange' => '/api/recurring_tasks#rearrange'
     resources :recurring_tasks, only: [:index, :create, :show, :update, :destroy]

@@ -1,12 +1,14 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import { Common, Details } from 'handy-components'
 import HandyTools from 'handy-tools'
-import ErrorsStore from '../stores/errors-store.js'
-import ClientActions from '../actions/client-actions.js'
 import DetailsComponent from './_details.jsx'
 import { ERRORS } from '../errors.js'
+import { createEntity } from '../actions/index'
 
-export default class RecipeNew extends DetailsComponent {
+class RecipeNew extends DetailsComponent {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -19,14 +21,6 @@ export default class RecipeNew extends DetailsComponent {
       },
       errors: []
     };
-  }
-
-  componentDidMount() {
-    this.errorsListener = ErrorsStore.addListener(this.getErrors.bind(this));
-  }
-
-  componentWillUnmount() {
-    this.errorsListener.remove();
   }
 
   getErrors() {
@@ -47,7 +41,18 @@ export default class RecipeNew extends DetailsComponent {
     this.setState({
       fetching: true
     });
-    ClientActions.standardCreate('recipes', 'recipe', this.state.recipe);
+    this.props.createEntity({
+      directory: 'recipes',
+      entityName: 'recipe',
+      entity: this.state.recipe
+    }).then(() => {
+      this.props.afterCreate(this.props.recipes);
+    }, () => {
+      this.setState({
+        fetching: false,
+        errors: this.props.errors
+      });
+    });
   }
 
   render() {
@@ -90,3 +95,13 @@ export default class RecipeNew extends DetailsComponent {
     );
   }
 }
+
+const mapStateToProps = (reducers) => {
+  return reducers.standardReducer;
+};
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ createEntity }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RecipeNew);

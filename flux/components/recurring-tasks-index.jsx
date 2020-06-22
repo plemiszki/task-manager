@@ -1,10 +1,11 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import Modal from 'react-modal'
 import { Common, Index } from 'handy-components'
 import HandyTools from 'handy-tools'
-import ClientActions from '../actions/client-actions.js'
-import RecurringTasksStore from '../stores/recurring-tasks-store.js'
 import RecurringTaskNew from './recurring-task-new'
+import { fetchEntities, rearrangeEntities, deleteEntity } from '../actions/index'
 
 const ModalStyles = {
   overlay: {
@@ -19,7 +20,13 @@ const ModalStyles = {
   }
 };
 
-export default class RecurringTasksIndex extends React.Component {
+const TIMEFRAMES_FRONT_TO_BACK = {
+  daily: 'Day',
+  weekend: 'Weekend',
+  monthly: 'Month'
+}
+
+class RecurringTasksIndex extends React.Component {
 
   constructor(props) {
     super(props);
@@ -34,19 +41,14 @@ export default class RecurringTasksIndex extends React.Component {
   }
 
   componentDidMount() {
-    this.tasksListener = RecurringTasksStore.addListener(this.getRecurringTasks.bind(this));
-    ClientActions.fetchRecurringTasks();
-  }
-
-  getRecurringTasks() {
-    this.setState({
-      fetching: false,
-      modalFetching: false,
-      modalOpen: false,
-      dailyTasks: RecurringTasksStore.dailyTasks(),
-      weekendTasks: RecurringTasksStore.weekendTasks(),
-      monthlyTasks: RecurringTasksStore.monthlyTasks(),
-      users: RecurringTasksStore.users()
+    this.props.fetchEntities({ directory: 'recurring_tasks' }).then(() => {
+      this.setState({
+        fetching: false,
+        dailyTasks: this.props.dailyTasks,
+        weekendTasks: this.props.weekendTasks,
+        monthlyTasks: this.props.monthlyTasks,
+        users: this.props.users
+      });
     });
   }
 
@@ -67,7 +69,17 @@ export default class RecurringTasksIndex extends React.Component {
       this.setState({
         fetching: true
       });
-      ClientActions.deleteRecurringTask(e.target.parentElement.parentElement.dataset.id);
+      this.props.deleteEntity({
+        directory: 'recurring_tasks',
+        id: e.target.parentElement.parentElement.dataset.id
+      }).then(() => {
+        this.setState({
+          fetching: false,
+          dailyTasks: this.props.dailyTasks,
+          weekendTasks: this.props.weekendTasks,
+          monthlyTasks: this.props.monthlyTasks
+        });
+      });
     } else if (e.target.classList.contains('handle')) {
       // do nothing
     } else {
@@ -142,8 +154,31 @@ export default class RecurringTasksIndex extends React.Component {
           currentOrder[task.order] = task.id;
         });
     }
-    let newOrder = HandyTools.rearrangeFields(currentOrder, draggedIndex, dropZoneIndex);
-    ClientActions.rearrangeRecurringTasks(newOrder);
+    let newOrder = HandyTools.rearrangeFields({ currentOrder, draggedIndex, dropZoneIndex });
+    this.setState({
+      fetching: true
+    });
+    this.props.rearrangeEntities({
+      directory: 'recurring_tasks',
+      data: { new_order: newOrder, timeframe: TIMEFRAMES_FRONT_TO_BACK[e.target.dataset.section] }
+    }).then(() => {
+      this.setState({
+        fetching: false,
+        dailyTasks: this.props.dailyTasks,
+        weekendTasks: this.props.weekendTasks,
+        monthlyTasks: this.props.monthlyTasks
+      });
+    });
+  }
+
+  afterCreate(response) {
+    this.setState({
+      fetching: false,
+      modalOpen: false,
+      dailyTasks: this.props.dailyTasks,
+      weekendTasks: this.props.weekendTasks,
+      monthlyTasks: this.props.monthlyTasks
+    });
   }
 
   render() {
@@ -162,7 +197,7 @@ export default class RecurringTasksIndex extends React.Component {
           </div>
         </div>
         <Modal isOpen={ this.state.modalOpen } onRequestClose={ this.closeModal.bind(this) } contentLabel="Modal" style={ ModalStyles }>
-          <RecurringTaskNew users={ this.state.users } />
+          <RecurringTaskNew users={ this.state.users } afterCreate={ (response) => this.afterCreate(response) } />
         </Modal>
       </div>
     );
@@ -237,3 +272,13 @@ export default class RecurringTasksIndex extends React.Component {
     });
   }
 };
+
+const mapStateToProps = (reducers) => {
+  return reducers.standardReducer;
+};
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ fetchEntities, rearrangeEntities, deleteEntity }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RecurringTasksIndex);

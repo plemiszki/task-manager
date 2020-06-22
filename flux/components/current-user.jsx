@@ -40,7 +40,6 @@ class CurrentUser extends React.Component {
   }
 
   render() {
-    console.log(this.state);
     return(
       <div className="container widened-container">
         <div className="row">

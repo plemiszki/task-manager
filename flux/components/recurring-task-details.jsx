@@ -1,14 +1,13 @@
 import React from 'react'
-import Modal from 'react-modal'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import { Common, Details } from 'handy-components'
 import HandyTools from 'handy-tools'
-import ClientActions from '../actions/client-actions.js'
-import RecurringTasksStore from '../stores/recurring-tasks-store.js'
-import ErrorsStore from '../stores/errors-store'
 import DetailsComponent from './_details.jsx'
+import { fetchEntity, updateEntity } from '../actions/index'
 import { ERRORS } from '../errors.js'
 
-export default class RecurringTaskDetails extends DetailsComponent {
+class RecurringTaskDetails extends DetailsComponent {
 
   constructor(props) {
     super(props);
@@ -20,14 +19,20 @@ export default class RecurringTaskDetails extends DetailsComponent {
   }
 
   componentDidMount() {
-    this.errorsListener = ErrorsStore.addListener(this.getErrors.bind(this));
-    this.recurringTasksListener = RecurringTasksStore.addListener(this.getRecurringTask.bind(this));
-    ClientActions.standardFetch('recurring_tasks', window.location.pathname.split('/')[2]);
-  }
-
-  componentWillUnmount() {
-    this.errorsListener.remove();
-    this.recurringTasksListener.remove();
+    this.props.fetchEntity({
+      id: window.location.pathname.split('/')[2],
+      directory: 'recurring_tasks',
+      entityName: 'recurringTask'
+    }).then(() => {
+      this.setState({
+        fetching: false,
+        recurringTask: this.props.recurringTask,
+        recurringTaskSaved: HandyTools.deepCopy(this.props.recurringTask),
+        changesToSave: false
+      }, () => {
+        HandyTools.setUpNiceSelect({ selector: 'select', func: Details.changeField.bind(this, this.changeFieldArgs()) });
+      });
+    });
   }
 
   checkForChanges() {
@@ -68,8 +73,26 @@ export default class RecurringTaskDetails extends DetailsComponent {
     this.setState({
       fetching: true,
       justSaved: true
+    }, () => {
+      this.props.updateEntity({
+        id: window.location.pathname.split('/')[2],
+        directory: 'recurring_tasks',
+        entity: this.state.recurringTask,
+        entityName: 'recurringTask'
+      }).then(() => {
+        this.setState({
+          fetching: false,
+          recurringTask: this.props.recurringTask,
+          recurringTaskSaved: HandyTools.deepCopy(this.props.recurringTask),
+          changesToSave: false
+        });
+      }, () => {
+        this.setState({
+          fetching: false,
+          errors: this.props.errors
+        });
+      });
     });
-    ClientActions.updateRecurringTask(this.state.recurringTask);
   }
 
   render() {
@@ -155,3 +178,13 @@ export default class RecurringTaskDetails extends DetailsComponent {
     );
   }
 };
+
+const mapStateToProps = (reducers) => {
+  return reducers.standardReducer;
+};
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ fetchEntity, updateEntity }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RecurringTaskDetails);

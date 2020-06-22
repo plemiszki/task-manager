@@ -53,55 +53,66 @@ class Api::TasksController < ActionController::Base
   ]
 
   def index
-    render json: Task.where(user_id: current_user.id).order(:order)
+    get_timeframes
+    render 'index.json.jbuilder'
   end
 
   def create
-    if params[:task]
+    if params[:duplicate_of]
       if existing_dup?
-        render json: [], status: 422
+        render_error = true
       else
-        @task = Task.new(task_params)
-        @task.user_id = current_user.id
-        unless params[:new_order]
-          @task.order = Task.where(user_id: current_user.id, timeframe: @task.timeframe).length
+        task = Task.find(params[:duplicate_of]).dup
+        task.duplicate_id = params[:duplicate_of]
+        task.timeframe = params[:timeframe]
+        if params[:position]
+          update_existing_positions({ timeframe: params[:timeframe], position: params[:position] })
+          task.order = params[:position]
+        else
+          task.order = Task.where(user: current_user, timeframe: params[:timeframe], parent_id: nil).length
         end
-        @task.save!
-        create_duplicate_subtasks(@task)
-        rearrange(params[:new_order] || {})
+        task.save!
+        create_duplicate_subtasks(task)
+      end
+    elsif params[:parent_id]
+      parent_task = Task.find(params[:parent_id])
+      tasks_length = Task.where(user_id: current_user.id, parent_id: params[:parent_id]).length
+      task = Task.new(user_id: current_user.id, timeframe: parent_task.timeframe, parent_id: parent_task.id, text: "New #{params[:timeframe]} task", order: tasks_length, color: parent_task.color)
+      task.save!
+
+      # expand parent task if necessary
+      unless parent_task.expanded
+        parent_task.update(expanded: true)
+      end
+
+      # if duplicates exist of the parent task, we need to create duplicates for the subtask
+      if parent_task
+        duped_tasks = Task.where(duplicate_id: parent_task.id)
+        while duped_tasks.length == 1
+          dup_parent_task = duped_tasks.first
+          dup_child_task = Task.new(user_id: current_user.id, timeframe: dup_parent_task.timeframe, parent_id: dup_parent_task.id, duplicate_id: task.id, text: task.text, color: task.color, order: tasks_length)
+          dup_child_task.save!
+          task = dup_child_task
+          duped_tasks = Task.where(duplicate_id: dup_parent_task.id)
+        end
       end
     else
-      tasks_length = Task.where(user_id: current_user.id, timeframe: params[:timeframe], parent_id: params[:parent_id]).length
-      @task = Task.new(user_id: current_user.id, timeframe: params[:timeframe], parent_id: params[:parent_id], text: "New #{params[:timeframe]} task", order: tasks_length)
+      tasks_length = Task.where(user_id: current_user.id, timeframe: params[:timeframe]).length
+      task = Task.new(
+        user_id: current_user.id,
+        timeframe: params[:timeframe],
+        text: "New #{params[:timeframe]} task",
+        order: tasks_length,
+        color: "210, 206, 200"
+      )
+      task.save!
+    end
 
-      # assign the proper color
-      color = "210, 206, 200"
-      if params[:parent_id]
-        @parent_task = Task.find(params[:parent_id])
-        color = @parent_task.color
-      end
-      @task.color = color
-      @task.save!
-
-      # expand parent task if a subtask was just created
-      if @parent_task && !@parent_task.expanded
-        @parent_task.update(expanded: true)
-      end
-
-      # if a subtask was added, and duplicates exist of the parent task, we need to create duplicates for the subtask
-      if @parent_task
-        duped_tasks = Task.where(duplicate_id: @parent_task.id)
-        while duped_tasks.length == 1
-          @dup_parent_task = duped_tasks.first
-          @dup_child_task = Task.new(user_id: current_user.id, timeframe: @dup_parent_task.timeframe, parent_id: @dup_parent_task.id, duplicate_id: @task.id, text: @task.text, color: @task.color, order: tasks_length)
-          @dup_child_task.save!
-
-          @task = @dup_child_task
-          duped_tasks = Task.where(duplicate_id: @dup_parent_task.id)
-        end
-      end
-
-      render json: Task.where(user_id: current_user.id).order(:order)
+    if render_error
+      render json: [], status: 422
+    else
+      get_timeframes
+      render 'index.json.jbuilder'
     end
   end
 
@@ -185,7 +196,9 @@ class Api::TasksController < ActionController::Base
         updating_dups = true
       end
     end
-    render json: Task.where(user_id: current_user.id).order(:order)
+
+    get_timeframes
+    render 'index.json.jbuilder'
   end
 
   def rearrange(tasks = params[:tasks])
@@ -215,12 +228,29 @@ class Api::TasksController < ActionController::Base
   end
 
   def destroy
-    @task = Task.find(params[:id])
-    Task.delete_task_and_subs_and_dups(@task)
-    render json: Task.where(user_id: current_user.id).order(:order)
+    Task.delete_task_and_subs_and_dups(Task.find(params[:id]))
+    get_timeframes
+    render 'index.json.jbuilder'
   end
 
   private
+
+  def update_existing_positions(timeframe:, position:)
+    tasks = Task.where(user: current_user, timeframe: timeframe, parent_id: nil).order(:order).to_a
+    tasks.insert(position.to_i, nil)
+    tasks.each_with_index do |task, index|
+      next if task.nil?
+      task.update!(order: index)
+    end
+  end
+
+  def get_timeframes
+    tasks = Task.where(user_id: current_user.id, parent_id: nil).includes(subtasks: [subtasks: [:subtasks]]).order(:order)
+    @timeframes = Hash.new { |h, k| h[k] = [] }
+    tasks.each do |task|
+      @timeframes[task.timeframe] << task.serialize
+    end
+  end
 
   def check_if_all_siblings_complete(task)
     return if !task.parent_id
@@ -234,7 +264,7 @@ class Api::TasksController < ActionController::Base
   end
 
   def existing_dup?
-    master_task = Task.find_by(id: params[:task][:duplicate_id])
+    master_task = Task.find(params[:duplicate_of])
     return true if Task.find_by(duplicate_id: master_task.id)
     tasks_queue = master_task.subtasks.to_a
     ids = []

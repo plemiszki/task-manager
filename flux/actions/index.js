@@ -15,14 +15,18 @@ export function fetchEntities(args) {
 }
 
 export function createEntity(args) {
-  let data = { [HandyTools.convertToUnderscore(args.entityName)]: HandyTools.convertObjectKeysToUnderscore(args.entity) };
+  let { url, entityName, entity, directory, additionalData } = args;
+  let data = {};
+  if (entityName && entity) {
+    data = { [HandyTools.convertToUnderscore(entityName)]: HandyTools.convertObjectKeysToUnderscore(entity) };
+  }
   if (args.additionalData) {
-    data = Object.assign(data, HandyTools.convertObjectKeysToUnderscore(args.additionalData));
+    data = Object.assign(data, HandyTools.convertObjectKeysToUnderscore(additionalData));
   }
   return (dispatch) => {
     return $.ajax({
       method: 'POST',
-      url: `/api/${args.directory}`,
+      url: url || `/api/${directory}`,
       data
     }).then(
       (response) => {
@@ -55,7 +59,7 @@ export function updateEntity(args) {
   return (dispatch) => {
     return $.ajax({
       method: 'PATCH',
-      url: `/api/${args.directory}/${args.id}`,
+      url: args.url || `/api/${args.directory}/${args.id}`,
       data: {
         [HandyTools.convertToUnderscore(args.entityName)]: HandyTools.convertObjectKeysToUnderscore(args.entity)
       }
@@ -73,18 +77,35 @@ export function updateEntity(args) {
 }
 
 export function deleteEntity(args) {
-  let { directory, id, callback } = args;
+  let { directory, id, callback, redirect } = args;
   return (dispatch) => {
     return $.ajax({
       method: 'DELETE',
       url: `/api/${directory}/${id}`
     }).then(
       (response) => {
-        if (callback) {
-          callback.call({}, response);
-        } else {
+        if (redirect) {
           window.location.pathname = `/${directory}`;
+        } else {
+          let obj = Object.assign(response, { type: 'DELETE_ENTITY' });
+          dispatch(obj);
         }
+      }
+    );
+  }
+}
+
+export function rearrangeEntities(args) {
+  let { directory, data } = args;
+  return (dispatch) => {
+    return $.ajax({
+      method: 'PATCH',
+      url: `/api/${directory}/rearrange`,
+      data
+    }).then(
+      (response) => {
+        let obj = Object.assign(response, { type: 'REARRANGE_ENTITIES' });
+        dispatch(obj);
       }
     );
   }

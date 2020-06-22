@@ -1,12 +1,13 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import { Common, Details } from 'handy-components'
 import HandyTools from 'handy-tools'
-import ErrorsStore from '../stores/errors-store.js'
-import ClientActions from '../actions/client-actions.js'
 import DetailsComponent from './_details.jsx'
 import { ERRORS } from '../errors.js'
+import { createEntity } from '../actions/index'
 
-export default class RecurringTaskNew extends DetailsComponent {
+class RecurringTaskNew extends DetailsComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -26,12 +27,7 @@ export default class RecurringTaskNew extends DetailsComponent {
   }
 
   componentDidMount() {
-    this.errorsListener = ErrorsStore.addListener(this.getErrors.bind(this));
     HandyTools.setUpNiceSelect({ selector: 'select', func: Details.changeField.bind(this, this.changeFieldArgs()) });
-  }
-
-  componentWillUnmount() {
-    this.errorsListener.remove();
   }
 
   getErrors() {
@@ -52,7 +48,18 @@ export default class RecurringTaskNew extends DetailsComponent {
     this.setState({
       fetching: true
     });
-    ClientActions.standardCreate('recurring_tasks', 'recurring_task', this.state.recurringTask);
+    this.props.createEntity({
+      directory: 'recurring_tasks',
+      entityName: 'recurringTask',
+      entity: this.state.recurringTask
+    }).then(() => {
+      this.props.afterCreate(this.props.recurringTasks);
+    }, () => {
+      this.setState({
+        fetching: false,
+        errors: this.props.errors
+      });
+    });
   }
 
   render() {
@@ -128,3 +135,13 @@ export default class RecurringTaskNew extends DetailsComponent {
     );
   }
 }
+
+const mapStateToProps = (reducers) => {
+  return reducers.standardReducer;
+};
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ createEntity }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RecurringTaskNew);

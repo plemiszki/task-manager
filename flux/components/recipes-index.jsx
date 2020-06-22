@@ -59,14 +59,13 @@ class RecipesIndex extends React.Component {
     });
     this.props.deleteEntity({
       directory: 'recipes',
-      id: e.target.dataset.id,
-      callback: (response) => {
-        this.setState({
-          fetching: false,
-          recipes: response.recipes,
-          modalOpen: false
-        });
-      }
+      id: e.target.dataset.id
+    }).then(() => {
+      this.setState({
+        fetching: false,
+        recipes: this.props.recipes,
+        modalOpen: false
+      });
     });
   }
 
@@ -113,7 +112,7 @@ class RecipesIndex extends React.Component {
           </div>
         </div>
         <Modal isOpen={ this.state.modalOpen } onRequestClose={ this.closeModal.bind(this) } contentLabel="Modal" style={ ModalStyles }>
-          <RecipeNew />
+          <RecipeNew afterCreate={ (recipes) => { this.setState({ recipes, modalOpen: false }) } } />
         </Modal>
       </div>
     );

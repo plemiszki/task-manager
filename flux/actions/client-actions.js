@@ -1,4 +1,4 @@
-var AppDispatcher = require('../dispatcher/dispatcher.js');
+// var AppDispatcher = require('../dispatcher/dispatcher.js');
 var ServerActions = require('../actions/server-actions.js');
 import HandyTools from 'handy-tools';
 

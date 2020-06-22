@@ -8,7 +8,7 @@ class Api::RecipesController < ActionController::Base
   end
 
   def show
-    @recipes = Recipe.where(id: params[:id])
+    @recipe = Recipe.find(params[:id])
     render 'show.json.jbuilder'
   end
 
@@ -25,7 +25,6 @@ class Api::RecipesController < ActionController::Base
   def update
     @recipe = Recipe.find(params[:id])
     if @recipe.update(recipe_params)
-      @recipes = Recipe.where(id: params[:id])
       render 'show.json.jbuilder'
     else
       render json: @recipe.errors.full_messages, status: 422

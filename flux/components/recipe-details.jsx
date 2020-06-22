@@ -1,14 +1,13 @@
 import React from 'react'
-import Modal from 'react-modal'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import { Common, Details } from 'handy-components'
 import HandyTools from 'handy-tools'
-import ClientActions from '../actions/client-actions.js'
-import RecipesStore from '../stores/recipes-store.js'
-import ErrorsStore from '../stores/errors-store'
 import DetailsComponent from './_details.jsx'
+import { fetchEntity, updateEntity } from '../actions/index'
 import { ERRORS } from '../errors.js'
 
-export default class RecipeDetails extends DetailsComponent {
+class RecipeDetails extends DetailsComponent {
 
   constructor(props) {
     super(props);
@@ -19,14 +18,18 @@ export default class RecipeDetails extends DetailsComponent {
   }
 
   componentDidMount() {
-    this.errorsListener = ErrorsStore.addListener(this.getErrors.bind(this));
-    this.recipesListener = RecipesStore.addListener(this.getRecipe.bind(this));
-    ClientActions.standardFetch('recipes', window.location.pathname.split('/')[2]);
-  }
-
-  componentWillUnmount() {
-    this.errorsListener.remove();
-    this.recipesListener.remove();
+    this.props.fetchEntity({
+      id: window.location.pathname.split('/')[2],
+      directory: 'recipes',
+      entityName: 'recipe'
+    }).then(() => {
+      this.setState({
+        fetching: false,
+        recipe: this.props.recipe,
+        recipeSaved: HandyTools.deepCopy(this.props.recipe),
+        changesToSave: false
+      });
+    });
   }
 
   checkForChanges() {
@@ -41,22 +44,30 @@ export default class RecipeDetails extends DetailsComponent {
     }
   }
 
-  getRecipe() {
-    var recipe = RecipesStore.find(window.location.pathname.split('/')[2]);
-    this.setState({
-      fetching: false,
-      changesToSave: false,
-      recipe: recipe,
-      recipeSaved: HandyTools.deepCopy(recipe)
-    });
-  }
-
   clickSave() {
     this.setState({
       fetching: true,
       justSaved: true
+    }, () => {
+      this.props.updateEntity({
+        id: window.location.pathname.split('/')[2],
+        directory: 'recipes',
+        entity: this.state.recipe,
+        entityName: 'recipe'
+      }).then(() => {
+        this.setState({
+          fetching: false,
+          recipe: this.props.recipe,
+          recipeSaved: HandyTools.deepCopy(this.props.recipe),
+          changesToSave: false
+        });
+      }, () => {
+        this.setState({
+          fetching: false,
+          errors: this.props.errors
+        });
+      });
     });
-    ClientActions.standardUpdate('recipes', 'recipe', this.state.recipe);
   }
 
   render() {
@@ -113,3 +124,13 @@ export default class RecipeDetails extends DetailsComponent {
     );
   }
 };
+
+const mapStateToProps = (reducers) => {
+  return reducers.standardReducer;
+};
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ fetchEntity, updateEntity }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RecipeDetails);

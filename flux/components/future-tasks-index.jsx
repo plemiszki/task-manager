@@ -36,8 +36,7 @@ class FutureTasksIndex extends React.Component {
     this.props.fetchEntities({ directory: 'future_tasks' }).then(() => {
       this.setState({
         fetching: false,
-        futureTasks: this.props.futureTasks,
-        modalOpen: false
+        futureTasks: this.props.futureTasks
       });
     });
   }
@@ -54,13 +53,12 @@ class FutureTasksIndex extends React.Component {
     });
     this.props.deleteEntity({
       directory: 'future_tasks',
-      id: e.target.dataset.id,
-      callback: (response) => {
-        this.setState({
-          fetching: false,
-          futureTasks: response.futureTasks
-        });
-      }
+      id: e.target.dataset.id
+    }).then(() => {
+      this.setState({
+        fetching: false,
+        futureTasks: this.props.futureTasks
+      });
     });
   }
 

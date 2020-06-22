@@ -1,15 +1,9 @@
 class Task < ActiveRecord::Base
 
-  has_many(
-    :subtasks,
-    class_name: "Task",
-    foreign_key: :parent_id,
-    primary_key: :id,
-    dependent: :destroy
-  )
-
   belongs_to :parent, class_name: "Task"
   belongs_to :user
+
+  has_many :subtasks, -> { order(:order) }, class_name: "Task", foreign_key: :parent_id, primary_key: :id, dependent: :destroy
 
   has_many(
     :duplicates,
@@ -24,6 +18,10 @@ class Task < ActiveRecord::Base
     foreign_key: :duplicate_id,
     primary_key: :id
   )
+
+  def serialize
+    self.serializable_hash(include: { subtasks: { include: { subtasks: { include: :subtasks } } } })
+  end
 
   def self.clear_daily_tasks
     tasks_to_delete = Task.where(timeframe: "day", parent_id: nil, complete: true) + Task.where(timeframe: "day", parent_id: nil, template: true)
