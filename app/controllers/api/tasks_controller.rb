@@ -63,6 +63,7 @@ class Api::TasksController < ActionController::Base
         render_error = true
       else
         task = Task.find(params[:duplicate_of]).dup
+        task.parent_id = nil
         task.duplicate_id = params[:duplicate_of]
         task.timeframe = params[:timeframe]
         if params[:position]
