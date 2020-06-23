@@ -91,9 +91,7 @@ class TasksTimeframe extends React.Component {
       fetching: true
     });
     if (draggedTimeFrame === droppedTimeFrame) {
-      console.log(hash);
       newHash = this.rearrangeFields(hash, draggedIndex, dropZoneIndex);
-      console.log(newHash);
       this.props.rearrangeTasks({
         newPositions: newHash
       });
@@ -109,9 +107,6 @@ class TasksTimeframe extends React.Component {
   }
 
   rearrangeFields(hash, draggedIndex, dropZoneIndex) {
-    console.log(hash);
-    console.log(draggedIndex);
-    console.log(dropZoneIndex);
     var result = {};
     var draggedTaskId;
     if (dropZoneIndex == -1) {
