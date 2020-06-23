@@ -149,7 +149,7 @@ class TasksTimeframe extends React.Component {
         { Common.renderSpinner(this.props.fetching) }
         { Common.renderGrayedOut(this.props.fetching, -10, -15) }
         { this.renderHeader() }
-        <a href="" onClick={ this.clickAdd.bind(this) }>Add Task</a>
+        <a className="add-task" href="" onClick={ this.clickAdd.bind(this) }>Add Task</a>
         <hr />
         <div id={ this.props.timeframe + '-top-drop' } className="drop-area"></div>
         { this.props.timeframeTasks.map((task, index) => {

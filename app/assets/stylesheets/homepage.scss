@@ -26,7 +26,7 @@
     margin-bottom: 10px;
   }
 
-  a {
+  a.add-task {
     display: inline-block;
     font-family: 'TeachableSans-SemiBold';
     font-size: 12px;
@@ -89,12 +89,13 @@
       }
 
       a.done-button {
-        background: asset-data-url("checkmark-white.svg") 75% 30% no-repeat;
-        background-size: 70%;
+        background: asset-data-url("check-white.svg") center center no-repeat;
+        background-size: 80%;
       }
 
       a.delete-button {
-        background: asset-data-url("delete-white.png") 45% 40% no-repeat;
+        background: asset-data-url("plus-white.svg") center center no-repeat;
+        background-size: 80%;
       }
 
       input.disabled {
@@ -113,8 +114,6 @@
 
       a {
         float: right;
-        border: solid 1px #5F5F5F;
-        border-radius: 100px;
         padding: 0;
         margin: 0;
         width: 13px;
@@ -124,13 +123,14 @@
       }
 
       .done-button {
-        background: asset-data-url("checkmark.svg") 75% 30% no-repeat;
-        background-size: 70%;
+        background: asset-data-url("check.svg") center center no-repeat;
+        background-size: 80%;
       }
 
       .delete-button {
-        background: asset-data-url("x.svg") center center no-repeat;
-        background-size: 100%;
+        background: asset-data-url("plus.svg") center center no-repeat;
+        background-size: 80%;
+        transform: rotate(45deg);
       }
 
       .color-button {
@@ -138,15 +138,13 @@
       }
 
       .add-subtask-button {
-        background-image: asset-data-url("inverted-triangle.png");
-        background-size: 100%;
-        background-position: center center;
-        background-repeat: no-repeat;
+        background: asset-data-url("plus.svg") center center no-repeat;
+        background-size: 70%;
       }
 
       .copy-subtask-button {
         background-image: asset-data-url("inverted-triangle.png");
-        background-size: 100%;
+        background-size: 90%;
         background-position: center center;
         background-repeat: no-repeat;
         transform: rotate(90deg);
