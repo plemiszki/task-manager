@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Common, Index } from 'handy-components'
+import ColorPicker from './color-picker'
 import HandyTools from 'handy-tools'
 import TasksCommon from '../../app/assets/javascripts/common.jsx'
 import TasksIndexItem from './tasks-index-item.jsx'
@@ -14,7 +15,8 @@ class TasksTimeframe extends React.Component {
     this.state = {
       fetching: true,
       tasks: [],
-      longWeekend: false
+      longWeekend: false,
+      showNewTaskColorPicker: false
     }
   }
 
@@ -38,10 +40,13 @@ class TasksTimeframe extends React.Component {
     }
   }
 
-  clickAdd(e) {
-    e.preventDefault();
+  addTask(color) {
+    this.setState({
+      showNewTaskColorPicker: false
+    });
     this.props.createTask({
-      timeframe: this.props.timeframe
+      timeframe: this.props.timeframe,
+      color
     });
   }
 
@@ -149,7 +154,7 @@ class TasksTimeframe extends React.Component {
         { Common.renderSpinner(this.props.fetching) }
         { Common.renderGrayedOut(this.props.fetching, -10, -15) }
         { this.renderHeader() }
-        <a className="add-task" href="" onClick={ this.clickAdd.bind(this) }>Add Task</a>
+        { this.renderAddButton() }
         <hr />
         <div id={ this.props.timeframe + '-top-drop' } className="drop-area"></div>
         { this.props.timeframeTasks.map((task, index) => {
@@ -198,6 +203,21 @@ class TasksTimeframe extends React.Component {
         return(
           <h1>Backlog</h1>
         )
+    }
+  }
+
+  renderAddButton() {
+    if (this.state.showNewTaskColorPicker) {
+      return(
+        <div className="color-picker-container">
+          <ColorPicker func={ (color) => { this.addTask(color) } } />
+          <div className="cancel-new" onClick={ Common.changeState.bind(this, 'showNewTaskColorPicker', false) }></div>
+        </div>
+      );
+    } else {
+      return(
+        <div className="add-task" href="" onClick={ Common.changeState.bind(this, 'showNewTaskColorPicker', true) }>Add Task</div>
+      );
     }
   }
 }

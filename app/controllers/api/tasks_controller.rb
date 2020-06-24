@@ -104,7 +104,7 @@ class Api::TasksController < ActionController::Base
         timeframe: params[:timeframe],
         text: "New #{params[:timeframe]} task",
         order: tasks_length,
-        color: "210, 206, 200"
+        color: params[:color]
       )
       task.save!
     end

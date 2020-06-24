@@ -26,7 +26,7 @@
     margin-bottom: 10px;
   }
 
-  a.add-task {
+  .add-task {
     display: inline-block;
     font-family: 'TeachableSans-SemiBold';
     font-size: 12px;
@@ -36,6 +36,54 @@
     border-radius: 100px;
     text-align: center;
     text-decoration: none;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  .color-picker-container {
+    width: 100%;
+    height: 37px;
+    margin-bottom: -6px;
+
+    .color-picker {
+      vertical-align: middle;
+    }
+
+    .cancel-new {
+      display: inline-block;
+      cursor: pointer;
+      background: asset-data-url("plus.svg") center center no-repeat;
+      background-size: 80%;
+      transform: rotate(45deg);
+      margin-left: 3px;
+      width: 15px;
+      height: 15px;
+      vertical-align: middle;
+    }
+  }
+
+  .color-picker {
+    display: inline-block;
+    background-color: white;
+    border: solid 1px black;
+    border-radius: 5px;
+    width: calc(100% - 35px);
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    padding: 5px 0 5px 5px;
+
+    div {
+      cursor: pointer;
+      display: block;
+      border: solid 1px transparent;
+      border-radius: 5px;
+      height: 100%;
+      width: calc(11.11% - 5px);
+      float: left;
+      margin-right: 5px;
+    }
   }
 
   .task {
@@ -160,27 +208,12 @@
     }
 
     .color-picker {
-      display: block;
       position: absolute;
-      background-color: white;
-      border: solid 1px black;
-      border-radius: 5px;
       width: calc(100% - 35px);
       height: 100%;
       left: 0;
       top: 0;
       z-index: 3;
-      padding: 5px 0 5px 5px;
-
-      div {
-        display: block;
-        border: solid 1px transparent;
-        border-radius: 5px;
-        height: 100%;
-        width: calc(11.11% - 5px);
-        float: left;
-        margin-right: 5px;
-      }
     }
 
     .click-area {

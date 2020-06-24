@@ -1,4 +1,5 @@
 import React from 'react'
+import ColorPicker from './color-picker'
 
 const nextShortestTimeframe = {
   'backlog': 'life',
@@ -15,7 +16,8 @@ export default class TaskIndexItem extends React.Component {
     this.state = {
       editing: false,
       task: this.props.task,
-      subtasks: this.props.task.subtasks || []
+      subtasks: this.props.task.subtasks || [],
+      showColorPicker: false
     }
   }
 
@@ -25,7 +27,6 @@ export default class TaskIndexItem extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    $('.color-picker').addClass('hidden');
     this.setState({
       task: nextProps.task,
       subtasks: nextProps.task.subtasks || []
@@ -111,16 +112,18 @@ export default class TaskIndexItem extends React.Component {
 
   clickColorPicker(e) {
     e.preventDefault();
-    $(e.target.parentElement.parentElement.children[1]).toggleClass('hidden');
+    let value = !this.state.showColorPicker;
+    this.setState({
+      showColorPicker: value
+    });
   }
 
-  pickColor(e) {
-    let style = e.target.getAttribute('style');
-    let color = style.split('(')[1].slice(0, -2);
+  changeColor(color) {
     let task = this.state.task;
     task.color = color;
     this.setState({
-      task: task
+      task: task,
+      showColorPicker: false
     }, () => {
       this.props.updateTask(this.state.task);
     })
@@ -216,17 +219,7 @@ export default class TaskIndexItem extends React.Component {
             <a href="" className={ "copy-subtask-button" + (((task.duplicateId || task.parentId) && task.timeframe !== 'day') ? "" : " hidden") } onClick={ this.copySubTask.bind(this) }></a>
             <a href="" className={ "copy-subtask-to-day-button" + (((task.duplicateId || task.parentId) && task.timeframe === 'month') ? "" : " hidden") } onClick={ this.copySubTaskToDay.bind(this) }></a>
           </div>
-          <div className="hidden color-picker">
-            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(234, 30, 30)' } }></div>
-            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(255, 175, 163)' } }></div>
-            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(255, 175, 36)' } }></div>
-            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(238, 244, 66)' } }></div>
-            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(92, 184, 92)' } }></div>
-            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(111, 138, 240)' } }></div>
-            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(181, 111, 240)' } }></div>
-            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(175, 96, 26)' } }></div>
-            <div onClick={ this.pickColor.bind(this) } style={ { 'backgroundColor': 'rgb(210, 206, 200)' } }></div>
-          </div>
+          { this.renderColorPicker() }
           <div className={ (editing ? "hidden" : (task.complete ? "check" : (subtasks.length == 0 ? "hidden" : (task.expanded ? "minus" : "plus")))) } onClick={ this.clickExpand.bind(this) }>
           </div>
           <div className="click-area" onClick={ this.clickText.bind(this) }>
@@ -238,6 +231,14 @@ export default class TaskIndexItem extends React.Component {
         { this.renderSubTasks() }
       </div>
     );
+  }
+
+  renderColorPicker() {
+    if (this.state.showColorPicker) {
+      return(
+        <ColorPicker func={ (color) => this.changeColor(color) } />
+      );
+    }
   }
 
   renderBottomDropArea() {
