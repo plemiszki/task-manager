@@ -125,6 +125,17 @@
       margin-left: 4px;
     }
 
+    .menu {
+      position: absolute;
+      background-color: white;
+      padding: 5px 10px;
+      border: solid 1px;
+      z-index: 5;
+      border-radius: 5px;
+      right: 0;
+      top: 37px;
+    }
+
     &.joint {
       background-color: black !important;
 
@@ -181,8 +192,9 @@
         transform: rotate(45deg);
       }
 
-      .color-button {
-        background: asset-data-url("color-wheel.png") center center no-repeat;
+      .menu-button {
+        background: asset-data-url("menu.svg") center center no-repeat;
+        background-size: 70%;
       }
 
       .add-subtask-button {

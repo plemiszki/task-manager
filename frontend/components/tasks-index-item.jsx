@@ -1,5 +1,6 @@
 import React from 'react'
 import ColorPicker from './color-picker'
+import { Common } from 'handy-components'
 
 const nextShortestTimeframe = {
   'backlog': 'life',
@@ -17,7 +18,8 @@ export default class TaskIndexItem extends React.Component {
       editing: false,
       task: this.props.task,
       subtasks: this.props.task.subtasks || [],
-      showColorPicker: false
+      showColorPicker: false,
+      menuOpen: false
     }
   }
 
@@ -110,11 +112,11 @@ export default class TaskIndexItem extends React.Component {
     });
   }
 
-  clickColorPicker(e) {
+  clickMenu(e) {
     e.preventDefault();
-    let value = !this.state.showColorPicker;
+    let value = !this.state.menuOpen;
     this.setState({
-      showColorPicker: value
+      menuOpen: value
     });
   }
 
@@ -206,22 +208,34 @@ export default class TaskIndexItem extends React.Component {
     return alteredText;
   }
 
+  mouseLeave(e) {
+    if (this.state.menuOpen) {
+      this.setState({
+        menuOpen: false
+      });
+    }
+  }
+
   render() {
     let { task, editing, subtasks } = this.state;
+    let menuOptions = [];
+    if (!task.duplicateId && !task.parentId) {
+      menuOptions.push({ label: 'Change Color', func: () => { this.setState({ showColorPicker: true, menuOpen: false }) } });
+    }
     return(
       <div className="group">
-        <div id={ this.createTaskId() } className={ "task" + (task.expanded ? " expanded" : "") + (task.duplicateId ? " duplicate" : "") + (task.jointId ? " joint" : "") } style={ this.taskStyle() } data-taskid={ this.props.task.id }>
+        <div id={ this.createTaskId() } className={ "task" + (task.expanded ? " expanded" : "") + (task.duplicateId ? " duplicate" : "") + (task.jointId ? " joint" : "") } style={ this.taskStyle() } data-taskid={ this.props.task.id } onMouseLeave={ this.mouseLeave.bind(this) }>
           <div className={ "controls" + (editing ? " hidden" : "") }>
             <a href="" className={ "delete-button" + (task.duplicateId && task.parentId ? " hidden" : "") } onClick={ this.deleteTask.bind(this) }></a>
             <a href="" className="done-button" onClick={ this.finishedTask.bind(this) }></a>
+            <a href="" className={ "menu-button" + (menuOptions.length > 0 ? "" : " hidden") } onClick={ this.clickMenu.bind(this) }></a>
             <a href="" className={ "add-subtask-button" + (task.duplicateId ? " hidden" : "")} onClick={ this.clickAddSubtask.bind(this) }></a>
-            <a href="" className={ "color-button" + ((task.duplicateId || task.parentId) ? " hidden" : "") } onClick={ this.clickColorPicker.bind(this) }></a>
             <a href="" className={ "copy-subtask-button" + (((task.duplicateId || task.parentId) && task.timeframe !== 'day') ? "" : " hidden") } onClick={ this.copySubTask.bind(this) }></a>
             <a href="" className={ "copy-subtask-to-day-button" + (((task.duplicateId || task.parentId) && task.timeframe === 'month') ? "" : " hidden") } onClick={ this.copySubTaskToDay.bind(this) }></a>
           </div>
           { this.renderColorPicker() }
-          <div className={ (editing ? "hidden" : (task.complete ? "check" : (subtasks.length == 0 ? "hidden" : (task.expanded ? "minus" : "plus")))) } onClick={ this.clickExpand.bind(this) }>
-          </div>
+          <div className={ (editing ? "hidden" : (task.complete ? "check" : (subtasks.length == 0 ? "hidden" : (task.expanded ? "minus" : "plus")))) } onClick={ this.clickExpand.bind(this) }></div>
+          { this.renderMenu(menuOptions) }
           <div className="click-area" onClick={ this.clickText.bind(this) }>
             <div className="handle"></div>
             <input className={ editing ? "" : "disabled" } disabled={ !editing } value={ this.formatTaskText.call(this) } onChange={ this.changeText.bind(this) } onKeyPress={ this.clickEnter.bind(this) } />
@@ -231,6 +245,21 @@ export default class TaskIndexItem extends React.Component {
         { this.renderSubTasks() }
       </div>
     );
+  }
+
+  renderMenu(menuOptions) {
+    if (this.state.menuOpen) {
+      return(
+        <ul className="menu">
+          { menuOptions.map((option, index) => {
+            console.log(option.func);
+            return(
+              <li key={ index } onClick={ option.func.bind(this) }>{ option.label }</li>
+            );
+          }) }
+        </ul>
+      );
+    }
   }
 
   renderColorPicker() {
