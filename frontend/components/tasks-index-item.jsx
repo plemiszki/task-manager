@@ -1,6 +1,5 @@
 import React from 'react'
 import ColorPicker from './color-picker'
-import { Common } from 'handy-components'
 
 const nextShortestTimeframe = {
   'backlog': 'life',
