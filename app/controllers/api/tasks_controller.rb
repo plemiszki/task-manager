@@ -202,6 +202,15 @@ class Api::TasksController < ActionController::Base
     render 'index.json.jbuilder'
   end
 
+  def convert_to_future
+    task = Task.find(params[:id])
+    task.convert_to_future_task!
+    task.delete
+    
+    get_timeframes
+    render 'index.json.jbuilder'
+  end
+
   def rearrange(tasks = params[:tasks])
     tasks.each do |index, id|
       task = Task.find(id)

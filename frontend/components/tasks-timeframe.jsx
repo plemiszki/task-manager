@@ -168,6 +168,7 @@ class TasksTimeframe extends React.Component {
               updateTask={ this.props.updateTask.bind(this) }
               copyTask={ this.props.copyTask.bind(this) }
               deleteTask={ this.props.deleteTask.bind(this) }
+              convertToFutureTask={ this.props.convertToFutureTask.bind(this) }
               dropHandler={ this.dropHandler.bind(this) }
             />
           );

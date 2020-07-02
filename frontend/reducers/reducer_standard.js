@@ -6,6 +6,7 @@ export default function(state = {}, action) {
   case 'UPDATE_ENTITY':
   case 'DELETE_ENTITY':
   case 'REARRANGE_ENTITIES':
+  case 'SEND_REQUEST':
     delete action["type"]
     return Object.assign({}, state, action);
   case 'ERRORS':

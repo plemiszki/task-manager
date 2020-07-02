@@ -23,6 +23,10 @@ class Task < ActiveRecord::Base
     self.serializable_hash(include: { subtasks: { include: { subtasks: { include: :subtasks } } } })
   end
 
+  def convert_to_future_task!
+    FutureTask.create!(text: text, timeframe: timeframe.capitalize, color: "rgb(#{color})", user_id: user_id, date: Date.today + 1.day, add_to_end: true)
+  end
+
   def self.clear_daily_tasks
     tasks_to_delete = Task.where(timeframe: "day", parent_id: nil, complete: true) + Task.where(timeframe: "day", parent_id: nil, template: true)
     tasks_to_delete += Task.where(timeframe: "weekend", parent_id: nil, complete: true) if Date.today.strftime("%A") == (User.first.long_weekend ? "Tuesday" : "Monday")

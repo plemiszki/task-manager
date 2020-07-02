@@ -5,7 +5,7 @@ import { Common, Index } from 'handy-components'
 import HandyTools from 'handy-tools'
 import TasksCommon from '../../app/assets/javascripts/common.jsx'
 import TasksTimeframe from './tasks-timeframe.jsx'
-import { fetchEntities, createEntity, fetchEntity, updateEntity, deleteEntity, rearrangeEntities } from '../actions/index'
+import { fetchEntities, createEntity, fetchEntity, updateEntity, deleteEntity, rearrangeEntities, sendRequest } from '../actions/index'
 
 class TasksIndex extends React.Component {
 
@@ -111,6 +111,21 @@ class TasksIndex extends React.Component {
     });
   }
 
+  convertToFutureTask(args) {
+    this.setState({
+      fetching: true
+    });
+    this.props.sendRequest({
+      directory: `/api/tasks/${args.id}/convert_to_future`,
+      method: 'post'
+    }).then(() => {
+      this.setState({
+        fetching: false,
+        tasks: this.props.tasks
+      });
+    });
+  }
+
   deleteTask(id) {
     this.setState({
       fetching: true
@@ -147,6 +162,7 @@ class TasksIndex extends React.Component {
             timeframeTasks={ this.state.tasks[timeframe] }
             createTask={ this.createTask.bind(this) }
             updateTask={ this.updateTask.bind(this) }
+            convertToFutureTask={ this.convertToFutureTask.bind(this) }
             copyTask={ this.copyTask.bind(this) }
             deleteTask={ this.deleteTask.bind(this) }
             rearrangeTasks={ this.rearrangeTasks.bind(this) }
@@ -166,7 +182,7 @@ const mapStateToProps = (reducers) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ fetchEntities, createEntity, fetchEntity, updateEntity, deleteEntity, rearrangeEntities }, dispatch);
+  return bindActionCreators({ fetchEntities, createEntity, fetchEntity, updateEntity, deleteEntity, rearrangeEntities, sendRequest }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(TasksIndex);

@@ -128,12 +128,24 @@
     .menu {
       position: absolute;
       background-color: white;
-      padding: 5px 10px;
       border: solid 1px;
       z-index: 5;
       border-radius: 5px;
       right: 0;
       top: 37px;
+
+      li {
+        padding: 5px 10px;
+        border-radius: 5px;
+
+        &:first-of-type, &:last-of-type {
+          padding: 10px 10px;
+        }
+
+        &:hover {
+          background-color: #EAEDED;
+        }
+      }
     }
 
     &.joint {

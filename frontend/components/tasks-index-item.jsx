@@ -130,6 +130,15 @@ export default class TaskIndexItem extends React.Component {
     })
   }
 
+  convertToFutureTask() {
+    this.setState({
+      menuOpen: false
+    });
+    this.props.convertToFutureTask({
+      id: this.state.task.id
+    });
+  }
+
   clickAddSubtask(e, task) {
     e.preventDefault();
     this.props.createTask({
@@ -219,7 +228,8 @@ export default class TaskIndexItem extends React.Component {
     let { task, editing, subtasks } = this.state;
     let menuOptions = [];
     if (!task.duplicateId && !task.parentId) {
-      menuOptions.push({ label: 'Change Color', func: () => { this.setState({ showColorPicker: true, menuOpen: false }) } });
+      menuOptions.push({ label: 'Change Color', func: () => { this.setState({ showColorPicker: !this.state.showColorPicker, menuOpen: false }) } });
+      menuOptions.push({ label: 'Do Tomorrow', func: (e) => { this.convertToFutureTask() } });
     }
     return(
       <div className="group">
@@ -251,7 +261,6 @@ export default class TaskIndexItem extends React.Component {
       return(
         <ul className="menu">
           { menuOptions.map((option, index) => {
-            console.log(option.func);
             return(
               <li key={ index } onClick={ option.func.bind(this) }>{ option.label }</li>
             );

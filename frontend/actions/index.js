@@ -110,3 +110,18 @@ export function rearrangeEntities(args) {
     );
   }
 }
+
+export function sendRequest(args) {
+  let { directory, method } = args;
+  return (dispatch) => {
+    return $.ajax({
+      method: args.method.toUpperCase(),
+      url: args.directory
+    }).then(
+      (response) => {
+        let obj = Object.assign(response, { type: 'SEND_REQUEST' });
+        dispatch(obj);
+      }
+    );
+  }
+}
