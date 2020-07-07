@@ -214,7 +214,7 @@ class Api::TasksController < ActionController::Base
 
   def move
     task = Task.find(params[:id])
-    siblings = Task.where(user: current_user, timeframe: task.timeframe, parent_id: nil)
+    siblings = Task.where(user: current_user, timeframe: task.timeframe, parent_id: nil).order(:order)
     task.update!(
       timeframe: params[:timeframe],
       order: Task.where(user: current_user, timeframe: params[:timeframe], parent_id: nil).length
