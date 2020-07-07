@@ -47,6 +47,7 @@ class Api::TasksController < ActionController::Base
     'nail clippers',
     'floss',
     'tissues',
+    'vitamin d',
     'sunscreen?',
     'advil?',
     'pepto bismol?'
@@ -206,7 +207,22 @@ class Api::TasksController < ActionController::Base
     task = Task.find(params[:id])
     task.convert_to_future_task!
     task.delete
-    
+
+    get_timeframes
+    render 'index.json.jbuilder'
+  end
+
+  def move
+    task = Task.find(params[:id])
+    siblings = Task.where(user: current_user, timeframe: task.timeframe, parent_id: nil)
+    task.update!(
+      timeframe: params[:timeframe],
+      order: Task.where(user: current_user, timeframe: params[:timeframe], parent_id: nil).length
+    )
+    siblings.each_with_index do |task, index|
+      task.update(order: index)
+    end
+
     get_timeframes
     render 'index.json.jbuilder'
   end

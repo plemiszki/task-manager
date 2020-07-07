@@ -94,6 +94,26 @@ class TasksIndex extends React.Component {
     });
   }
 
+  moveTask(args) {
+    let { timeframe, id } = args;
+    console.log(timeframe);
+    this.setState({
+      fetching: true
+    });
+    this.props.sendRequest({
+      directory: `/api/tasks/${id}/move`,
+      method: 'patch',
+      data: {
+        timeframe
+      }
+    }).then(() => {
+      this.setState({
+        fetching: false,
+        tasks: this.props.tasks
+      });
+    });
+  }
+
   rearrangeTasks(args) {
     this.setState({
       fetching: true
@@ -164,6 +184,7 @@ class TasksIndex extends React.Component {
             updateTask={ this.updateTask.bind(this) }
             convertToFutureTask={ this.convertToFutureTask.bind(this) }
             copyTask={ this.copyTask.bind(this) }
+            moveTask={ this.moveTask.bind(this) }
             deleteTask={ this.deleteTask.bind(this) }
             rearrangeTasks={ this.rearrangeTasks.bind(this) }
           />

@@ -1,5 +1,7 @@
 import React from 'react'
 import ColorPicker from './color-picker'
+import ChangeCase from 'change-case'
+import HandyTools from 'handy-tools'
 
 const nextShortestTimeframe = {
   'backlog': 'life',
@@ -147,22 +149,6 @@ export default class TaskIndexItem extends React.Component {
     });
   }
 
-  copySubTask(e) {
-    e.preventDefault();
-    this.props.copyTask({
-      timeframe: nextShortestTimeframe[this.state.task.timeframe],
-      duplicateOf: this.state.task.id
-    });
-  }
-
-  copySubTaskToDay(e) {
-    e.preventDefault();
-    this.props.copyTask({
-      timeframe: 'day',
-      duplicateOf: this.state.task.id
-    });
-  }
-
   dragStartHandler(e) {
     $('.task').addClass('dragging');
     $('.task, a, input').addClass('grabbing');
@@ -216,6 +202,28 @@ export default class TaskIndexItem extends React.Component {
     return alteredText;
   }
 
+  moveTask(e) {
+    let timeframe = e.target.dataset.timeframe;
+    this.setState({
+      menuOpen: false
+    });
+    this.props.moveTask({
+      id: this.state.task.id,
+      timeframe
+    });
+  }
+
+  copyTask(e) {
+    let timeframe = e.target.dataset.timeframe;
+    this.setState({
+      menuOpen: false
+    });
+    this.props.copyTask({
+      duplicateOf: this.state.task.id,
+      timeframe
+    });
+  }
+
   mouseLeave(e) {
     if (this.state.menuOpen) {
       this.setState({
@@ -228,8 +236,16 @@ export default class TaskIndexItem extends React.Component {
     let { task, editing, subtasks } = this.state;
     let menuOptions = [];
     if (!task.duplicateId && !task.parentId) {
+      menuOptions.push({ label: 'Move', expandTimeframes: true, func: (e) => { this.moveTask(e) } });
+    }
+    if (['day', 'backlog'].indexOf(this.state.task.timeframe) === -1) {
+      menuOptions.push({ label: 'Copy', expandTimeframes: true, func: (e) => { this.copyTask(e) } });
+    }
+    if (!task.duplicateId && !task.parentId && this.state.task.timeframe === 'day') {
+      menuOptions.push({ label: 'Do Tomorrow', func: () => { this.convertToFutureTask() } });
+    }
+    if (!task.duplicateId && !task.parentId) {
       menuOptions.push({ label: 'Change Color', func: () => { this.setState({ showColorPicker: !this.state.showColorPicker, menuOpen: false }) } });
-      menuOptions.push({ label: 'Do Tomorrow', func: (e) => { this.convertToFutureTask() } });
     }
     return(
       <div className="group">
@@ -239,8 +255,6 @@ export default class TaskIndexItem extends React.Component {
             <a href="" className="done-button" onClick={ this.finishedTask.bind(this) }></a>
             <a href="" className={ "menu-button" + (menuOptions.length > 0 ? "" : " hidden") } onClick={ this.clickMenu.bind(this) }></a>
             <a href="" className={ "add-subtask-button" + (task.duplicateId ? " hidden" : "")} onClick={ this.clickAddSubtask.bind(this) }></a>
-            <a href="" className={ "copy-subtask-button" + (((task.duplicateId || task.parentId) && task.timeframe !== 'day') ? "" : " hidden") } onClick={ this.copySubTask.bind(this) }></a>
-            <a href="" className={ "copy-subtask-to-day-button" + (((task.duplicateId || task.parentId) && task.timeframe === 'month') ? "" : " hidden") } onClick={ this.copySubTaskToDay.bind(this) }></a>
           </div>
           { this.renderColorPicker() }
           <div className={ (editing ? "hidden" : (task.complete ? "check" : (subtasks.length == 0 ? "hidden" : (task.expanded ? "minus" : "plus")))) } onClick={ this.clickExpand.bind(this) }></div>
@@ -262,7 +276,31 @@ export default class TaskIndexItem extends React.Component {
         <ul className="menu">
           { menuOptions.map((option, index) => {
             return(
-              <li key={ index } onClick={ option.func.bind(this) }>{ option.label }</li>
+              <li key={ index } className={ option.expandTimeframes ? 'arrow' : '' } onClick={ option.func.bind(this) }>
+                { option.label }
+                { this.renderTimeframeMenu(option) }
+              </li>
+            );
+          }) }
+        </ul>
+      );
+    }
+  }
+
+  renderTimeframeMenu(option) {
+    if (option.expandTimeframes) {
+      let timeframes = ['day', 'weekend', 'month', 'year', 'life', 'backlog'];
+      if (option.label === 'Copy') {
+        let index = timeframes.indexOf(this.state.task.timeframe);
+        timeframes = timeframes.slice(0, index);
+      } else {
+        timeframes = HandyTools.removeFromArray(timeframes, this.state.task.timeframe);
+      }
+      return(
+        <ul className="timeframe-menu hidden">
+          { timeframes.map((timeframe, index) => {
+            return(
+              <li key={ index } data-timeframe={ timeframe }>{ ChangeCase.titleCase(timeframe) }</li>
             );
           }) }
         </ul>
@@ -301,6 +339,7 @@ export default class TaskIndexItem extends React.Component {
                 createTask={ this.props.createTask.bind(this) }
                 updateTask={ this.props.updateTask.bind(this) }
                 copyTask={ this.props.copyTask.bind(this) }
+                moveTask={ this.props.moveTask.bind(this) }
                 deleteTask={ this.props.deleteTask.bind(this) }
                 dropHandler={ this.props.dropHandler.bind(this) }
               />

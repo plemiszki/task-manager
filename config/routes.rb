@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     patch '/tasks' => '/api/tasks#update'
     patch '/tasks/rearrange' => '/api/tasks#rearrange'
     post '/tasks/:id/convert_to_future' => '/api/tasks#convert_to_future'
+    patch '/tasks/:id/move' => '/api/tasks#move'
     resources :future_tasks, only: [:index, :create, :destroy]
     patch '/recurring_tasks/rearrange' => '/api/recurring_tasks#rearrange'
     resources :recurring_tasks, only: [:index, :create, :show, :update, :destroy]

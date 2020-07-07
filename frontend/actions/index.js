@@ -116,7 +116,8 @@ export function sendRequest(args) {
   return (dispatch) => {
     return $.ajax({
       method: args.method.toUpperCase(),
-      url: args.directory
+      url: args.directory,
+      data: args.data
     }).then(
       (response) => {
         let obj = Object.assign(response, { type: 'SEND_REQUEST' });

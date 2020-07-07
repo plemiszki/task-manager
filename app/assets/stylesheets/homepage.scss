@@ -131,19 +131,54 @@
       border: solid 1px;
       z-index: 5;
       border-radius: 5px;
+      width: 120px;
       right: 0;
       top: 37px;
 
       li {
-        padding: 5px 10px;
-        border-radius: 5px;
+        padding: 8px 12px;
+        text-align: left;
 
-        &:first-of-type, &:last-of-type {
-          padding: 10px 10px;
+        &:first-of-type {
+          padding-top: 10px;
+          border-top-left-radius: 5px;
+          border-top-right-radius: 5px;
+        }
+
+        &:last-of-type {
+          padding-bottom: 10px;
+          border-bottom-left-radius: 5px;
+          border-bottom-right-radius: 5px;
         }
 
         &:hover {
           background-color: #EAEDED;
+        }
+
+        &.arrow {
+          position: relative;
+          background: asset-data-url("arrow-right.svg");
+          background-position: calc(100% - 10px) 50%;
+          background-size: 8px;
+          background-repeat: no-repeat;
+
+          &:hover {
+            background-color: #EAEDED;
+
+            ul.timeframe-menu {
+              display: block !important;
+              width: 120px;
+            }
+          }
+
+          ul.timeframe-menu {
+            position: absolute;
+            top: -1px;
+            left: 118px;
+            background-color: white;
+            border: solid 1px;
+            border-radius: 5px;
+          }
         }
       }
     }
@@ -212,22 +247,6 @@
       .add-subtask-button {
         background: asset-data-url("plus.svg") center center no-repeat;
         background-size: 70%;
-      }
-
-      .copy-subtask-button {
-        background-image: asset-data-url("inverted-triangle.png");
-        background-size: 90%;
-        background-position: center center;
-        background-repeat: no-repeat;
-        transform: rotate(90deg);
-      }
-
-      .copy-subtask-to-day-button {
-        background-image: asset-data-url("inverted-triangle-double.png");
-        background-size: 80%;
-        background-position: center center;
-        background-repeat: no-repeat;
-        transform: rotate(90deg);
       }
     }
 
