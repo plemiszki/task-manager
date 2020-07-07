@@ -247,14 +247,17 @@ export default class TaskIndexItem extends React.Component {
     if (!task.duplicateId && !task.parentId) {
       menuOptions.push({ label: 'Change Color', func: () => { this.setState({ showColorPicker: !this.state.showColorPicker, menuOpen: false }) } });
     }
+    let hideDeleteButton = task.duplicateId && task.parentId;
+    let hideSubtaskButton = task.duplicateId;
+    let hideMenuButton = menuOptions.length === 0;
     return(
       <div className="group">
         <div id={ this.createTaskId() } className={ "task" + (task.expanded ? " expanded" : "") + (task.duplicateId ? " duplicate" : "") + (task.jointId ? " joint" : "") } style={ this.taskStyle() } data-taskid={ this.props.task.id } onMouseLeave={ this.mouseLeave.bind(this) }>
-          <div className={ "controls" + (editing ? " hidden" : "") }>
-            <a href="" className={ "delete-button" + (task.duplicateId && task.parentId ? " hidden" : "") } onClick={ this.deleteTask.bind(this) }></a>
+          <div className={ "controls" + (editing ? " hidden" : "") + ((hideDeleteButton && hideSubtaskButton) ? " narrow" : "") }>
+            <a href="" className={ "delete-button" + (hideDeleteButton ? " hidden" : "") } onClick={ this.deleteTask.bind(this) }></a>
             <a href="" className="done-button" onClick={ this.finishedTask.bind(this) }></a>
-            <a href="" className={ "menu-button" + (menuOptions.length > 0 ? "" : " hidden") } onClick={ this.clickMenu.bind(this) }></a>
-            <a href="" className={ "add-subtask-button" + (task.duplicateId ? " hidden" : "")} onClick={ this.clickAddSubtask.bind(this) }></a>
+            <a href="" className={ "menu-button" + (hideMenuButton ? " hidden" : "") } onClick={ this.clickMenu.bind(this) }></a>
+            <a href="" className={ "add-subtask-button" + (hideSubtaskButton ? " hidden" : "") } onClick={ this.clickAddSubtask.bind(this) }></a>
           </div>
           { this.renderColorPicker() }
           <div className={ (editing ? "hidden" : (task.complete ? "check" : (subtasks.length == 0 ? "hidden" : (task.expanded ? "minus" : "plus")))) } onClick={ this.clickExpand.bind(this) }></div>
