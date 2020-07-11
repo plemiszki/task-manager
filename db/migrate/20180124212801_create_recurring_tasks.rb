@@ -1,4 +1,4 @@
-class CreateRecurringTasks < ActiveRecord::Migration
+class CreateRecurringTasks < ActiveRecord::Migration[5.2]
   def change
     create_table :recurring_tasks do |t|
       t.string :text, null: false

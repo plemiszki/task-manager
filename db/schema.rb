@@ -15,7 +15,7 @@ ActiveRecord::Schema.define(version: 2020_05_09_125447) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "future_tasks", id: :serial, force: :cascade do |t|
+  create_table "future_tasks", force: :cascade do |t|
     t.string "text", null: false
     t.string "timeframe", default: "day"
     t.string "color", default: "210, 206, 200"
@@ -31,7 +31,7 @@ ActiveRecord::Schema.define(version: 2020_05_09_125447) do
     t.string "name", null: false
   end
 
-  create_table "recurring_tasks", id: :serial, force: :cascade do |t|
+  create_table "recurring_tasks", force: :cascade do |t|
     t.string "text", null: false
     t.string "color", default: "210, 206, 200"
     t.string "timeframe", default: "day"
@@ -45,7 +45,7 @@ ActiveRecord::Schema.define(version: 2020_05_09_125447) do
     t.boolean "active", default: true
   end
 
-  create_table "tasks", id: :serial, force: :cascade do |t|
+  create_table "tasks", force: :cascade do |t|
     t.string "text", null: false
     t.string "timeframe", default: "day"
     t.string "color", default: "yellow"
@@ -62,7 +62,7 @@ ActiveRecord::Schema.define(version: 2020_05_09_125447) do
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
-  create_table "users", id: :serial, force: :cascade do |t|
+  create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "email", null: false

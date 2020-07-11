@@ -1,4 +1,4 @@
-class CreateFutureTasks < ActiveRecord::Migration
+class CreateFutureTasks < ActiveRecord::Migration[5.2]
   def change
     create_table :future_tasks do |t|
       t.string :text, null: false
