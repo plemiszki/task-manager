@@ -2,10 +2,13 @@
   height: 91px;
 
   input[type="checkbox"] {
-    margin-right: 10px;
+    vertical-align: top;
+    margin-top: 0px;
+    margin-right: 8px;
   }
 
   label {
+    vertical-align: top;
     width: 39px;
   }
 }
