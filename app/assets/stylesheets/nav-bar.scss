@@ -23,8 +23,13 @@
     right: 15px;
   }
 
+  .widget {
+    margin-right: 20px;
+    vertical-align: top;
+  }
+
   .congress {
-    display: block;
+    display: inline-block;
 
     img, div {
       display: inline-block;
@@ -60,6 +65,24 @@
 
     img:not(:last-of-type), div {
       margin-right: 15px;
+    }
+  }
+
+  .mileage {
+    display: inline-block;
+    border: solid 1px black;
+    border-radius: 5px;
+    padding: 10px;
+
+    h1 {
+      text-transform: uppercase;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    p {
+      font-size: 16px;
+      text-align: center;
     }
   }
 }

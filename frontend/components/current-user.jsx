@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { fetchEntity } from '../actions/index'
+import Mileage from './mileage'
 
 class CurrentUser extends React.Component {
 
@@ -63,6 +64,7 @@ class CurrentUser extends React.Component {
                 </div>
                 <img src={ Images.republican } />
               </div>
+              <Mileage />
             </div>
           </div>
         </div>

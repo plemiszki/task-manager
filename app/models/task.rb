@@ -121,7 +121,7 @@ class Task < ActiveRecord::Base
     recurring_tasks = RecurringTask.where(active: true, user_id: user.id, timeframe: timeframe, add_to_end: position == "end").order(:order)
     joint_tasks = []
     recurring_tasks.each do |task|
-      recurrence = Montrose.r(JSON.parse(task.recurrence))
+      recurrence = task.montrose_object
       i = 1
       while recurrence.events.take(i).last.to_date <= Date.today
         if recurrence.events.take(i).last.to_date == Date.today

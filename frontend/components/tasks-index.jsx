@@ -96,7 +96,6 @@ class TasksIndex extends React.Component {
 
   moveTask(args) {
     let { timeframe, id } = args;
-    console.log(timeframe);
     this.setState({
       fetching: true
     });
