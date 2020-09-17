@@ -207,6 +207,9 @@ class Api::TasksController < ActionController::Base
     task = Task.find(params[:id])
     task.convert_to_future_task!
     task.delete
+    Task.where(user: current_user, timeframe: task.timeframe, parent_id: nil).order(:order).each_with_index do |task, index|
+      task.update(order: index)
+    end
 
     get_timeframes
     render 'index.json.jbuilder'
