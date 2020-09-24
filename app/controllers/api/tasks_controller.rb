@@ -99,12 +99,19 @@ class Api::TasksController < ActionController::Base
         end
       end
     else
-      tasks_length = Task.where(user_id: current_user.id, timeframe: params[:timeframe]).length
+      timeframe_root_tasks = Task.where(user_id: current_user.id, timeframe: params[:timeframe], parent_id: nil).order(:order)
+      if params[:order]
+        timeframe_root_tasks.select { |task| task.order >= params[:order].to_i }.each do |task|
+          task.update(
+            order: task.order + 1
+          )
+        end
+      end
       task = Task.new(
         user_id: current_user.id,
         timeframe: params[:timeframe],
         text: "New #{params[:timeframe]} task",
-        order: tasks_length,
+        order: (params[:order] || timeframe_root_tasks.length),
         color: params[:color]
       )
       task.save!

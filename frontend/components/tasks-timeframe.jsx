@@ -16,7 +16,8 @@ class TasksTimeframe extends React.Component {
       fetching: true,
       tasks: [],
       longWeekend: false,
-      showNewTaskColorPicker: false
+      showNewTaskColorPicker: false,
+      showTopColorPicker: false
     }
   }
 
@@ -40,13 +41,14 @@ class TasksTimeframe extends React.Component {
     }
   }
 
-  addTask(color) {
+  addTask(color, order) {
     this.setState({
       showNewTaskColorPicker: false
     });
     this.props.createTask({
       timeframe: this.props.timeframe,
-      color
+      color,
+      order
     });
   }
 
@@ -148,6 +150,24 @@ class TasksTimeframe extends React.Component {
     })
   }
 
+  renderTopColorPicker() {
+    if (this.state.showTopColorPicker) {
+      return(
+        <div className="color-picker-container drop-zone-color-picker-container">
+          <ColorPicker func={ this.addTaskAtBeginning.bind(this) } />
+          <div className="cancel-new" onClick={ Common.changeState.bind(this, 'showTopColorPicker', false) }></div>
+        </div>
+      );
+    }
+  }
+
+  addTaskAtBeginning(color) {
+    this.setState({
+      showTopColorPicker: false
+    });
+    this.addTask(color, '0');
+  }
+
   render() {
     return(
       <div className="tasks-timeframe match-height" data-index={ this.props.timeframe }>
@@ -156,7 +176,8 @@ class TasksTimeframe extends React.Component {
         { this.renderHeader() }
         { this.renderAddButton() }
         <hr />
-        <div id={ this.props.timeframe + '-top-drop' } className="drop-area"></div>
+        { this.renderTopColorPicker() }
+        <div id={ this.props.timeframe + '-top-drop' } className="drop-area" onDoubleClick={ Common.changeState.bind(this, 'showTopColorPicker', !this.state.showTopColorPicker) }></div>
         { this.props.timeframeTasks.map((task, index) => {
           return(
             <TasksIndexItem
@@ -211,7 +232,7 @@ class TasksTimeframe extends React.Component {
   renderAddButton() {
     if (this.state.showNewTaskColorPicker) {
       return(
-        <div className="color-picker-container">
+        <div className="color-picker-container index-top-color-picker-container">
           <ColorPicker func={ (color) => { this.addTask(color) } } />
           <div className="cancel-new" onClick={ Common.changeState.bind(this, 'showNewTaskColorPicker', false) }></div>
         </div>

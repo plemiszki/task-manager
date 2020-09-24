@@ -34,7 +34,7 @@ class TasksIndex extends React.Component {
   }
 
   createTask(args) {
-    let { timeframe, parentId, color } = args;
+    let { timeframe, parentId, color, order } = args;
     this.setState({
       fetching: true
     });
@@ -43,7 +43,8 @@ class TasksIndex extends React.Component {
       additionalData: {
         timeframe,
         parentId,
-        color
+        color,
+        order
       }
     }).then(() => {
       this.setState({

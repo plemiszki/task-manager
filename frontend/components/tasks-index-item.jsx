@@ -2,6 +2,7 @@ import React from 'react'
 import ColorPicker from './color-picker'
 import ChangeCase from 'change-case'
 import HandyTools from 'handy-tools'
+import { Common as HandyComponentsCommon } from 'handy-components'
 
 const nextShortestTimeframe = {
   'backlog': 'life',
@@ -20,6 +21,7 @@ export default class TaskIndexItem extends React.Component {
       task: this.props.task,
       subtasks: this.props.task.subtasks || [],
       showColorPicker: false,
+      showDropZoneColorPicker: false,
       menuOpen: false
     }
   }
@@ -267,10 +269,33 @@ export default class TaskIndexItem extends React.Component {
             <input className={ editing ? "" : "disabled" } disabled={ !editing } value={ this.formatTaskText.call(this) } onChange={ this.changeText.bind(this) } onKeyPress={ this.clickEnter.bind(this) } />
           </div>
         </div>
+        { this.renderDropZoneColorPicker() }
         { this.renderBottomDropArea() }
         { this.renderSubTasks() }
       </div>
     );
+  }
+
+  renderDropZoneColorPicker() {
+    if (this.state.showDropZoneColorPicker) {
+      return(
+        <div className="color-picker-container drop-zone-color-picker-container">
+          <ColorPicker func={ this.addTask.bind(this) } />
+          <div className="cancel-new" onClick={ HandyComponentsCommon.changeState.bind(this, 'showDropZoneColorPicker', false) }></div>
+        </div>
+      );
+    }
+  }
+
+  addTask(color) {
+    this.setState({
+      showDropZoneColorPicker: false
+    });
+    this.props.createTask({
+      timeframe: this.props.task.timeframe,
+      color,
+      order: (this.props.task.order + 1)
+    });
   }
 
   renderMenu(menuOptions) {
@@ -322,7 +347,7 @@ export default class TaskIndexItem extends React.Component {
   renderBottomDropArea() {
     if (!this.state.task.expanded) {
       return(
-        <div id={ this.createDropAreaId() } className="drop-area"></div>
+        <div id={ this.createDropAreaId() } className="drop-area" onDoubleClick={ HandyComponentsCommon.changeState.bind(this, 'showDropZoneColorPicker', !this.state.showDropZoneColorPicker) }></div>
       );
     }
   }
