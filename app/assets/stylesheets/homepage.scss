@@ -117,12 +117,14 @@
 
     .plus {
       width: 20px;
-      background: asset-data-url("plus.png") center center no-repeat;
+      background: asset-data-url("plus-circle.svg") center center no-repeat;
+      background-size: 100%;
     }
 
     .minus {
       width: 20px;
-      background: asset-data-url("minus.png") center center no-repeat;
+      background: asset-data-url("minus-circle.svg") center center no-repeat;
+      background-size: 100%;
     }
 
     .check {
@@ -285,10 +287,6 @@
     .hidden {
       display: none;
     }
-  }
-
-  .task .expandable {
-    background-image: asset-data-url("plus.png");
   }
 
   .task:hover .controls {
