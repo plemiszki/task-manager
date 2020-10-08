@@ -77,9 +77,23 @@ class Api::TasksController < ActionController::Base
         create_duplicate_subtasks(task)
       end
     elsif params[:parent_id]
+
+      # reorder siblings if necessary
+      if params[:order]
+        Task.rearrange_after_position!(tasks: Task.where(parent_id: params[:parent_id]), position: params[:order].to_i)
+      end
+
+      # create the new task
       parent_task = Task.find(params[:parent_id])
       tasks_length = Task.where(user_id: current_user.id, parent_id: params[:parent_id]).length
-      task = Task.new(user_id: current_user.id, timeframe: parent_task.timeframe, parent_id: parent_task.id, text: "New #{params[:timeframe]} task", order: tasks_length, color: parent_task.color)
+      task = Task.new(
+        user_id: current_user.id,
+        timeframe: parent_task.timeframe,
+        parent_id: parent_task.id,
+        text: "New #{params[:timeframe]} task",
+        order: params[:order] || tasks_length,
+        color: parent_task.color
+      )
       task.save!
 
       # expand parent task if necessary
@@ -87,7 +101,7 @@ class Api::TasksController < ActionController::Base
         parent_task.update(expanded: true)
       end
 
-      # if duplicates exist of the parent task, we need to create duplicates for the subtask
+      # if duplicates exist of the parent task, we need to create duplicates of the new subtask
       if parent_task
         duped_tasks = Task.where(duplicate_id: parent_task.id)
         while duped_tasks.length == 1
@@ -98,14 +112,11 @@ class Api::TasksController < ActionController::Base
           duped_tasks = Task.where(duplicate_id: dup_parent_task.id)
         end
       end
+
     else
       timeframe_root_tasks = Task.where(user_id: current_user.id, timeframe: params[:timeframe], parent_id: nil).order(:order)
       if params[:order]
-        timeframe_root_tasks.select { |task| task.order >= params[:order].to_i }.each do |task|
-          task.update(
-            order: task.order + 1
-          )
-        end
+        Task.rearrange_after_position!(tasks: timeframe_root_tasks, position: params[:order].to_i)
       end
       task = Task.new(
         user_id: current_user.id,

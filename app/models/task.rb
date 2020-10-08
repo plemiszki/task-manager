@@ -23,6 +23,39 @@ class Task < ActiveRecord::Base
     self.serializable_hash(include: { subtasks: { include: { subtasks: { include: :subtasks } } } })
   end
 
+  def siblings
+    if (self.parent_id)
+      self.parent.subtasks
+    else
+      Task.where(user: self.user, timeframe: self.timeframe, parent_id: nil).order(:order)
+    end
+  end
+
+  def self.rearrange_after_position!(tasks:, position:)
+    # when a new task is being created in the middle of a list, we need to increment each of the following tasks' positions by one
+    tasks.order(:order).each_with_index do |task, index|
+      if task.order >= position
+        task.update!(order: index + 1)
+        if task.parent_id
+          duped_parents = Task.where(duplicate_id: task.parent_id)
+          until duped_parents.empty?
+            duped_task = Task.where(duplicate_id: task.id).first
+            duped_task.update(order: index)
+            duped_parents = Task.where(duplicate_id: duped_task.parent_id)
+            task = duped_task
+          end
+          master_parents = Task.where(id: task.parent.duplicate_id)
+          until master_parents.empty?
+            master_task = Task.where(id: task.duplicate_id).first
+            master_task.update(order: index)
+            master_parents = Task.where(id: master_task.parent.duplicate_id)
+            task = master_task
+          end
+        end
+      end
+    end
+  end
+
   def convert_to_future_task!
     FutureTask.create!(text: text, timeframe: timeframe.capitalize, color: "rgb(#{color})", user_id: user_id, date: Date.today + 1.day, add_to_end: true)
   end

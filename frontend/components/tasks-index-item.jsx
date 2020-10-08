@@ -347,8 +347,27 @@ export default class TaskIndexItem extends React.Component {
   renderBottomDropArea() {
     if (!this.state.task.expanded) {
       return(
-        <div id={ this.createDropAreaId() } className="drop-area" onDoubleClick={ HandyComponentsCommon.changeState.bind(this, 'showDropZoneColorPicker', !this.state.showDropZoneColorPicker) }></div>
+        <div id={ this.createDropAreaId() } className="drop-area" onDoubleClick={ this.doubleClickDropArea.bind(this) }></div>
       );
+    }
+  }
+
+  doubleClickDropArea() {
+    const { task } = this.props;
+    if (task.parentId && task.duplicateId) {
+      return;
+    }
+    if (task.parentId) {
+      this.props.createTask({
+        timeframe: task.timeframe,
+        color: task.color,
+        order: (task.order + 1),
+        parentId: task.parentId
+      });
+    } else {
+      this.setState({
+        showDropZoneColorPicker: true
+      });
     }
   }
 
