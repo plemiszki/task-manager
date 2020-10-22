@@ -3,7 +3,7 @@ class Api::FutureTasksController < ActionController::Base
   include Clearance::Controller
 
   def index
-    @future_tasks = FutureTask.where(user_id: current_user.id)
+    @future_tasks = FutureTask.where(user_id: current_user.id).order(:date)
     render "index.json.jbuilder"
   end
 

@@ -3,7 +3,8 @@
   "repository": "https://github.com/plemiszki/task-manager",
   "license": "MIT",
   "scripts": {
-    "heroku-postbuild": "webpack --mode production"
+    "heroku-postbuild": "webpack --mode production",
+    "dev": "./node_modules/webpack/bin/webpack.js --watch"
   },
   "dependencies": {
     "@babel/core": "7.5.5",
