@@ -41,14 +41,14 @@ class TasksTimeframe extends React.Component {
     }
   }
 
-  addTask(color, order) {
+  addTask(color, position) {
     this.setState({
       showNewTaskColorPicker: false
     });
     this.props.createTask({
       timeframe: this.props.timeframe,
       color,
-      order
+      position
     });
   }
 

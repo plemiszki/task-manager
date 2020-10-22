@@ -5,7 +5,7 @@ json.array! tasks do |hash|
   json.color hash['color']
   json.parentId hash['parent_id']
   json.duplicateId hash['duplicate_id']
-  json.order hash['order']
+  json.position hash['position']
   json.complete hash['complete']
   json.template hash['template']
   json.expanded hash['expanded']

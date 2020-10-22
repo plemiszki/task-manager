@@ -294,7 +294,7 @@ export default class TaskIndexItem extends React.Component {
     this.props.createTask({
       timeframe: this.props.task.timeframe,
       color,
-      order: (this.props.task.order + 1)
+      position: (this.props.task.position + 1)
     });
   }
 
@@ -361,7 +361,7 @@ export default class TaskIndexItem extends React.Component {
       this.props.createTask({
         timeframe: task.timeframe,
         color: task.color,
-        order: (task.order + 1),
+        position: (task.position + 1),
         parentId: task.parentId
       });
     } else {

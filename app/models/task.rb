@@ -3,7 +3,7 @@ class Task < ActiveRecord::Base
   belongs_to :parent, class_name: "Task"
   belongs_to :user
 
-  has_many :subtasks, -> { order(:order) }, class_name: "Task", foreign_key: :parent_id, primary_key: :id, dependent: :destroy
+  has_many :subtasks, -> { order(:position) }, class_name: "Task", foreign_key: :parent_id, primary_key: :id, dependent: :destroy
 
   has_many(
     :duplicates,
@@ -27,29 +27,31 @@ class Task < ActiveRecord::Base
     if (self.parent_id)
       self.parent.subtasks
     else
-      Task.where(user: self.user, timeframe: self.timeframe, parent_id: nil).order(:order)
+      Task.where(user: self.user, timeframe: self.timeframe, parent_id: nil).order(:position)
     end
   end
 
   def self.rearrange_after_position!(tasks:, position:)
     # when a new task is being created in the middle of a list, we need to increment each of the following tasks' positions by one
-    tasks.order(:order).each_with_index do |task, index|
-      if task.order >= position
-        task.update!(order: index + 1)
+    tasks.order(:position).each_with_index do |task, index|
+      if task.position >= position
+        task.update!(position: index + 1)
         if task.parent_id
           duped_parents = Task.where(duplicate_id: task.parent_id)
+          t = task
           until duped_parents.empty?
-            duped_task = Task.where(duplicate_id: task.id).first
-            duped_task.update(order: index)
+            duped_task = Task.where(duplicate_id: t.id).first
+            duped_task.update(position: index + 1)
             duped_parents = Task.where(duplicate_id: duped_task.parent_id)
-            task = duped_task
+            t = duped_task
           end
           master_parents = Task.where(id: task.parent.duplicate_id)
+          t = task
           until master_parents.empty?
-            master_task = Task.where(id: task.duplicate_id).first
-            master_task.update(order: index)
+            master_task = Task.where(id: t.duplicate_id).first
+            master_task.update(position: index + 1)
             master_parents = Task.where(id: master_task.parent.duplicate_id)
-            task = master_task
+            t = master_task
           end
         end
       end
@@ -75,7 +77,7 @@ class Task < ActiveRecord::Base
       # DAILY TASKS
 
       day_tasks = []
-      existing_day_tasks = Task.where(user_id: user.id, timeframe: "day", parent_id: nil).order(:order).to_a
+      existing_day_tasks = Task.where(user_id: user.id, timeframe: "day", parent_id: nil).order(:position).to_a
       joint_tasks += Task.convert_recurring_tasks(day_tasks, user, "Day", "beginning")
       Task.convert_future_tasks(day_tasks, user, "Day", "beginning")
       day_tasks += Task.convert_joint_tasks(joint_tasks, user, "Day")
@@ -84,13 +86,13 @@ class Task < ActiveRecord::Base
       Task.convert_future_tasks(day_tasks, user, "Day", "end")
 
       day_tasks.each_with_index do |task, index|
-        task.update(order: index)
+        task.update(position: index)
       end
 
       # WEEKEND TASKS
 
       weekend_tasks = []
-      existing_weekend_tasks = Task.where(user_id: 1, timeframe: "weekend", parent_id: nil).order(:order)
+      existing_weekend_tasks = Task.where(user_id: 1, timeframe: "weekend", parent_id: nil).order(:position)
       joint_tasks += Task.convert_recurring_tasks(weekend_tasks, user, "Weekend", "beginning")
       Task.convert_future_tasks(weekend_tasks, user, "Weekend", "beginning")
       weekend_tasks += existing_weekend_tasks
@@ -98,13 +100,13 @@ class Task < ActiveRecord::Base
       Task.convert_future_tasks(weekend_tasks, user, "Weekend", "end")
 
       weekend_tasks.each_with_index do |task, index|
-        task.update(order: index)
+        task.update(position: index)
       end
 
       # MONTH TASKS
 
       month_tasks = []
-      existing_month_tasks = Task.where(user_id: 1, timeframe: "month", parent_id: nil).order(:order)
+      existing_month_tasks = Task.where(user_id: 1, timeframe: "month", parent_id: nil).order(:position)
       joint_tasks += Task.convert_recurring_tasks(month_tasks, user, "Month", "beginning")
       Task.convert_future_tasks(month_tasks, user, "Month", "beginning")
       month_tasks += existing_month_tasks
@@ -112,7 +114,7 @@ class Task < ActiveRecord::Base
       Task.convert_future_tasks(month_tasks, user, "Month", "end")
 
       month_tasks.each_with_index do |task, index|
-        task.update(order: index)
+        task.update(position: index)
       end
     end
   end
@@ -124,7 +126,7 @@ class Task < ActiveRecord::Base
       tasks_queue += tasks_queue.first.duplicates.to_a
       task = tasks_queue.first
       task.destroy
-      siblings = Task.where(user_id: task.user_id, timeframe: task.timeframe, parent_id: task.parent_id).order(:order)
+      siblings = Task.where(user_id: task.user_id, timeframe: task.timeframe, parent_id: task.parent_id).order(:position)
       # close parent task if no siblings left
       if task.parent_id && siblings.length == 0
         parent_task = Task.where(id: task.parent_id)
@@ -134,7 +136,7 @@ class Task < ActiveRecord::Base
       end
       # reassign order to siblings
       siblings.each_with_index do |task, index|
-        task.update(order: index)
+        task.update(position: index)
       end
       tasks_queue.shift
     end
@@ -151,7 +153,7 @@ class Task < ActiveRecord::Base
   end
 
   def self.convert_recurring_tasks(tasks_array, user, timeframe, position)
-    recurring_tasks = RecurringTask.where(active: true, user_id: user.id, timeframe: timeframe, add_to_end: position == "end").order(:order)
+    recurring_tasks = RecurringTask.where(active: true, user_id: user.id, timeframe: timeframe, add_to_end: position == "end").order(:position)
     joint_tasks = []
     recurring_tasks.each do |task|
       recurrence = task.montrose_object

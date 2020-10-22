@@ -69,9 +69,9 @@ class Api::TasksController < ActionController::Base
         task.timeframe = params[:timeframe]
         if params[:position]
           update_existing_positions({ timeframe: params[:timeframe], position: params[:position] })
-          task.order = params[:position]
+          task.position = params[:position]
         else
-          task.order = Task.where(user: current_user, timeframe: params[:timeframe], parent_id: nil).length
+          task.position = Task.where(user: current_user, timeframe: params[:timeframe], parent_id: nil).length
         end
         task.save!
         create_duplicate_subtasks(task)
@@ -79,8 +79,8 @@ class Api::TasksController < ActionController::Base
     elsif params[:parent_id]
 
       # reorder siblings if necessary
-      if params[:order]
-        Task.rearrange_after_position!(tasks: Task.where(parent_id: params[:parent_id]), position: params[:order].to_i)
+      if params[:position]
+        Task.rearrange_after_position!(tasks: Task.where(parent_id: params[:parent_id]), position: params[:position].to_i)
       end
 
       # create the new task
@@ -91,7 +91,7 @@ class Api::TasksController < ActionController::Base
         timeframe: parent_task.timeframe,
         parent_id: parent_task.id,
         text: "New #{params[:timeframe]} task",
-        order: params[:order] || tasks_length,
+        position: params[:position] || tasks_length,
         color: parent_task.color
       )
       task.save!
@@ -106,7 +106,7 @@ class Api::TasksController < ActionController::Base
         duped_tasks = Task.where(duplicate_id: parent_task.id)
         while duped_tasks.length == 1
           dup_parent_task = duped_tasks.first
-          dup_child_task = Task.new(user_id: current_user.id, timeframe: dup_parent_task.timeframe, parent_id: dup_parent_task.id, duplicate_id: task.id, text: task.text, color: task.color, order: tasks_length)
+          dup_child_task = Task.new(user_id: current_user.id, timeframe: dup_parent_task.timeframe, parent_id: dup_parent_task.id, duplicate_id: task.id, text: task.text, color: task.color, position: params[:position] || tasks_length)
           dup_child_task.save!
           task = dup_child_task
           duped_tasks = Task.where(duplicate_id: dup_parent_task.id)
@@ -114,15 +114,15 @@ class Api::TasksController < ActionController::Base
       end
 
     else
-      timeframe_root_tasks = Task.where(user_id: current_user.id, timeframe: params[:timeframe], parent_id: nil).order(:order)
-      if params[:order]
-        Task.rearrange_after_position!(tasks: timeframe_root_tasks, position: params[:order].to_i)
+      timeframe_root_tasks = Task.where(user_id: current_user.id, timeframe: params[:timeframe], parent_id: nil).order(:position)
+      if params[:position]
+        Task.rearrange_after_position!(tasks: timeframe_root_tasks, position: params[:position].to_i)
       end
       task = Task.new(
         user_id: current_user.id,
         timeframe: params[:timeframe],
         text: "New #{params[:timeframe]} task",
-        order: (params[:order] || timeframe_root_tasks.length),
+        position: (params[:position] || timeframe_root_tasks.length),
         color: params[:color]
       )
       task.save!
@@ -164,11 +164,11 @@ class Api::TasksController < ActionController::Base
           end
           current_length = @task.parent.subtasks.length
           (n - 1).times do |index|
-            extra_task = Task.new(task_params.merge({ text: "#{text}#{index + 2}", order: current_length + index }))
+            extra_task = Task.new(task_params.merge({ text: "#{text}#{index + 2}", position: current_length + index }))
             extra_task.user_id = current_user.id
             extra_task.save!
             duplicates.each do |duplicate|
-              duplicate_extra_task = Task.new(task_params.merge({ timeframe: duplicate.timeframe, duplicate_id: extra_task.id ,parent_id: duplicate.parent_id, text: "#{text}#{index + 2}", order: current_length + index }))
+              duplicate_extra_task = Task.new(task_params.merge({ timeframe: duplicate.timeframe, duplicate_id: extra_task.id ,parent_id: duplicate.parent_id, text: "#{text}#{index + 2}", position: current_length + index }))
               duplicate_extra_task.user_id = current_user.id
               duplicate_extra_task.save!
             end
@@ -183,11 +183,11 @@ class Api::TasksController < ActionController::Base
                 duplicate.update({ text: item })
               end
             else
-              extra_task = Task.new(task_params.merge({ text: item, order: current_subtasks_length + index }))
+              extra_task = Task.new(task_params.merge({ text: item, position: current_subtasks_length + index }))
               extra_task.user_id = current_user.id
               extra_task.save!
               duplicates.each do |duplicate|
-                duplicate_extra_task = Task.new(task_params.merge({ timeframe: duplicate.timeframe, duplicate_id: extra_task.id ,parent_id: duplicate.parent_id, text: item, order: current_subtasks_length + index }))
+                duplicate_extra_task = Task.new(task_params.merge({ timeframe: duplicate.timeframe, duplicate_id: extra_task.id ,parent_id: duplicate.parent_id, text: item, position: current_subtasks_length + index }))
                 duplicate_extra_task.user_id = current_user.id
                 duplicate_extra_task.save!
               end
@@ -225,8 +225,8 @@ class Api::TasksController < ActionController::Base
     task = Task.find(params[:id])
     task.convert_to_future_task!
     task.delete
-    Task.where(user: current_user, timeframe: task.timeframe, parent_id: nil).order(:order).each_with_index do |task, index|
-      task.update(order: index)
+    Task.where(user: current_user, timeframe: task.timeframe, parent_id: nil).order(:position).each_with_index do |task, index|
+      task.update(position: index)
     end
 
     get_timeframes
@@ -235,13 +235,13 @@ class Api::TasksController < ActionController::Base
 
   def move
     task = Task.find(params[:id])
-    siblings = Task.where(user: current_user, timeframe: task.timeframe, parent_id: nil).order(:order)
+    siblings = Task.where(user: current_user, timeframe: task.timeframe, parent_id: nil).order(:position)
     task.update!(
       timeframe: params[:timeframe],
-      order: Task.where(user: current_user, timeframe: params[:timeframe], parent_id: nil).length
+      position: Task.where(user: current_user, timeframe: params[:timeframe], parent_id: nil).length
     )
     siblings.each_with_index do |task, index|
-      task.update(order: index)
+      task.update(position: index)
     end
 
     get_timeframes
@@ -251,12 +251,12 @@ class Api::TasksController < ActionController::Base
   def rearrange(tasks = params[:tasks])
     tasks.each do |index, id|
       task = Task.find(id)
-      task.update(order: index)
+      task.update(position: index)
       if task.parent_id
         duped_parents = Task.where(duplicate_id: task.parent_id)
         until duped_parents.empty?
           duped_task = Task.where(duplicate_id: task.id).first
-          duped_task.update(order: index)
+          duped_task.update(position: index)
 
           duped_parents = Task.where(duplicate_id: duped_task.parent_id)
           task = duped_task
@@ -264,7 +264,7 @@ class Api::TasksController < ActionController::Base
         master_parents = Task.where(id: task.parent.duplicate_id)
         until master_parents.empty?
           master_task = Task.where(id: task.duplicate_id).first
-          master_task.update(order: index)
+          master_task.update(position: index)
 
           master_parents = Task.where(id: master_task.parent.duplicate_id)
           task = master_task
@@ -285,16 +285,16 @@ class Api::TasksController < ActionController::Base
   private
 
   def update_existing_positions(timeframe:, position:)
-    tasks = Task.where(user: current_user, timeframe: timeframe, parent_id: nil).order(:order).to_a
+    tasks = Task.where(user: current_user, timeframe: timeframe, parent_id: nil).order(:position).to_a
     tasks.insert(position.to_i, nil)
     tasks.each_with_index do |task, index|
       next if task.nil?
-      task.update!(order: index)
+      task.update!(position: index)
     end
   end
 
   def get_timeframes
-    tasks = Task.where(user_id: current_user.id, parent_id: nil).includes(subtasks: [subtasks: [:subtasks]]).order(:order)
+    tasks = Task.where(user_id: current_user.id, parent_id: nil).includes(subtasks: [subtasks: [:subtasks]]).order(:position)
     @timeframes = Hash.new { |h, k| h[k] = [] }
     tasks.each do |task|
       @timeframes[task.timeframe] << task.serialize
@@ -342,7 +342,7 @@ class Api::TasksController < ActionController::Base
         complete: master_queue.first.complete,
         expanded: false,
         color: master_queue.first.color,
-        order: master_queue.first.order,
+        position: master_queue.first.position,
         template: master_queue.first.template
       )
       @subtask.save!
@@ -372,7 +372,7 @@ class Api::TasksController < ActionController::Base
   end
 
   def task_params
-    params.require(:task).permit(:text, :color, :complete, :duplicate_id, :parent_id, :expanded, :timeframe, :order)
+    params.require(:task).permit(:text, :color, :complete, :duplicate_id, :parent_id, :expanded, :timeframe, :position)
   end
 
 end
