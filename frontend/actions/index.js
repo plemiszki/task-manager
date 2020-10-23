@@ -56,13 +56,19 @@ export function fetchEntity(args) {
 }
 
 export function updateEntity(args) {
+  let { id, url, entityName, entity, directory, additionalData } = args;
+  let data = {};
+  if (entityName && entity) {
+    data = { [HandyTools.convertToUnderscore(entityName)]: HandyTools.convertObjectKeysToUnderscore(entity) };
+  }
+  if (args.additionalData) {
+    data = Object.assign(data, HandyTools.convertObjectKeysToUnderscore(additionalData));
+  }
   return (dispatch) => {
     return $.ajax({
       method: 'PATCH',
-      url: args.url || `/api/${args.directory}/${args.id}`,
-      data: {
-        [HandyTools.convertToUnderscore(args.entityName)]: HandyTools.convertObjectKeysToUnderscore(args.entity)
-      }
+      url: url || `/api/${directory}/${id}`,
+      data
     }).then(
       (response) => {
         let obj = Object.assign(response, { type: 'UPDATE_ENTITY' });

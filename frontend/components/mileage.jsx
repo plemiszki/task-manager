@@ -5,7 +5,7 @@ const monthlyMileageAllowance = (200000 / 10 / 12);
 
 const calculateMileage = () => {
   const months = monthDiff(carPurchaseMonth, new Date);
-  return (months * monthlyMileageAllowance).toLocaleString();
+  return Math.floor(months * monthlyMileageAllowance).toLocaleString();
 }
 
 const monthDiff = (date1, date2) => {

@@ -54,8 +54,7 @@ class Api::TasksController < ActionController::Base
   ]
 
   def index
-    get_timeframes
-    render 'index.json.jbuilder'
+    build_response
   end
 
   def create
@@ -131,8 +130,7 @@ class Api::TasksController < ActionController::Base
     if render_error
       render json: [], status: 422
     else
-      get_timeframes
-      render 'index.json.jbuilder'
+      build_response
     end
   end
 
@@ -217,8 +215,8 @@ class Api::TasksController < ActionController::Base
       end
     end
 
-    get_timeframes
-    render 'index.json.jbuilder'
+    timeframe = (@task.timeframe == 'day' && !@task.duplicate_id) ? 'day' : nil
+    build_response(timeframe: timeframe)
   end
 
   def convert_to_future
@@ -229,8 +227,7 @@ class Api::TasksController < ActionController::Base
       task.update(position: index)
     end
 
-    get_timeframes
-    render 'index.json.jbuilder'
+    build_response
   end
 
   def move
@@ -244,8 +241,7 @@ class Api::TasksController < ActionController::Base
       task.update(position: index)
     end
 
-    get_timeframes
-    render 'index.json.jbuilder'
+    build_response
   end
 
   def rearrange(tasks = params[:tasks])
@@ -272,14 +268,19 @@ class Api::TasksController < ActionController::Base
       end
     end
 
-    get_timeframes
-    render 'index.json.jbuilder'
+    build_response
   end
 
   def destroy
-    Task.delete_task_and_subs_and_dups(Task.find(params[:id]))
-    get_timeframes
-    render 'index.json.jbuilder'
+    @task = Task.find(params[:id])
+    timeframe = nil
+    if @task.timeframe == 'day'
+      timeframe = 'day'
+    elsif !@task.has_dups?
+      timeframe = @task.timeframe
+    end
+    Task.delete_task_and_subs_and_dups(@task)
+    build_response(timeframe: timeframe)
   end
 
   private
@@ -293,11 +294,19 @@ class Api::TasksController < ActionController::Base
     end
   end
 
-  def get_timeframes
-    tasks = Task.where(user_id: current_user.id, parent_id: nil).includes(subtasks: [subtasks: [:subtasks]]).order(:position)
-    @timeframes = Hash.new { |h, k| h[k] = [] }
-    tasks.each do |task|
-      @timeframes[task.timeframe] << task.serialize
+  def build_response(timeframe: nil)
+    if timeframe
+      @timeframe = timeframe
+      tasks = Task.where(timeframe: @timeframe, user_id: current_user.id, parent_id: nil).includes(subtasks: [subtasks: [:subtasks]]).order(:position)
+      @tasks = tasks.map(&:serialize)
+      render 'index.json.jbuilder'
+    else
+      tasks = Task.where(user_id: current_user.id, parent_id: nil).includes(subtasks: [subtasks: [:subtasks]]).order(:position)
+      @timeframes = Hash.new { |h, k| h[k] = [] }
+      tasks.each do |task|
+        @timeframes[task.timeframe] << task.serialize
+      end
+      render 'all.json.jbuilder'
     end
   end
 

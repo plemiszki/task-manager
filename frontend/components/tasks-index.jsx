@@ -26,10 +26,7 @@ class TasksIndex extends React.Component {
 
   componentDidMount() {
     this.props.fetchEntities({ directory: 'tasks' }).then(() => {
-      this.setState({
-        fetching: false,
-        tasks: this.props.tasks
-      });
+      this.updateComponentTasks();
     });
   }
 
@@ -47,10 +44,7 @@ class TasksIndex extends React.Component {
         position
       }
     }).then(() => {
-      this.setState({
-        fetching: false,
-        tasks: this.props.tasks
-      });
+      this.updateComponentTasks();
     });
   }
 
@@ -63,10 +57,7 @@ class TasksIndex extends React.Component {
       entityName: 'task',
       entity: newTask
     }).then(() => {
-      this.setState({
-        fetching: false,
-        tasks: this.props.tasks
-      });
+      this.updateComponentTasks();
     });
   }
 
@@ -155,10 +146,22 @@ class TasksIndex extends React.Component {
       directory: 'tasks',
       entityName: 'task'
     }).then(() => {
-      this.setState({
-        fetching: false,
-        tasks: this.props.tasks
-      });
+      this.updateComponentTasks();
+    });
+  }
+
+  updateComponentTasks() {
+    let tasks;
+    let timeframeKeys = Object.keys(this.props.tasks);
+    if (timeframeKeys.length === 1) {
+      tasks = this.state.tasks;
+      tasks[timeframeKeys[0]] = this.props.tasks[timeframeKeys[0]];
+    } else {
+      tasks = this.props.tasks;
+    }
+    this.setState({
+      fetching: false,
+      tasks
     });
   }
 
