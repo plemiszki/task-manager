@@ -347,7 +347,7 @@ export default class TaskIndexItem extends React.Component {
   renderBottomDropArea() {
     if (!this.state.task.expanded) {
       return(
-        <div id={ this.createDropAreaId() } className="drop-area" onDoubleClick={ this.doubleClickDropArea.bind(this) }></div>
+        <div id={ this.createDropAreaId() } className="drop-area" onDoubleClick={ this.doubleClickDropArea.bind(this, false) }></div>
       );
     }
   }
