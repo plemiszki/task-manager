@@ -131,7 +131,7 @@ class RecurringTaskDetails extends DetailsComponent {
             <div className="row">
               <div className="col-xs-4 recurrence-field-column">
                 <h2>Recurrence</h2>
-                <input className={ Details.errorClass([], []) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.recurrence ? this.convertToEnglish(this.state.recurringTask.recurrence) : "" } readOnly={ true } data-entity="recurringTask" data-field="recurrence" />
+                <input className={ Details.errorClass([], []) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.recurrence ? this.convertToEnglish(this.state.recurringTask) : "" } readOnly={ true } data-entity="recurringTask" data-field="recurrence" />
                 <a onClick={ this.editRecurrence.bind(this) }>Edit</a>
                 { Details.renderFieldError([], []) }
               </div>

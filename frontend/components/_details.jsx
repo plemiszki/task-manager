@@ -91,13 +91,13 @@ export default class _Details extends React.Component {
     });
   }
 
-  convertToEnglish(input) {
-    input = JSON.parse(input);
-    var months = HandyTools.MONTHS;
+  convertToEnglish(task) {
+    let input = JSON.parse(task.recurrence);
+    const months = HandyTools.MONTHS;
     if (input.every) {
       if (input.every === 'day') {
         if (input.interval) {
-          return `Every ${input.interval} days`;
+          return `Every ${input.interval} days (next: ${task.nextOccurence})`;
         } else {
           return 'Daily';
         }

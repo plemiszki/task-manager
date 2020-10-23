@@ -11,7 +11,7 @@ class Api::FutureTasksController < ActionController::Base
     @future_task = FutureTask.new(future_task_params)
     @future_task.user_id = current_user.id
     if @future_task.save
-      @future_tasks = FutureTask.where(user_id: current_user.id)
+      @future_tasks = FutureTask.where(user_id: current_user.id).order(:date)
       render "index.json.jbuilder"
     else
       render json: @future_task.errors.full_messages, status: 422
@@ -20,7 +20,7 @@ class Api::FutureTasksController < ActionController::Base
 
   def destroy
     FutureTask.find(params[:id]).destroy
-    @future_tasks = FutureTask.where(user_id: current_user.id)
+    @future_tasks = FutureTask.where(user_id: current_user.id).order(:date)
     render "index.json.jbuilder"
   end
 
