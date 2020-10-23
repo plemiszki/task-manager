@@ -352,17 +352,20 @@ export default class TaskIndexItem extends React.Component {
     }
   }
 
-  doubleClickDropArea() {
+  doubleClickDropArea(insertBeginningSubtask = false) {
     const { task } = this.props;
     if (task.parentId && task.duplicateId) {
       return;
     }
-    if (task.parentId) {
+    if (insertBeginningSubtask && task.duplicateId) {
+      return;
+    }
+    if (task.parentId || insertBeginningSubtask) {
       this.props.createTask({
         timeframe: task.timeframe,
         color: task.color,
-        position: (task.position + 1),
-        parentId: task.parentId
+        position: insertBeginningSubtask ? 0 : (task.position + 1),
+        parentId: insertBeginningSubtask ? task.id : task.parentId
       });
     } else {
       this.setState({
@@ -375,7 +378,11 @@ export default class TaskIndexItem extends React.Component {
     if (this.state.task.expanded) {
       return(
         <div id={ "subtasks-" + this.createTaskId() } className="subtasks">
-          <div id={ this.createTaskId() + '-top-drop' } className="drop-area"></div>
+          <div
+            id={ this.createTaskId() + '-top-drop' }
+            className="drop-area"
+            onDoubleClick={ this.doubleClickDropArea.bind(this, true) }
+          ></div>
           { this.state.subtasks.map((task, index) => {
             return(
               <TaskIndexItem

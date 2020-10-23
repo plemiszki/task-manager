@@ -177,7 +177,11 @@ class TasksTimeframe extends React.Component {
         { this.renderAddButton() }
         <hr />
         { this.renderTopColorPicker() }
-        <div id={ this.props.timeframe + '-top-drop' } className="drop-area" onDoubleClick={ Common.changeState.bind(this, 'showTopColorPicker', !this.state.showTopColorPicker) }></div>
+        <div
+          id={ this.props.timeframe + '-top-drop' }
+          className="drop-area"
+          onDoubleClick={ Common.changeState.bind(this, 'showTopColorPicker', !this.state.showTopColorPicker) }
+        ></div>
         { this.props.timeframeTasks.map((task, index) => {
           return(
             <TasksIndexItem
