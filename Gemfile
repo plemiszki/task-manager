@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 ruby '2.7.1'
 
-gem 'rails', '5.2.4.4'
+gem 'rails', '6.0.3.4'
 gem 'pg', '~> 0.18'
 
 gem 'bootstrap-sass'
@@ -26,8 +26,8 @@ group :development, :test do
 end
 
 group :development do
-  gem 'web-console', '~> 2.0' # see console on error pages (or <% console %>)
-  gem 'spring' # speeds up development by keeping your application running in the background
+  gem 'web-console', '~> 2.0'
+  gem 'spring'
 end
 
 group :production do
