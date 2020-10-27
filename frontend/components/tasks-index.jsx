@@ -115,10 +115,7 @@ class TasksIndex extends React.Component {
         tasks: args.newPositions
       }
     }).then(() => {
-      this.setState({
-        fetching: false,
-        tasks: this.props.tasks
-      });
+      this.updateComponentTasks();
     });
   }
 

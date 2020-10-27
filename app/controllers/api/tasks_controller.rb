@@ -268,7 +268,7 @@ class Api::TasksController < ActionController::Base
       end
     end
 
-    build_response
+    build_rearrange_response(tasks: tasks)
   end
 
   def destroy
@@ -284,6 +284,20 @@ class Api::TasksController < ActionController::Base
   end
 
   private
+
+  def build_rearrange_response(tasks:)
+    sample_task = Task.find(tasks['0'])
+    if sample_task.parent_id
+      parent = sample_task.parent
+      if parent.duplicate_id || parent.has_dups?
+        build_response
+      else
+        build_response(timeframe: sample_task.timeframe)
+      end
+    else
+      build_response(timeframe: sample_task.timeframe)
+    end
+  end
 
   def update_existing_positions(timeframe:, position:)
     tasks = Task.where(user: current_user, timeframe: timeframe, parent_id: nil).order(:position).to_a
