@@ -130,7 +130,7 @@ class Api::TasksController < ActionController::Base
     if render_error
       render json: [], status: 422
     else
-      build_response
+      build_response(timeframe: (params[:duplicate_of] || params[:parent_id] ? nil : task.timeframe))
     end
   end
 
@@ -323,7 +323,7 @@ class Api::TasksController < ActionController::Base
 
   def existing_dup?
     master_task = Task.find(params[:duplicate_of])
-    return true if Task.find_by(duplicate_id: master_task.id)
+    return true if Task.exists?(duplicate_id: master_task.id)
     tasks_queue = master_task.subtasks.to_a
     ids = []
     until tasks_queue.empty?
@@ -332,7 +332,7 @@ class Api::TasksController < ActionController::Base
       tasks_queue.shift
     end
     ids.each do |id|
-      return true if Task.find_by(duplicate_id: id)
+      return true if Task.exists?(duplicate_id: master_task.id)
     end
     false
   end
