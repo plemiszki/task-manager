@@ -3,7 +3,7 @@ class Api::RecipesController < ActionController::Base
   include Clearance::Controller
 
   def index
-    @recipes = Recipe.all
+    @recipes = Recipe.all.order(:name)
     render 'index.json.jbuilder'
   end
 
@@ -15,7 +15,7 @@ class Api::RecipesController < ActionController::Base
   def create
     @recipe = Recipe.new(recipe_params)
     if @recipe.save
-      @recipes = Recipe.all
+      @recipes = Recipe.all.order(:name)
       render 'index.json.jbuilder'
     else
       render json: @recipe.errors.full_messages, status: 422
@@ -33,7 +33,7 @@ class Api::RecipesController < ActionController::Base
 
   def destroy
     Recipe.find(params[:id]).destroy
-    @recipes = Recipe.all
+    @recipes = Recipe.all.order(:name)
     render 'index.json.jbuilder'
   end
 
