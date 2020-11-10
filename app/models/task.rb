@@ -82,11 +82,11 @@ class Task < ActiveRecord::Base
 
       day_tasks = []
       existing_day_tasks = Task.where(user_id: user.id, timeframe: "day", parent_id: nil).order(:position).to_a
-      joint_tasks += Task.convert_recurring_tasks(day_tasks, user, "Day", "beginning")
+      joint_tasks += Task.convert_recurring_tasks!(tasks: day_tasks, user: user, timeframe: "Day", position: "beginning")
       Task.convert_future_tasks(day_tasks, user, "Day", "beginning")
       day_tasks += Task.convert_joint_tasks(joint_tasks, user, "Day")
       day_tasks += existing_day_tasks
-      joint_tasks += Task.convert_recurring_tasks(day_tasks, user, "Day", "end")
+      joint_tasks += Task.convert_recurring_tasks!(tasks: day_tasks, user: user, timeframe: "Day", position: "end")
       Task.convert_future_tasks(day_tasks, user, "Day", "end")
 
       day_tasks.each_with_index do |task, index|
@@ -97,10 +97,10 @@ class Task < ActiveRecord::Base
 
       weekend_tasks = []
       existing_weekend_tasks = Task.where(user_id: 1, timeframe: "weekend", parent_id: nil).order(:position)
-      joint_tasks += Task.convert_recurring_tasks(weekend_tasks, user, "Weekend", "beginning")
+      joint_tasks += Task.convert_recurring_tasks!(tasks: weekend_tasks, user: user, timeframe: "Weekend", position: "beginning")
       Task.convert_future_tasks(weekend_tasks, user, "Weekend", "beginning")
       weekend_tasks += existing_weekend_tasks
-      joint_tasks += Task.convert_recurring_tasks(weekend_tasks, user, "Weekend", "end")
+      joint_tasks += Task.convert_recurring_tasks!(tasks: weekend_tasks, user: user, timeframe: "Weekend", position: "end")
       Task.convert_future_tasks(weekend_tasks, user, "Weekend", "end")
 
       weekend_tasks.each_with_index do |task, index|
@@ -111,10 +111,10 @@ class Task < ActiveRecord::Base
 
       month_tasks = []
       existing_month_tasks = Task.where(user_id: 1, timeframe: "month", parent_id: nil).order(:position)
-      joint_tasks += Task.convert_recurring_tasks(month_tasks, user, "Month", "beginning")
+      joint_tasks += Task.convert_recurring_tasks!(tasks: month_tasks, user: user, timeframe: "Month", position: "beginning")
       Task.convert_future_tasks(month_tasks, user, "Month", "beginning")
       month_tasks += existing_month_tasks
-      joint_tasks += Task.convert_recurring_tasks(month_tasks, user, "Month", "end")
+      joint_tasks += Task.convert_recurring_tasks!(tasks: month_tasks, user: user, timeframe: "Month", position: "end")
       Task.convert_future_tasks(month_tasks, user, "Month", "end")
 
       month_tasks.each_with_index do |task, index|
@@ -156,19 +156,32 @@ class Task < ActiveRecord::Base
     future_tasks.destroy_all
   end
 
-  def self.convert_recurring_tasks(tasks_array, user, timeframe, position)
+  def self.convert_recurring_tasks!(tasks:, user:, timeframe:, position:)
     recurring_tasks = RecurringTask.where(active: true, user_id: user.id, timeframe: timeframe, add_to_end: position == "end").order(:position)
     joint_tasks = []
-    recurring_tasks.each do |task|
-      recurrence = task.montrose_object
+    recurring_tasks.each do |recurring_task|
+      recurrence = recurring_task.montrose_object
       i = 1
       while recurrence.events.take(i).last.to_date <= Date.today
         if recurrence.events.take(i).last.to_date == Date.today
-          new_task = Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task.text, template: task.expires, color: task.color.gsub(/[rgb\(\)]/, ""))
-          tasks_array << new_task
-          if task.joint_user_id
-            joint_tasks << { user_id: task.joint_user_id, timeframe: timeframe.downcase, text: task.joint_text, template: task.expires, color: task.color.gsub(/[rgb\(\)]/, ""), joint_id: new_task.id }
+          new_task = Task.create(
+            user_id: user.id,
+            timeframe: timeframe.downcase,
+            text: recurring_task.text,
+            template: recurring_task.expires,
+            color: recurring_task.color.gsub(/[rgb\(\)]/, "")
+          )
+          if recurring_task.joint_user_id
+            joint_tasks << {
+              user_id: recurring_task.joint_user_id,
+              timeframe: timeframe.downcase,
+              text: recurring_task.joint_text,
+              template: recurring_task.expires,
+              color: recurring_task.color.gsub(/[rgb\(\)]/, ""),
+              joint_id: new_task.id
+            }
           end
+          recurring_task.update_start!
           break
         else
           i += 1

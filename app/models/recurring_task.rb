@@ -5,6 +5,16 @@ class RecurringTask < ActiveRecord::Base
   validates :text, :color, presence: true
   validate :joint_id_and_task
 
+  def update_start!
+    hash = JSON.parse(self.recurrence)
+    if hash.has_key?('starts')
+      hash['starts'] = Date.today.strftime('%Y-%m-%d')
+      self.update!(
+        recurrence: hash.to_json
+      )
+    end
+  end
+
   def joint_id_and_task
     if joint_user_id && joint_text.empty?
       errors.add(:joint_text, "can't be blank")
