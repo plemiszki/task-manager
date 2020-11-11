@@ -5,7 +5,7 @@ class RecurringTask < ActiveRecord::Base
   validates :text, :color, presence: true
   validate :joint_id_and_task
 
-  def update_start!
+  def update_start_date!
     hash = JSON.parse(self.recurrence)
     if hash.has_key?('starts')
       hash['starts'] = Date.today.strftime('%Y-%m-%d')

@@ -171,6 +171,7 @@ class Task < ActiveRecord::Base
             template: recurring_task.expires,
             color: recurring_task.color.gsub(/[rgb\(\)]/, "")
           )
+          tasks << new_task
           if recurring_task.joint_user_id
             joint_tasks << {
               user_id: recurring_task.joint_user_id,
@@ -181,7 +182,7 @@ class Task < ActiveRecord::Base
               joint_id: new_task.id
             }
           end
-          recurring_task.update_start!
+          recurring_task.update_start_date!
           break
         else
           i += 1
