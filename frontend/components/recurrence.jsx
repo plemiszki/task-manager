@@ -41,7 +41,8 @@ export default class Recurrence extends React.Component {
       result.monthday = recurrence.mday[0];
     }
     this.state = {
-      recurrence: result
+      recurrence: result,
+      dateOptions: []
     };
   }
 
@@ -105,6 +106,7 @@ export default class Recurrence extends React.Component {
   }
 
   render() {
+    this.getDateOptions.call(this);
     return(
       <div className="admin-modal recurrence-modal">
         <div className="white-box">
@@ -135,11 +137,20 @@ export default class Recurrence extends React.Component {
   renderSecondRow() {
     if (this.state.recurrence.type === 'Daily (Interval)') {
       return(
-        <div className="col-xs-5 second-row">
-          <h2>Interval</h2>
-          <input type="number" value={ this.state.recurrence.interval } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } data-entity="recurrence" data-field="interval" />
-          { Details.renderFieldError([], []) }
-        </div>
+        <>
+          <div className="col-xs-5 second-row">
+            <h2>Interval</h2>
+            <input type="number" value={ this.state.recurrence.interval } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } data-entity="recurrence" data-field="interval" />
+            { Details.renderFieldError([], []) }
+          </div>
+          <div className="col-xs-7 second-row">
+            <h2>Next Occurrence</h2>
+            <select onChange={ () => {} } value={ this.state.recurrence.type } data-entity="recurrence" data-field="type">
+              <option value="Daily">Daily</option>
+            </select>
+            { Details.renderDropdownFieldError([], []) }
+          </div>
+        </>
       );
     } else if (this.state.recurrence.type === 'Weekly') {
       return(
@@ -185,6 +196,16 @@ export default class Recurrence extends React.Component {
         </div>
       );
     }
+  }
+
+  getDateOptions() {
+    const nextOccurrence = new Date(this.props.recurringTask.nextOccurrence);
+    let today = new Date();
+    today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const daysUntilNext = ((nextOccurrence - today) / 1000 / 60 / 60 / 24);
+    const daysAfterNext = +this.state.recurrence.interval - daysUntilNext - 1;
+    let result = [];
+    return result;
   }
 
   componentWillUpdate(nextProps, nextState) {

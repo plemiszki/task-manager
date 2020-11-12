@@ -9,7 +9,8 @@ json.recurringTask do
   json.jointUserId @recurring_task.joint_user_id.to_s || ""
   json.jointText @recurring_task.joint_text || ""
   json.active @recurring_task.active
-  json.nextOccurence @recurring_task.next_occurence.strftime("%m/%d")
+  json.nextOccurrence @recurring_task.next_occurrence.strftime("%m/%d/%Y")
+  json.nextOccurrenceNoYear @recurring_task.next_occurrence.strftime("%m/%d")
 end
 json.users @users do |user|
   json.id user.id

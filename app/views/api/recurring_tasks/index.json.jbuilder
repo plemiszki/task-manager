@@ -1,7 +1,7 @@
 json.dailyTasks @daily_recurring_tasks do |task|
   json.id task.id
   json.text task.text
-  json.recurrence convert(Montrose.r(YAML::load(task.recurrence)).to_hash)
+  json.recurrence convert(task)
   json.color task.color
   json.expires task.expires
   json.addToEnd task.add_to_end
@@ -12,7 +12,7 @@ end
 json.weekendTasks @weekend_recurring_tasks do |task|
   json.id task.id
   json.text task.text
-  json.recurrence convert(Montrose.r(YAML::load(task.recurrence)).to_hash)
+  json.recurrence convert(task)
   json.color task.color
   json.expires task.expires
   json.addToEnd task.add_to_end
@@ -23,7 +23,7 @@ end
 json.monthlyTasks @monthly_recurring_tasks do |task|
   json.id task.id
   json.text task.text
-  json.recurrence convert(Montrose.r(YAML::load(task.recurrence)).to_hash)
+  json.recurrence convert(task)
   json.color task.color
   json.expires task.expires
   json.addToEnd task.add_to_end

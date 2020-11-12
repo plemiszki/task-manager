@@ -2,11 +2,12 @@ module ApplicationHelper
 
   MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
-  def convert(hash)
+  def convert(recurring_task)
+    hash = recurring_task.montrose_object.to_hash
     if hash.has_key?(:every)
       if hash[:every] == :day
         if hash.has_key?(:interval)
-          "Every #{hash[:interval]} days"
+          "Every #{hash[:interval]} days - next on #{recurring_task.next_occurrence.strftime('%m/%d')}"
         else
           "Daily"
         end

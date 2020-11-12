@@ -182,7 +182,7 @@ class Task < ActiveRecord::Base
               joint_id: new_task.id
             }
           end
-          recurring_task.update_start_date!
+          recurring_task.update_start_date_to_today!
           break
         else
           i += 1

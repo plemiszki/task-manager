@@ -97,7 +97,7 @@ export default class _Details extends React.Component {
     if (input.every) {
       if (input.every === 'day') {
         if (input.interval) {
-          return `Every ${input.interval} days - next on ${task.nextOccurence}`;
+          return `Every ${input.interval} days - next on ${task.nextOccurrenceNoYear}`;
         } else {
           return 'Daily';
         }

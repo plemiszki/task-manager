@@ -5,10 +5,18 @@ class RecurringTask < ActiveRecord::Base
   validates :text, :color, presence: true
   validate :joint_id_and_task
 
-  def update_start_date!
+  def update_start_date_to_today!
+    update_start_date!(date: Date.today)
+  end
+
+  def update_start_date_to_next_occurrence!
+    update_start_date!(date: next_occurrence)
+  end
+
+  def update_start_date!(date:)
     hash = JSON.parse(self.recurrence)
     if hash.has_key?('starts')
-      hash['starts'] = Date.today.strftime('%Y-%m-%d')
+      hash['starts'] = date.strftime('%Y-%m-%d')
       self.update!(
         recurrence: hash.to_json
       )
@@ -25,13 +33,13 @@ class RecurringTask < ActiveRecord::Base
     Montrose.r(JSON.parse(recurrence))
   end
 
-  def next_occurence
+  def next_occurrence
     obj = montrose_object
     i = 1
     until obj.events.take(i).last.to_date >= Date.today
       i += 1
     end
-    obj.events.take(i).last
+    obj.events.take(i).last.to_date
   end
 
 end
