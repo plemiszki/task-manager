@@ -106,7 +106,6 @@ export default class Recurrence extends React.Component {
   }
 
   render() {
-    this.getDateOptions.call(this);
     return(
       <div className="admin-modal recurrence-modal">
         <div className="white-box">
@@ -143,11 +142,9 @@ export default class Recurrence extends React.Component {
             <input type="number" value={ this.state.recurrence.interval } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } data-entity="recurrence" data-field="interval" />
             { Details.renderFieldError([], []) }
           </div>
-          <div className="col-xs-7 second-row">
+          <div className="col-xs-7 second-row select-scroll-2">
             <h2>Next Occurrence</h2>
-            <select onChange={ () => {} } value={ this.state.recurrence.type } data-entity="recurrence" data-field="type">
-              <option value="Daily">Daily</option>
-            </select>
+            { this.renderDateOptions() }
             { Details.renderDropdownFieldError([], []) }
           </div>
         </>
@@ -198,13 +195,26 @@ export default class Recurrence extends React.Component {
     }
   }
 
+  renderDateOptions() {
+    const dateOptions = this.getDateOptions.call(this);
+    return(
+      <select onChange={ () => {} } value={ this.state.recurrence.starts } data-entity="recurrence" data-field="starts">
+        { dateOptions.map((dateOption, index) => {
+          return(
+            <option key={ index } value={ HandyTools.stringifyDateWithHyphens(dateOption) }>{ HandyTools.stringifyDate(dateOption) }</option>
+          );
+        }) }
+      </select>
+    );
+  }
+
   getDateOptions() {
-    const nextOccurrence = new Date(this.props.recurringTask.nextOccurrence);
-    let today = new Date();
-    today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const daysUntilNext = ((nextOccurrence - today) / 1000 / 60 / 60 / 24);
-    const daysAfterNext = +this.state.recurrence.interval - daysUntilNext - 1;
+    const today = HandyTools.stripTimeFromDate(new Date());
     let result = [];
+    for (let i = 0; i < +this.state.recurrence.interval; i++) {
+      const date = HandyTools.addDaysToDate(today, i);
+      result.push(date);
+    }
     return result;
   }
 
