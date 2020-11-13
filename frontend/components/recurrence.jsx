@@ -226,7 +226,7 @@ export default class Recurrence extends React.Component {
   }
 
   componentDidUpdate() {
-    HandyTools.setUpNiceSelect({
+    HandyTools.resetNiceSelect({
       selector: '.recurrence-modal .second-row select',
       func: Details.changeField.bind(this, this.changeFieldArgs())
     });
