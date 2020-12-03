@@ -36,7 +36,7 @@ class RecurringTask < ActiveRecord::Base
   def next_occurrence
     obj = montrose_object
     i = 1
-    until obj.events.take(i).last.to_date >= Date.today
+    until obj.events.take(i).last.to_date > Date.today
       i += 1
     end
     obj.events.take(i).last.to_date
