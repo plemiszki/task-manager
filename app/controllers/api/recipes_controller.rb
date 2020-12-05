@@ -40,7 +40,7 @@ class Api::RecipesController < ActionController::Base
   private
 
   def recipe_params
-    params.require(:recipe).permit(:name, :category, :ingredients, :prep)
+    params.require(:recipe).permit(:name, :category, :ingredients, :prep, :time)
   end
 
 end

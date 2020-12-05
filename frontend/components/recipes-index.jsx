@@ -83,22 +83,28 @@ class RecipesIndex extends React.Component {
                   <tr>
                     <th>Name</th>
                     <th>Category</th>
+                    <th>Time</th>
                     <th className="x-button-column"></th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="below-header"><td></td><td></td><td></td></tr>
+                  <tr className="below-header"><td></td><td></td><td></td><td></td></tr>
                   { this.state.recipes.map((recipe) => {
                     return(
                       <tr key={ recipe.id }>
                         <td>
-                          <a href={`/recipes/${recipe.id}`}>
+                          <a href={ `/recipes/${recipe.id}` }>
                             { recipe.name }
                           </a>
                         </td>
                         <td>
-                          <a href={`/recipes/${recipe.id}`}>
+                          <a href={ `/recipes/${recipe.id}` }>
                             { recipe.category }
+                          </a>
+                        </td>
+                        <td>
+                          <a href={ `/recipes/${recipe.id}` }>
+                            { recipe.time }
                           </a>
                         </td>
                         <td><div className="x-button" onClick={ this.clickX.bind(this) } data-id={ recipe.id }></div></td>

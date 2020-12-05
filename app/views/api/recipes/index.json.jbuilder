@@ -4,4 +4,5 @@ json.recipes @recipes do |recipe|
   json.ingredients recipe.ingredients
   json.prep recipe.prep
   json.category recipe.category
+  json.time recipe.time
 end

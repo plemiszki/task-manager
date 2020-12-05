@@ -84,11 +84,12 @@ class RecipeDetails extends DetailsComponent {
                 <input className={ Details.errorClass(this.state.errors, ERRORS.name) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recipe.name || "" } data-entity="recipe" data-field="name" />
                 { Details.renderFieldError(this.state.errors, ERRORS.name) }
               </div>
-              <div className="col-xs-6">
+              <div className="col-xs-4">
                 <h2>Category</h2>
                 <input className={ Details.errorClass(this.state.errors, []) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recipe.category || "" } data-entity="recipe" data-field="category" />
                 { Details.renderFieldError(this.state.errors, []) }
               </div>
+              { Details.renderField.bind(this)({ columnWidth: 2, entity: 'recipe', property: 'time' }) }
             </div>
             <div className="row">
               <div className="col-xs-6">
