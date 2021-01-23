@@ -58,7 +58,7 @@ class CurrentUser extends React.Component {
                 <img src={ Images.democrat } />
                 <div>
                   <p className={ this.houseClass('senate') }>{ this.state.congress.senate.dems } - Senate - { this.state.congress.senate.repubs }</p>
-                  <p className="elections">{ this.state.congress.senate.dems_up } - 2020 Elections - { this.state.congress.senate.repubs_up }</p>
+                  <p className="elections">{ this.state.congress.senate.dems_up } - 2022 Elections - { this.state.congress.senate.repubs_up }</p>
                   <hr />
                   <p className={ this.houseClass('house') }>{ this.state.congress.house.dems } - House - { this.state.congress.house.repubs }</p>
                 </div>
