@@ -237,6 +237,7 @@ class Api::TasksController < ActionController::Base
       timeframe: params[:timeframe],
       position: Task.where(user: current_user, timeframe: params[:timeframe], parent_id: nil).length
     )
+    task.subtasks.update_all(timeframe: params[:timeframe])
     siblings.each_with_index do |task, index|
       task.update(position: index)
     end
