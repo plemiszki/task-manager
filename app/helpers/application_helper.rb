@@ -1,7 +1,5 @@
 module ApplicationHelper
 
-  MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-
   def convert(recurring_task)
     hash = recurring_task.montrose_object.to_hash
     if hash.has_key?(:every)
@@ -18,6 +16,8 @@ module ApplicationHelper
           days = hash[:on]
           if days.class == String
             "#{hash[:on].to_s.capitalize}s"
+          elsif days.join(' ') == "monday tuesday wednesday thursday friday"
+            "Weekdays"
           else
             days.length <= 3 ? days.map { |day| "#{day.capitalize}s" }.join(", ") : days.map { |day| "#{day.capitalize[0...3]}" }.join(", ")
           end
@@ -26,9 +26,9 @@ module ApplicationHelper
         "Monthly"
       elsif hash[:every] == :year
         if hash[:mday][0] != 1
-          "Every #{MONTHS[hash[:month][0] - 1]} #{hash[:mday][0].ordinalize}"
+          "Every #{Date::MONTHNAMES[hash[:month][0]]} #{hash[:mday][0].ordinalize}"
         else
-          "Every #{MONTHS[hash[:month][0] - 1]}"
+          "Every #{Date::MONTHNAMES[hash[:month][0]]}"
         end
       else
         "Custom"
