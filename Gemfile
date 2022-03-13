@@ -5,7 +5,7 @@ gem 'rails', '7.0.2.3'
 gem 'pg', '~> 1.1'
 
 gem 'bootstrap-sass'
-gem 'clearance', '1.17.0'
+gem 'clearance', '2.5.0'
 gem 'httparty'
 gem 'jbuilder', '~> 2.5'
 gem 'jquery-rails'
