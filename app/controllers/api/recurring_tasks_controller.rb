@@ -7,7 +7,6 @@ class Api::RecurringTasksController < ActionController::Base
     @weekend_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Weekend').order(:position)
     @monthly_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Month').order(:position)
     @users = User.where.not(id: current_user.id)
-    render 'index.json.jbuilder'
   end
 
   def create
@@ -19,7 +18,7 @@ class Api::RecurringTasksController < ActionController::Base
       @weekend_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Weekend').order(:position)
       @monthly_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Month').order(:position)
       @users = User.where.not(id: current_user.id)
-      render 'index.json.jbuilder'
+      render 'index'
     else
       render json: @recurring_task.errors.full_messages, status: 422
     end
@@ -28,13 +27,13 @@ class Api::RecurringTasksController < ActionController::Base
   def show
     @recurring_task = RecurringTask.find(params[:id])
     @users = User.where.not(id: current_user.id)
-    render 'show.json.jbuilder'
+    render 'show'
   end
 
   def update
     @recurring_task = RecurringTask.find(params[:id])
     if @recurring_task.update(recurring_task_params)
-      render 'show.json.jbuilder'
+      render 'show'
     else
       render json: @recurring_task.errors.full_messages, status: 422
     end
@@ -49,7 +48,7 @@ class Api::RecurringTasksController < ActionController::Base
     @daily_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Day').order(:position)
     @weekend_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Weekend').order(:position)
     @monthly_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Month').order(:position)
-    render 'index.json.jbuilder'
+    render 'index'
   end
 
   def rearrange
@@ -71,7 +70,7 @@ class Api::RecurringTasksController < ActionController::Base
     @daily_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Day').order(:position)
     @weekend_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Weekend').order(:position)
     @monthly_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Month').order(:position)
-    render 'index.json.jbuilder'
+    render 'index'
   end
 
   private

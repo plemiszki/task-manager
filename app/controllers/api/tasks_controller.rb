@@ -321,7 +321,7 @@ class Api::TasksController < ActionController::Base
       tasks.each do |task|
         @timeframes[task.timeframe] << task.serialize
       end
-      render 'all.json.jbuilder'
+      render 'api/tasks/all'
     end
   end
 
