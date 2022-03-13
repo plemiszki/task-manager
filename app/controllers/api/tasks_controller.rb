@@ -314,7 +314,7 @@ class Api::TasksController < ActionController::Base
       @timeframe = timeframe
       tasks = Task.where(timeframe: @timeframe, user_id: current_user.id, parent_id: nil).includes(subtasks: [subtasks: [:subtasks]]).order(:position)
       @tasks = tasks.map(&:serialize)
-      render 'index.json.jbuilder'
+      render 'index'
     else
       tasks = Task.where(user_id: current_user.id, parent_id: nil).includes(subtasks: [subtasks: [:subtasks]]).order(:position)
       @timeframes = Hash.new { |h, k| h[k] = [] }

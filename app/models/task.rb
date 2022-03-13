@@ -19,6 +19,16 @@ class Task < ActiveRecord::Base
     primary_key: :id
   )
 
+  after_commit :auto_rearrange!, on: :update
+
+  def auto_rearrange!
+    return unless self.complete
+    desired = self.completed_siblings + self.uncompleted_siblings
+    desired.each_with_index do |task, index|
+      task.update!(position: index) unless task.position == index
+    end
+  end
+
   def serialize
     self.serializable_hash(include: { subtasks: { include: { subtasks: { include: :subtasks } } } })
   end
@@ -28,11 +38,15 @@ class Task < ActiveRecord::Base
   end
 
   def siblings
-    if (self.parent_id)
-      self.parent.subtasks
-    else
-      Task.where(user: self.user, timeframe: self.timeframe, parent_id: nil).order(:position)
-    end
+    Task.where(user: self.user, timeframe: self.timeframe, parent_id: self.parent_id).order(:position)
+  end
+
+  def completed_siblings
+    siblings.where(complete: true)
+  end
+
+  def uncompleted_siblings
+    siblings.where(complete: false)
   end
 
   def self.rearrange_after_position!(tasks:, position:)
