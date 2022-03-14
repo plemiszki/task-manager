@@ -67,7 +67,7 @@ class Api::TasksController < ActionController::Base
         task.duplicate_id = params[:duplicate_of]
         task.timeframe = params[:timeframe]
         if params[:position]
-          update_existing_positions({ timeframe: params[:timeframe], position: params[:position] })
+          update_existing_positions(timeframe: params[:timeframe], position: params[:position])
           task.position = params[:position]
         else
           task.position = Task.where(user: current_user, timeframe: params[:timeframe], parent_id: nil).length
