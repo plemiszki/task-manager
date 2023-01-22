@@ -41,7 +41,9 @@ class CurrentUser extends React.Component {
   }
 
   render() {
-    return(
+    const { congress, user } = this.state;
+    const { house, senate, next_election } = congress;
+    return (
       <div className="container widened-container">
         <div className="row">
           <div className="col-xs-12">
@@ -52,15 +54,15 @@ class CurrentUser extends React.Component {
               <a className="btn btn-info" rel="nofollow" href="/future_tasks">Future Tasks</a>
               <a className="btn btn-primary" rel="nofollow" href="/">Home</a>
               <div className="email">
-                { this.state.user ? this.state.user.email : "(loading)" }
+                { user ? user.email : "(loading)" }
               </div>
               <div className="widget congress">
                 <img src={ Images.democrat } />
                 <div>
-                  <p className={ this.houseClass('senate') }>{ this.state.congress.senate.dems } - Senate - { this.state.congress.senate.repubs }</p>
-                  <p className="elections">{ this.state.congress.senate.dems_up } - 2022 Elections - { this.state.congress.senate.repubs_up }</p>
+                  <p className={ this.houseClass('senate') }>{ senate.dems } - Senate - { senate.repubs }</p>
+                  <p className="elections">{ senate.dems_up } - { next_election } Elections - { senate.repubs_up }</p>
                   <hr />
-                  <p className={ this.houseClass('house') }>{ this.state.congress.house.dems } - House - { this.state.congress.house.repubs }</p>
+                  <p className={ this.houseClass('house') }>{ house.dems } - House - { house.repubs }</p>
                 </div>
                 <img src={ Images.republican } />
               </div>

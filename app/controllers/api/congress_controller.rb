@@ -23,6 +23,7 @@ class Api::CongressController < ActionController::Base
 
     render json: {
       congress: {
+        next_election: NEXT_ELECTION,
         senate: {
           dems: senate_dems.length,
           repubs: senate_repubs.length,
