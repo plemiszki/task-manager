@@ -1,7 +1,7 @@
 class Api::CongressController < ActionController::Base
 
-  CONGRESS_NUMBER = 117
-  NEXT_ELECTION = 2022
+  CONGRESS_NUMBER = 118
+  NEXT_ELECTION = 2024
 
   def show
     endpoint = 'https://api.propublica.org/congress/v1/'
