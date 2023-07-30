@@ -1,18 +1,14 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { Common, Details } from 'handy-components'
-import HandyTools from 'handy-tools'
+import { Details, Spinner, GrayedOut, createEntity } from 'handy-components'
 import DetailsComponent from './_details.jsx'
 import { ERRORS } from '../errors.js'
-import { createEntity } from '../actions/index'
 
-class RecipeNew extends DetailsComponent {
+export default class RecipeNew extends DetailsComponent {
 
   constructor(props) {
     super(props);
     this.state = {
-      fetching: false,
+      spinner: false,
       recipe: {
         name: '',
         category: '',
@@ -32,6 +28,7 @@ class RecipeNew extends DetailsComponent {
 
   changeFieldArgs() {
     return {
+      entity: 'recipe',
       allErrors: ERRORS,
       errorsArray: this.state.errors
     }
@@ -39,50 +36,49 @@ class RecipeNew extends DetailsComponent {
 
   clickSave() {
     this.setState({
-      fetching: true
+      spinner: true
     });
-    this.props.createEntity({
+    createEntity({
       directory: 'recipes',
       entityName: 'recipe',
-      entity: this.state.recipe
-    }).then(() => {
-      this.props.afterCreate(this.props.recipes);
-    }, () => {
+      entity: this.state.recipe,
+    }).then((response) => {
+      this.props.afterCreate(response.recipes);
+    }, (response) => {
       this.setState({
-        fetching: false,
-        errors: this.props.errors
+        spinner: false,
+        errors: response,
       });
     });
   }
 
   render() {
-    return(
-      <div id="future-task-new" className="admin-modal">
+    const { spinner, errors } = this.state;
+    return (
+      <div id="recipe-new" className="admin-modal handy-component">
           <div className="white-box">
-            { Common.renderSpinner(this.state.fetching) }
-            { Common.renderGrayedOut(this.state.fetching, -26, -26, 6) }
             <div className="row">
               <div className="col-xs-6">
                 <h2>Name</h2>
-                <input className={ Details.errorClass(this.state.errors, ERRORS.name) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recipe.name || "" } data-entity="recipe" data-field="name" />
-                { Details.renderFieldError(this.state.errors, ERRORS.name) }
+                <input className={ Details.errorClass(this.state.errors, ERRORS.name) } onChange={ Details.changeField.bind(this, { ...this.changeFieldArgs(), property: 'name' }) } value={ this.state.recipe.name || "" } />
+                { Details.renderFieldError(this.state.errors, []) }
               </div>
               <div className="col-xs-6">
                 <h2>Category</h2>
-                <input className={ Details.errorClass(this.state.errors, []) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recipe.category || "" } data-entity="recipe" data-field="category" />
-                { Details.renderFieldError(this.state.errors, []) }
+                <input className={ Details.errorClass(this.state.errors, []) } onChange={ Details.changeField.bind(this, { ...this.changeFieldArgs(), property: 'category' }) } value={ this.state.recipe.category || "" } />
+                { Details.renderFieldError([], []) }
               </div>
             </div>
             <div className="row">
               <div className="col-xs-6">
                 <h2>Ingredients</h2>
-                <textarea rows={ 10 } className={ Details.errorClass(this.state.errors, []) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recipe.ingredients } data-entity="recipe" data-field="ingredients"></textarea>
-                { Details.renderFieldError(this.state.errors, []) }
+                <textarea rows={ 10 } className={ Details.errorClass(this.state.errors, []) } onChange={ Details.changeField.bind(this, { ...this.changeFieldArgs(), property: 'ingredients' }) } value={ this.state.recipe.ingredients }></textarea>
+                { Details.renderFieldError([], []) }
               </div>
               <div className="col-xs-6">
                 <h2>Preparation</h2>
-                <textarea rows={ 10 } className={ Details.errorClass(this.state.errors, []) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recipe.prep } data-entity="recipe" data-field="prep"></textarea>
-                { Details.renderFieldError(this.state.errors, []) }
+                <textarea rows={ 10 } className={ Details.errorClass(this.state.errors, []) } onChange={ Details.changeField.bind(this, { ...this.changeFieldArgs(), property: 'prep' }) } value={ this.state.recipe.prep }></textarea>
+                { Details.renderFieldError([], []) }
               </div>
             </div>
             <div className="row">
@@ -90,18 +86,10 @@ class RecipeNew extends DetailsComponent {
                 <div className="btn btn-info recipe-button" onClick={ this.clickSave.bind(this) }>Add Recipe</div>
               </div>
             </div>
+            <GrayedOut visible={ spinner } />
+            <Spinner visible={ spinner } />
           </div>
       </div>
     );
   }
 }
-
-const mapStateToProps = (reducers) => {
-  return reducers.standardReducer;
-};
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ createEntity }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(RecipeNew);
