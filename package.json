@@ -4,10 +4,10 @@
   "license": "MIT",
   "scripts": {
     "heroku-postbuild": "webpack --mode production",
-    "dev": "./node_modules/webpack/bin/webpack.js --watch"
+    "dev": "webpack --watch"
   },
   "dependencies": {
-    "@babel/core": "7.5.5",
+    "@babel/core": "7.4.0",
     "@babel/preset-react": "7.0.0",
     "babel-loader": "8.0.5",
     "change-case": "3.1.0",
@@ -20,8 +20,9 @@
     "react-redux": "6.0.1",
     "redux": "4.0.1",
     "redux-thunk": "2.3.0",
-    "webpack": "4.29.6",
-    "webpack-cli": "^3.3.12"
+    "styled-jsx": "5.0.7",
+    "webpack": "^5.85.0",
+    "webpack-cli": "4.10.0"
   },
   "engines": {
     "node": "20.2.0"
