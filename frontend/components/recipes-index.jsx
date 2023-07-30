@@ -1,11 +1,7 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import React, { useState, useEffect } from 'react'
 import Modal from 'react-modal'
-import { Common, Index } from 'handy-components'
-import HandyTools from 'handy-tools'
+import { Spinner, GrayedOut, deleteEntity } from 'handy-components'
 import RecipeNew from './recipe-new.jsx'
-import { fetchEntities, deleteEntity } from '../actions/index'
 
 const ModalStyles = {
   overlay: {
@@ -20,117 +16,84 @@ const ModalStyles = {
   }
 };
 
-class RecipesIndex extends React.Component {
+export default function RecipesIndex() {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      modalOpen: false,
-      fetching: true,
-      recipes: []
-    }
-  }
+  const [spinner, setSpinner] = useState(true)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [recipes, setRecipes] = useState([])
 
-  componentDidMount() {
-    this.props.fetchEntities({ directory: 'recipes' }).then(() => {
-      this.setState({
-        fetching: false,
-        recipes: this.props.recipes,
-        modalOpen: false
+  useEffect(() => {
+    fetch(`/api/recipes`)
+      .then(data => data.json())
+      .then((response) => {
+        setRecipes(response.recipes)
+        setSpinner(false)
       });
-    });
-  }
+  }, [])
 
-  clickNew() {
-    this.setState({
-      modalOpen: true
-    });
-  }
-
-  closeModal() {
-    this.setState({
-      modalOpen: false
-    });
-  }
-
-  clickX(e) {
-    this.setState({
-      fetching: true
-    });
-    this.props.deleteEntity({
+  const deleteRecipe = (id) => {
+    setSpinner(true);
+    deleteEntity({
       directory: 'recipes',
-      id: e.target.dataset.id
-    }).then(() => {
-      this.setState({
-        fetching: false,
-        recipes: this.props.recipes,
-        modalOpen: false
-      });
+      id,
+    }).then((response) => {
+      const { recipes } = response;
+      setRecipes(recipes);
+      setModalOpen(false);
+      setSpinner(false);
     });
-  }
+  };
 
-  render() {
-    return(
-      <div className="container widened-container index-component">
-        <div className="row">
-          <div className="col-xs-12">
-            <div className="white-box">
-              { Common.renderSpinner(this.state.fetching) }
-              { Common.renderGrayedOut(this.state.fetching, -26, -26, 6) }
-              <h1>Recipes</h1>
-              <table className="with-links">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Time</th>
-                    <th className="x-button-column"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="below-header"><td></td><td></td><td></td><td></td></tr>
-                  { this.state.recipes.map((recipe) => {
-                    return(
-                      <tr key={ recipe.id }>
-                        <td>
-                          <a href={ `/recipes/${recipe.id}` }>
-                            { recipe.name }
-                          </a>
-                        </td>
-                        <td>
-                          <a href={ `/recipes/${recipe.id}` }>
-                            { recipe.category }
-                          </a>
-                        </td>
-                        <td>
-                          <a href={ `/recipes/${recipe.id}` }>
-                            { recipe.time }
-                          </a>
-                        </td>
-                        <td><div className="x-button" onClick={ this.clickX.bind(this) } data-id={ recipe.id }></div></td>
-                      </tr>
-                    );
-                  }) }
-                </tbody>
-              </table>
-              <div className="btn btn-info recipe-button" onClick={ this.clickNew.bind(this) }>Add New</div>
-            </div>
+  return (
+    <div className="handy-component container widened-container index-component">
+      <div className="row">
+        <div className="col-xs-12">
+          <div className="white-box">
+            <h1>Recipes</h1>
+            <table className="with-links">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Time</th>
+                  <th className="x-button-column"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="below-header"><td></td><td></td><td></td><td></td></tr>
+                { recipes.map((recipe) => {
+                  return(
+                    <tr key={ recipe.id }>
+                      <td>
+                        <a href={ `/recipes/${recipe.id}` }>
+                          { recipe.name }
+                        </a>
+                      </td>
+                      <td>
+                        <a href={ `/recipes/${recipe.id}` }>
+                          { recipe.category }
+                        </a>
+                      </td>
+                      <td>
+                        <a href={ `/recipes/${recipe.id}` }>
+                          { recipe.time }
+                        </a>
+                      </td>
+                      <td><div className="x-button" onClick={ () => { deleteRecipe(recipe.id) } } data-id={ recipe.id }></div></td>
+                    </tr>
+                  );
+                }) }
+              </tbody>
+            </table>
+            <div className="btn btn-info recipe-button" onClick={ () => { setModalOpen(true) } }>Add New</div>
+            <GrayedOut visible={ spinner } />
+            <Spinner visible={ spinner } />
           </div>
         </div>
-        <Modal isOpen={ this.state.modalOpen } onRequestClose={ this.closeModal.bind(this) } contentLabel="Modal" style={ ModalStyles }>
-          <RecipeNew afterCreate={ (recipes) => { this.setState({ recipes, modalOpen: false }) } } />
-        </Modal>
       </div>
-    );
-  }
+      <Modal isOpen={ modalOpen } onRequestClose={ () => { setModalOpen(false) } } contentLabel="Modal" style={ ModalStyles }>
+        <RecipeNew afterCreate={ (recipes) => { this.setState({ recipes, modalOpen: false }) } } />
+      </Modal>
+    </div>
+  );
 }
-
-const mapStateToProps = (reducers) => {
-  return reducers.standardReducer;
-};
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ fetchEntities, deleteEntity }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(RecipesIndex);
