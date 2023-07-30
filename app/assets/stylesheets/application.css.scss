@@ -11,26 +11,28 @@
  * file per style scope.
  *
  *= require_self
- */
+*/
 
- $highlight-color: black;
- $imgpath: 'handy-components/images';
+$highlight-color: black;
+$imgpath: 'handy-components/images';
 
- @import 'bootstrap-sprockets';
- @import 'bootstrap';
- @import 'library/nice-select';
+@import 'bootstrap-sprockets';
+@import 'bootstrap';
+@import 'library/nice-select';
 
- @import 'handy-tools/styles/reset';
- @import 'handy-tools/styles/fonts';
- @import 'handy-tools/styles/general';
- @import 'handy-tools/styles/sign-in';
+@import 'handy-tools/styles/reset';
+@import 'handy-tools/styles/fonts';
+@import 'handy-tools/styles/general';
+@import 'handy-tools/styles/sign-in';
 
- // load admin layout for spinner styling
+// load admin layout for spinner styling
 //  @import 'handy-components/styles/admin-layout';
 //  @import 'handy-components/styles/admin-layout-rails';
 
- @import 'general';
- @import 'nav-bar';
- @import 'homepage';
- @import 'recurring-tasks';
- @import 'recurrence';
+@import 'handy-components/styles/styles';
+
+@import 'general';
+@import 'nav-bar';
+@import 'homepage';
+@import 'recurring-tasks';
+@import 'recurrence';
