@@ -48,7 +48,7 @@ body {
   }
 }
 
-.white-box {
+.handy-component .white-box {
   padding: 26px 26px;
   background-color: white;
   color: black;
@@ -82,7 +82,8 @@ body {
   font-family: 'TeachableSans-Regular';
 }
 
-h1 {
+.handy-component h1 {
+  margin-top: 0;
   font-family: 'Helvetica Neue';
   font-size: 20px;
   color: #2C2F33;
