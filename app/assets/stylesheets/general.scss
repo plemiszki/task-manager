@@ -202,3 +202,16 @@ a.on-call-link {
   text-decoration: underline;
   padding-bottom: 20px;
 }
+
+#recipe-details a {
+  $recipe-button-color: rgb(255, 175, 163);
+  background-color: $recipe-button-color;
+  padding: 7px 13px;
+  border-radius: 4px;
+  font-family: 'TeachableSans-SemiBold';
+  width: 175px !important;
+
+  &:hover {
+    background-color: darken($recipe-button-color, 10%);
+  }
+}
