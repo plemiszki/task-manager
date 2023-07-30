@@ -1,10 +1,7 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { fetchEntity } from '../actions/index'
-import Mileage from './mileage'
+import { sendRequest } from 'handy-components';
 
-class CurrentUser extends React.Component {
+export default class CurrentUser extends React.Component {
 
   constructor(props) {
     super(props);
@@ -18,15 +15,13 @@ class CurrentUser extends React.Component {
   }
 
   componentDidMount() {
-    this.props.fetchEntity({ url: '/api/user' }).then(() => {
-      this.setState({
-        user: this.props.user
-      });
+    sendRequest('/api/user').then(response => {
+      const { user } = response;
+      this.setState({ user });
     });
-    this.props.fetchEntity({ url: '/api/congress' }).then(() => {
-      this.setState({
-        congress: this.props.congress
-      });
+    sendRequest('/api/congress').then(response => {
+      const { congress } = response;
+      this.setState({ congress });
     });
   }
 
@@ -66,7 +61,6 @@ class CurrentUser extends React.Component {
                 </div>
                 <img src={ Images.republican } />
               </div>
-              <Mileage />
             </div>
           </div>
         </div>
@@ -74,13 +68,3 @@ class CurrentUser extends React.Component {
     );
   }
 }
-
-const mapStateToProps = (reducers) => {
-  return reducers.standardReducer;
-};
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ fetchEntity }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CurrentUser);
