@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
-ruby '3.0.2'
+ruby '3.2.2'
 
-gem 'rails', '7.0.2.3'
-gem 'pg', '~> 1.1'
+gem 'rails', '7.0.4.3'
+gem 'pg'
 
 gem 'bootstrap-sass'
 gem 'clearance', '1.17.0'

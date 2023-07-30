@@ -1,5 +1,3 @@
-import HandyTools from 'handy-tools'
-
 export function fetchEntities(args) {
   return (dispatch) => {
     return $.ajax({

@@ -1,6 +1,5 @@
 import React from 'react'
 import { Common, Details } from 'handy-components'
-import HandyTools from 'handy-tools'
 import ChangeCase from 'change-case'
 
 export default class Recurrence extends React.Component {

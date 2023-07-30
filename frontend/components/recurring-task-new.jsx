@@ -1,8 +1,5 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
 import { Common, Details } from 'handy-components'
-import HandyTools from 'handy-tools'
 import DetailsComponent from './_details.jsx'
 import { ERRORS } from '../errors.js'
 import { createEntity } from '../actions/index'

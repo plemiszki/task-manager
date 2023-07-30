@@ -1,10 +1,9 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+
+
 import Modal from 'react-modal'
 import Moment from 'moment'
 import { Common, Index } from 'handy-components'
-import HandyTools from 'handy-tools'
 import FutureTaskNew from './future-task-new.jsx'
 import { fetchEntities, deleteEntity } from '../actions/index'
 

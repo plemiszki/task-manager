@@ -1,7 +1,6 @@
 import React from 'react'
 import ColorPicker from './color-picker'
 import ChangeCase from 'change-case'
-import HandyTools from 'handy-tools'
 import { Common as HandyComponentsCommon } from 'handy-components'
 
 const nextShortestTimeframe = {

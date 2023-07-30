@@ -1,9 +1,8 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+
+
 import Modal from 'react-modal'
 import { Common, Index } from 'handy-components'
-import HandyTools from 'handy-tools'
 import RecipeNew from './recipe-new.jsx'
 import { fetchEntities, deleteEntity } from '../actions/index'
 

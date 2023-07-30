@@ -1,7 +1,6 @@
 import React from 'react'
 import Modal from 'react-modal'
 import { Common, Details } from 'handy-components'
-import HandyTools from 'handy-tools'
 import Recurrence from './recurrence.jsx'
 import ChangeCase from 'change-case'
 

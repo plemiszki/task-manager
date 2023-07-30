@@ -1,9 +1,4 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { Common, Index } from 'handy-components'
-import HandyTools from 'handy-tools'
-import TasksCommon from '../../app/assets/javascripts/common.jsx'
 import TasksTimeframe from './tasks-timeframe.jsx'
 import { fetchEntities, createEntity, fetchEntity, updateEntity, deleteEntity, rearrangeEntities, sendRequest } from '../actions/index'
 
