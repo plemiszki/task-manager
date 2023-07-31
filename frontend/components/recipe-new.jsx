@@ -1,7 +1,6 @@
 import React from 'react'
 import { Details, Spinner, GrayedOut, createEntity } from 'handy-components'
 import DetailsComponent from './_details.jsx'
-import { ERRORS } from '../errors.js'
 
 export default class RecipeNew extends DetailsComponent {
 
@@ -19,17 +18,9 @@ export default class RecipeNew extends DetailsComponent {
     };
   }
 
-  getErrors() {
-    this.setState({
-      fetching: false,
-      errors: ErrorsStore.all()
-    });
-  }
-
   changeFieldArgs() {
     return {
       entity: 'recipe',
-      allErrors: ERRORS,
       errorsArray: this.state.errors
     }
   }
@@ -47,39 +38,23 @@ export default class RecipeNew extends DetailsComponent {
     }, (response) => {
       this.setState({
         spinner: false,
-        errors: response,
+        errors: response.errors,
       });
     });
   }
 
   render() {
-    const { spinner, errors } = this.state;
+    const { spinner } = this.state;
     return (
       <div id="recipe-new" className="admin-modal handy-component">
           <div className="white-box">
             <div className="row">
-              <div className="col-xs-6">
-                <h2>Name</h2>
-                <input className={ Details.errorClass(this.state.errors, ERRORS.name) } onChange={ Details.changeField.bind(this, { ...this.changeFieldArgs(), property: 'name' }) } value={ this.state.recipe.name || "" } />
-                { Details.renderFieldError(this.state.errors, []) }
-              </div>
-              <div className="col-xs-6">
-                <h2>Category</h2>
-                <input className={ Details.errorClass(this.state.errors, []) } onChange={ Details.changeField.bind(this, { ...this.changeFieldArgs(), property: 'category' }) } value={ this.state.recipe.category || "" } />
-                { Details.renderFieldError([], []) }
-              </div>
+              { Details.renderField.bind(this)({ columnWidth: 6, entity: 'recipe', property: 'name' }) }
+              { Details.renderField.bind(this)({ columnWidth: 6, entity: 'recipe', property: 'category' }) }
             </div>
             <div className="row">
-              <div className="col-xs-6">
-                <h2>Ingredients</h2>
-                <textarea rows={ 10 } className={ Details.errorClass(this.state.errors, []) } onChange={ Details.changeField.bind(this, { ...this.changeFieldArgs(), property: 'ingredients' }) } value={ this.state.recipe.ingredients }></textarea>
-                { Details.renderFieldError([], []) }
-              </div>
-              <div className="col-xs-6">
-                <h2>Preparation</h2>
-                <textarea rows={ 10 } className={ Details.errorClass(this.state.errors, []) } onChange={ Details.changeField.bind(this, { ...this.changeFieldArgs(), property: 'prep' }) } value={ this.state.recipe.prep }></textarea>
-                { Details.renderFieldError([], []) }
-              </div>
+              { Details.renderField.bind(this)({ columnWidth: 6, entity: 'recipe', property: 'ingredients', type: 'textbox', rows: 11 }) }
+              { Details.renderField.bind(this)({ columnWidth: 6, entity: 'recipe', property: 'preparation', type: 'textbox', rows: 11 }) }
             </div>
             <div className="row">
               <div className="col-xs-12">

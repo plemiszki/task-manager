@@ -12,7 +12,7 @@ const ModalStyles = {
     padding: 0,
     margin: 'auto',
     maxWidth: 1000,
-    height: 482,
+    height: 493,
   }
 };
 
@@ -92,7 +92,12 @@ export default function RecipesIndex() {
         </div>
       </div>
       <Modal isOpen={ modalOpen } onRequestClose={ () => { setModalOpen(false) } } contentLabel="Modal" style={ ModalStyles }>
-        <RecipeNew afterCreate={ (recipes) => { this.setState({ recipes, modalOpen: false }) } } />
+        <RecipeNew
+          afterCreate={ (recipes) => {
+            setRecipes(recipes);
+            setModalOpen(false);
+          } }
+        />
       </Modal>
     </div>
   );

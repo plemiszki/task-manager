@@ -1,6 +1,7 @@
 class Api::RecipesController < ActionController::Base
 
   include Clearance::Controller
+  include RenderErrors
 
   def index
     @recipes = Recipe.all.order(:name)
@@ -16,7 +17,7 @@ class Api::RecipesController < ActionController::Base
       @recipes = Recipe.all.order(:name)
       render 'index'
     else
-      render json: @recipe.errors.full_messages, status: 422
+      render_errors(@recipe)
     end
   end
 
@@ -25,7 +26,7 @@ class Api::RecipesController < ActionController::Base
     if @recipe.update(recipe_params)
       render 'show'
     else
-      render json: @recipe.errors.full_messages, status: 422
+      render_errors(@recipe)
     end
   end
 
