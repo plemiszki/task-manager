@@ -1,14 +1,9 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
 import Moment from 'moment'
-import { Common, Details } from 'handy-components'
-import HandyTools from 'handy-tools'
+import { Details, setUpNiceSelect, createEntity } from 'handy-components'
 import DetailsComponent from './_details.jsx'
-import { ERRORS } from '../errors.js'
-import { createEntity } from '../actions/index'
 
-class FutureTaskNew extends DetailsComponent {
+export default class FutureTaskNew extends DetailsComponent {
 
   constructor(props) {
     super(props);
@@ -19,78 +14,77 @@ class FutureTaskNew extends DetailsComponent {
         timeframe: 'Day',
         addToEnd: false,
         color: 'rgb(210, 206, 200)',
-        date: (Moment().add(1, 'days').format('l'))
+        date: (Moment().add(1, 'days').format('l')),
       },
-      errors: []
+      errors: [],
     };
   }
 
   componentDidMount() {
-    HandyTools.setUpNiceSelect({ selector: 'select', func: Details.changeField.bind(this, this.changeFieldArgs()) });
+    setUpNiceSelect({ selector: 'select', func: Details.changeDropdownField.bind(this) });
   }
 
   changeFieldArgs() {
     return {
-      allErrors: ERRORS,
-      errorsArray: this.state.errors
+      entity: 'futureTask',
+      errorsArray: this.state.errors,
     }
   }
 
   clickSave() {
     this.setState({
-      fetching: true
+      spinner: true,
     });
-    this.props.createEntity({
+    createEntity({
       directory: 'future_tasks',
       entityName: 'futureTask',
-      entity: this.state.futureTask
-    }).then(() => {
-      this.props.afterCreate(this.props.futureTasks);
-    }, () => {
+      entity: this.state.futureTask,
+    }).then((response) => {
+      this.props.afterCreate(response.futureTasks);
+    }, (response) => {
       this.setState({
-        fetching: false,
-        errors: this.props.errors
+        spinner: false,
+        errors: response.errors,
       });
     });
   }
 
   render() {
     return(
-      <div id="future-task-new" className="admin-modal">
+      <div id="future-task-new" className="handy-component admin-modal">
           <div className="white-box">
-            { Common.renderSpinner(this.state.fetching) }
-            { Common.renderGrayedOut(this.state.fetching, -26, -26, 6) }
             <div className="row">
-              <div className="col-xs-3">
-                <h2>Date</h2>
-                <input className={ Details.errorClass(this.state.errors, ERRORS.date) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.futureTask.date || "" } data-entity="futureTask" data-field="date" />
-                { Details.renderFieldError(this.state.errors, ERRORS.date) }
-              </div>
-              <div className="col-xs-9">
-                <h2>Text</h2>
-                <input className={ Details.errorClass(this.state.errors, ERRORS.text) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.futureTask.text || "" } data-entity="futureTask" data-field="text" />
-                { Details.renderFieldError(this.state.errors, ERRORS.text) }
-              </div>
+              { Details.renderField.bind(this)({ columnWidth: 3, entity: 'futureTask', property: 'date' }) }
+              { Details.renderField.bind(this)({ columnWidth: 9, entity: 'futureTask', property: 'text' }) }
             </div>
             <div className="row">
-              <div className="col-xs-3 select-scroll-2">
-                <h2>Time Frame</h2>
-                <select onChange={ function() {} } data-entity="futureTask" data-field="timeframe">
-                  <option>Day</option>
-                  <option>Weekend</option>
-                  <option>Month</option>
-                  <option>Year</option>
-                </select>
-                { Details.renderFieldError([], []) }
-              </div>
-              <div className="col-xs-3">
-                <h2>Position</h2>
-                <select onChange={ function() {} } value={ HandyTools.convertBooleanToTFString(this.state.futureTask.addToEnd) } data-entity="futureTask" data-field="addToEnd">
-                  <option value={ "f" }>Beginning</option>
-                  <option value={ "t" }>End</option>
-                </select>
-                { Details.renderFieldError([], []) }
-              </div>
+              { Details.renderDropDown.bind(this)({
+                columnWidth: 3,
+                entity: 'futureTask',
+                columnHeader: "Time Frame",
+                property: 'timeframe',
+                type: 'dropdown',
+                options: [
+                  { value: "Day" },
+                  { value: "Weekend" },
+                  { value: "Month" },
+                  { value: "Year" },
+                ],
+                optionDisplayProperty: 'value',
+                maxOptions: 2,
+              }) }
+              { Details.renderDropDown.bind(this)({
+                columnWidth: 3,
+                entity: 'futureTask',
+                columnHeader: "Position",
+                property: 'addToEnd',
+                type: 'dropdown',
+                options: [
+                  { value: "f", text: "Beginning" },
+                  { value: "t", text: "End" },
+                ],
+                optionDisplayProperty: 'text',
+              }) }
               { this.renderColorField(5) }
             </div>
             <div className="row">
@@ -103,13 +97,3 @@ class FutureTaskNew extends DetailsComponent {
     );
   }
 }
-
-const mapStateToProps = (reducers) => {
-  return reducers.standardReducer;
-};
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ createEntity }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(FutureTaskNew);

@@ -1,6 +1,7 @@
 class Api::FutureTasksController < ActionController::Base
 
   include Clearance::Controller
+  include RenderErrors
 
   def index
     @future_tasks = FutureTask.where(user_id: current_user.id).order(:date)
@@ -13,7 +14,7 @@ class Api::FutureTasksController < ActionController::Base
       @future_tasks = FutureTask.where(user_id: current_user.id).order(:date)
       render 'index'
     else
-      render json: @future_task.errors.full_messages, status: 422
+      render_errors(@future_task)
     end
   end
 
