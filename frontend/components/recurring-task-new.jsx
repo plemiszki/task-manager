@@ -1,17 +1,13 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { Common, Details } from 'handy-components'
-import HandyTools from 'handy-tools'
+import { Common, Details, GrayedOut, Spinner, setUpNiceSelect, createEntity, fetchEntities } from 'handy-components'
 import DetailsComponent from './_details.jsx'
-import { ERRORS } from '../errors.js'
-import { createEntity } from '../actions/index'
 
-class RecurringTaskNew extends DetailsComponent {
+export default class RecurringTaskNew extends DetailsComponent {
+
   constructor(props) {
     super(props);
     this.state = {
-      fetching: false,
+      spinner: false,
       recurringTask: {
         text: '',
         timeframe: 'Day',
@@ -20,77 +16,85 @@ class RecurringTaskNew extends DetailsComponent {
         recurrence: "{\"every\":\"day\"}",
         expires: true,
         jointUserId: '',
-        jointText: ''
+        jointText: '',
       },
-      errors: []
+      errors: [],
+      users: [],
     };
   }
 
   componentDidMount() {
-    HandyTools.setUpNiceSelect({ selector: 'select', func: Details.changeField.bind(this, this.changeFieldArgs()) });
-  }
-
-  getErrors() {
-    this.setState({
-      fetching: false,
-      errors: ErrorsStore.all()
+    fetchEntities({
+      directory: 'users',
+    }).then((response) => {
+      const { users } = response;
+      this.setState({
+        spinner: false,
+        users,
+      }, () => {
+        setUpNiceSelect({ selector: 'select', func: Details.changeDropdownField.bind(this) });
+      });
     });
   }
 
   changeFieldArgs() {
     return {
-      allErrors: ERRORS,
-      errorsArray: this.state.errors
+      entity: 'recurringTask',
+      errorsArray: this.state.errors,
     }
   }
 
   clickSave() {
     this.setState({
-      fetching: true
+      spinner: true,
     });
-    this.props.createEntity({
+    createEntity({
       directory: 'recurring_tasks',
       entityName: 'recurringTask',
-      entity: this.state.recurringTask
-    }).then(() => {
-      this.props.afterCreate(this.props.recurringTasks);
-    }, () => {
+      entity: this.state.recurringTask,
+    }).then((response) => {
+      this.props.afterCreate(response);
+    }, (response) => {
       this.setState({
-        fetching: false,
-        errors: this.props.errors
+        spinner: false,
+        errors: response.errors,
       });
     });
   }
 
   render() {
-    return(
-      <div id="recurring-task-new" className="admin-modal">
+    const { spinner, recurringTask, users } = this.state;
+    return (
+      <>
+        <div id="recurring-task-new" className="handy-component admin-modal">
           <div className="white-box">
-            { Common.renderSpinner(this.state.fetching) }
-            { Common.renderGrayedOut(this.state.fetching, -26, -26, 6) }
             <div className="row">
-              <div className="col-xs-4">
-                <h2>Text</h2>
-                <input className={ Details.errorClass(this.state.errors, ERRORS.text) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.text || "" } data-entity="recurringTask" data-field="text" />
-                { Details.renderFieldError(this.state.errors, ERRORS.text) }
-              </div>
-              <div className="col-xs-2">
-                <h2>Time Frame</h2>
-                <select onChange={ () => {} } value={ this.state.recurringTask.timeframe || "" } data-entity="recurringTask" data-field="timeframe">
-                  <option value="Day">Day</option>
-                  <option value="Weekend">Weekend</option>
-                  <option value="Month">Month</option>
-                </select>
-                { Details.renderFieldError([], []) }
-              </div>
-              <div className="col-xs-2">
-                <h2>Position</h2>
-                <select onChange={ () => {} } value={ HandyTools.convertBooleanToTFString(this.state.recurringTask.addToEnd) } data-entity="recurringTask" data-field="addToEnd">
-                  <option value="f">Beginning</option>
-                  <option value="t">End</option>
-                </select>
-                { Details.renderFieldError([], []) }
-              </div>
+              { Details.renderField.bind(this)({ columnWidth: 4, entity: 'recurringTask', property: 'text' }) }
+              { Details.renderDropDown.bind(this)({
+                columnWidth: 2,
+                entity: 'recurringTask',
+                columnHeader: "Time Frame",
+                property: 'timeframe',
+                type: 'dropdown',
+                options: [
+                  { value: "Day" },
+                  { value: "Weekend" },
+                  { value: "Month" },
+                ],
+                optionDisplayProperty: 'value',
+              }) }
+              { Details.renderDropDown.bind(this)({
+                columnWidth: 2,
+                entity: 'recurringTask',
+                columnHeader: "Position",
+                property: 'addToEnd',
+                type: 'dropdown',
+                options: [
+                  { value: "f", text: "Beginning" },
+                  { value: "t", text: "End" },
+                ],
+                optionDisplayProperty: 'text',
+              }) }
               { this.renderColorField(4) }
             </div>
             <div className="row">
@@ -100,48 +104,46 @@ class RecurringTaskNew extends DetailsComponent {
                 <a onClick={ this.editRecurrence.bind(this) }>Edit</a>
                 { Details.renderFieldError([], []) }
               </div>
-              <div className="col-xs-2">
-                <h2>Expires</h2>
-                <select onChange={ () => {} } value={ HandyTools.convertBooleanToTFString(this.state.recurringTask.expires) } data-entity="recurringTask" data-field="expires">
-                  <option value="t">Yes</option>
-                  <option value="f">No</option>
-                </select>
-                { Details.renderFieldError([], []) }
-              </div>
-              <div className="col-xs-3">
-                <h2>Joint User</h2>
-                <select onChange={ () => {} } value={ this.state.recurringTask.jointUserId || "" } data-entity="recurringTask" data-field="jointUserId">
-                  <option value="">None</option>
-                  { this.props.users.map((user, index) => {
-                    return(
-                      <option key={ index } value={ user.id }>{ user.email }</option>
-                    );
-                  }) }
-                </select>
-                { Details.renderFieldError([], []) }
-              </div>
-              <div className={ "col-xs-3" + (this.state.recurringTask.jointUserId ? "" : " hidden") }>
-                <h2>Joint Text</h2>
-                <input className={ Details.errorClass(this.state.errors, ERRORS.jointText) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.jointText || "" } data-entity="recurringTask" data-field="jointText" />
-                { Details.renderFieldError(this.state.errors, ERRORS.jointText) }
-              </div>
+              { Details.renderDropDown.bind(this)({
+                columnWidth: 2,
+                entity: 'recurringTask',
+                columnHeader: "Expires",
+                property: 'expires',
+                type: 'dropdown',
+                options: [
+                  { value: "t", text: "Yes" },
+                  { value: "f", text: "No" },
+                ],
+                optionDisplayProperty: 'text',
+              }) }
+              { Details.renderDropDown.bind(this)({
+                columnWidth: 3,
+                entity: 'recurringTask',
+                columnHeader: "Joint User",
+                property: 'jointUserId',
+                type: 'dropdown',
+                options: users,
+                optionDisplayProperty: 'email',
+                optionValueProperty: 'id',
+                optional: true,
+                maxOptions: 2,
+              }) }
+              { Details.renderField.bind(this)({ columnWidth: 3, entity: 'recurringTask', property: 'jointText', hidden: !recurringTask.jointUserId }) }
             </div>
-            <a className={ "btn btn-success" + Common.renderDisabledButtonClass(this.state.fetching) } onClick={ this.clickSave.bind(this) }>
+            <a className={ "btn btn-success" + Common.renderDisabledButtonClass(spinner) } onClick={ () => this.clickSave() }>
               Add Recurring Task
             </a>
+            <GrayedOut visible={ spinner } />
+            <Spinner visible={ spinner } />
           </div>
           { this.renderRecurrenceModal() }
-      </div>
+        </div>
+        <style jsx>{`
+          a.btn, a.btn:hover {
+            color: white;
+          }
+        `}</style>
+      </>
     );
   }
 }
-
-const mapStateToProps = (reducers) => {
-  return reducers.standardReducer;
-};
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ createEntity }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(RecurringTaskNew);

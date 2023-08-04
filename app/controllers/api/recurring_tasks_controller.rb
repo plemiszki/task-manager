@@ -1,6 +1,7 @@
 class Api::RecurringTasksController < ActionController::Base
 
   include Clearance::Controller
+  include RenderErrors
 
   def index
     @daily_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Day').order(:position)
@@ -20,7 +21,7 @@ class Api::RecurringTasksController < ActionController::Base
       @users = User.where.not(id: current_user.id)
       render 'index'
     else
-      render json: @recurring_task.errors.full_messages, status: 422
+      render_errors(@recurring_task)
     end
   end
 
@@ -35,7 +36,7 @@ class Api::RecurringTasksController < ActionController::Base
     if @recurring_task.update(recurring_task_params)
       render 'show'
     else
-      render json: @recurring_task.errors.full_messages, status: 422
+      render_errors(@recurring_task)
     end
   end
 
