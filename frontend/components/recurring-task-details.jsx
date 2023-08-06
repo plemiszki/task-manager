@@ -1,50 +1,51 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { Common, Details } from 'handy-components'
+import { Common, Details, deepCopy, fetchEntity, updateEntity, objectsAreEqual, setUpNiceSelect, GrayedOut, Spinner } from 'handy-components'
 import HandyTools from 'handy-tools'
 import DetailsComponent from './_details.jsx'
-import { fetchEntity, updateEntity } from '../actions/index'
 import { ERRORS } from '../errors.js'
 
-class RecurringTaskDetails extends DetailsComponent {
+export default class RecurringTaskDetails extends DetailsComponent {
 
   constructor(props) {
     super(props);
     this.state = Object.assign(this.defaultState(), {
       recurringTask: {},
       recurringTaskSaved: {},
-      users: []
+      users: [],
+      spinner: true,
     });
   }
 
   componentDidMount() {
-    this.props.fetchEntity({
+    fetchEntity({
       id: window.location.pathname.split('/')[2],
       directory: 'recurring_tasks',
-      entityName: 'recurringTask'
-    }).then(() => {
+      entityName: 'recurringTask',
+    }).then((response) => {
+      const { recurringTask, users } = response;
       this.setState({
-        fetching: false,
-        recurringTask: this.props.recurringTask,
-        recurringTaskSaved: HandyTools.deepCopy(this.props.recurringTask),
-        changesToSave: false
+        spinner: false,
+        recurringTask,
+        recurringTaskSaved: deepCopy(recurringTask),
+        users,
+        changesToSave: false,
       }, () => {
-        HandyTools.setUpNiceSelect({ selector: 'select', func: Details.changeField.bind(this, this.changeFieldArgs()) });
+        setUpNiceSelect({ selector: 'select', func: Details.changeDropdownField.bind(this) });
       });
     });
   }
 
   checkForChanges() {
-    return !HandyTools.objectsAreEqual(this.state.recurringTask, this.state.recurringTaskSaved);
+    const { recurringTask, recurringTaskSaved } = this.state;
+    return !objectsAreEqual(recurringTask, recurringTaskSaved);
   }
 
   changeFieldArgs() {
     return {
-      allErrors: ERRORS,
+      entity: 'recurringTask',
       beforeSave: this.beforeSave,
       errorsArray: this.state.errors,
-      changesFunction: () => this.checkForChanges()
+      changesFunction: () => this.checkForChanges(),
     }
   }
 
@@ -56,106 +57,97 @@ class RecurringTaskDetails extends DetailsComponent {
     return { key, value }
   }
 
-  getRecurringTask() {
-    var recurringTask = RecurringTasksStore.find(window.location.pathname.split("/")[2]);
-    this.setState({
-      fetching: false,
-      changesToSave: false,
-      recurringTask: recurringTask,
-      recurringTaskSaved: HandyTools.deepCopy(recurringTask),
-      users: RecurringTasksStore.users()
-    }, function() {
-      HandyTools.setUpNiceSelect({ selector: 'select', func: Details.changeField.bind(this, this.changeFieldArgs()) });
-    });
-  }
-
   clickSave() {
+    const { recurringTask } = this.state;
     this.setState({
-      fetching: true,
-      justSaved: true
+      spinner: true,
+      justSaved: true,
     }, () => {
-      this.props.updateEntity({
+      updateEntity({
         id: window.location.pathname.split('/')[2],
         directory: 'recurring_tasks',
-        entity: this.state.recurringTask,
-        entityName: 'recurringTask'
-      }).then(() => {
+        entity: recurringTask,
+        entityName: 'recurringTask',
+      }).then((response) => {
+        const { recurringTask } = response;
         this.setState({
-          fetching: false,
-          recurringTask: this.props.recurringTask,
-          recurringTaskSaved: HandyTools.deepCopy(this.props.recurringTask),
-          changesToSave: false
+          spinner: false,
+          recurringTask,
+          recurringTaskSaved: deepCopy(recurringTask),
+          changesToSave: false,
         });
-      }, () => {
+      }, (response) => {
+        const { errors } = response;
         this.setState({
-          fetching: false,
-          errors: this.props.errors
+          spinner: false,
+          errors,
         });
       });
     });
   }
 
   render() {
-    return(
-      <div className="container widened-container">
+    const { spinner, recurringTask, users } = this.state;
+    return (
+      <div className="handy-component container widened-container">
         <div className="recurring-task-details component">
           <h1>Edit Recurring Task</h1>
           <div className="white-box">
-            { Common.renderSpinner(this.state.fetching) }
-            { Common.renderGrayedOut(this.state.fetching, -26, -26, 6) }
             <div className="row">
-              <div className="col-xs-4">
-                <h2>Text</h2>
-                <input className={ Details.errorClass(this.state.errors, ERRORS.text) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.text || "" } data-entity="recurringTask" data-field="text" />
-                { Details.renderFieldError(this.state.errors, ERRORS.text) }
-              </div>
-              <div className="col-xs-2">
-                <h2>Time Frame</h2>
-                <select onChange={ () => {} } value={ this.state.recurringTask.timeframe || "" } data-entity="recurringTask" data-field="timeframe">
-                  <option value="Day">Day</option>
-                  <option value="Weekend">Weekend</option>
-                  <option value="Month">Month</option>
-                </select>
-                { Details.renderFieldError([], []) }
-              </div>
-              <div className="col-xs-2">
-                <h2>Position</h2>
-                <select onChange={ () => {} } value={ HandyTools.convertBooleanToTFString(this.state.recurringTask.addToEnd) } data-entity="recurringTask" data-field="addToEnd">
-                  <option value="f">Beginning</option>
-                  <option value="t">End</option>
-                </select>
-                { Details.renderFieldError([], []) }
-              </div>
+              { Details.renderField.bind(this)({ columnWidth: 4, entity: 'recurringTask', property: 'text' }) }
+              { Details.renderDropDown.bind(this)({
+                columnWidth: 2,
+                entity: 'recurringTask',
+                columnHeader: "Time Frame",
+                property: 'timeframe',
+                type: 'dropdown',
+                options: [
+                  { value: "Day" },
+                  { value: "Weekend" },
+                  { value: "Month" },
+                ],
+                optionDisplayProperty: 'value',
+              }) }
+              { Details.renderDropDown.bind(this)({
+                columnWidth: 2,
+                entity: 'recurringTask',
+                columnHeader: "Position",
+                property: 'addToEnd',
+                type: 'dropdown',
+                options: [
+                  { value: "f", text: "Beginning" },
+                  { value: "t", text: "End" },
+                ],
+                optionDisplayProperty: 'text',
+              }) }
               { this.renderColorField(4) }
             </div>
             <div className="row">
               <div className="col-xs-4 recurrence-field-column">
                 <h2>Recurrence</h2>
-                <input className={ Details.errorClass([], []) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.recurrence ? this.convertToEnglish(this.state.recurringTask) : "" } readOnly={ true } data-entity="recurringTask" data-field="recurrence" />
+                <input className={ Details.errorClass([], []) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ recurringTask.recurrence ? this.convertToEnglish(recurringTask) : "" } readOnly={ true } data-entity="recurringTask" data-field="recurrence" />
                 <a onClick={ this.editRecurrence.bind(this) }>Edit</a>
                 { Details.renderFieldError([], []) }
               </div>
               { Details.renderDropDown.bind(this)({ columnWidth: 1, boolean: true, entity: 'recurringTask', property: 'expires' }) }
               { Details.renderDropDown.bind(this)({ columnWidth: 1, boolean: true, entity: 'recurringTask', property: 'active' }) }
-              <div className="col-xs-3">
-                <h2>Joint User</h2>
-                <select onChange={ () => {} } value={ this.state.recurringTask.jointUserId || '' } data-entity="recurringTask" data-field="jointUserId">
-                  <option value="">None</option>
-                  { this.state.users.map((user, index) => {
-                    return(
-                      <option key={ index } value={ user.id }>{ user.email }</option>
-                    );
-                  }) }
-                </select>
-                { Details.renderFieldError([], []) }
-              </div>
-              <div className={ 'col-xs-3' + (this.state.recurringTask.jointUserId ? '' : ' hidden') }>
-                <h2>Joint Text</h2>
-                <input className={ Details.errorClass(this.state.errors, ERRORS.jointText) } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } value={ this.state.recurringTask.jointText || "" } data-entity="recurringTask" data-field="jointText" />
-                { Details.renderFieldError(this.state.errors, ERRORS.jointText) }
-              </div>
+              { Details.renderDropDown.bind(this)({
+                columnWidth: 3,
+                entity: 'recurringTask',
+                columnHeader: "Joint User",
+                property: 'jointUserId',
+                type: 'dropdown',
+                options: users,
+                optionDisplayProperty: 'email',
+                optionValueProperty: 'id',
+                optional: true,
+                maxOptions: 2,
+              }) }
+              { Details.renderField.bind(this)({ columnWidth: 3, entity: 'recurringTask', property: 'jointText', hidden: !recurringTask.jointUserId }) }
             </div>
             { this.renderButtons() }
+            <GrayedOut visible={ spinner } />
+            <Spinner visible={ spinner } />
           </div>
         </div>
         { this.renderRecurrenceModal() }
@@ -164,27 +156,25 @@ class RecurringTaskDetails extends DetailsComponent {
   }
 
   renderButtons() {
-    if (this.state.changesToSave) {
+    const { changesToSave, justSaved, spinner } = this.state;
+    if (changesToSave) {
       var buttonText = 'Save';
     } else {
-      var buttonText = this.state.justSaved ? 'Saved' : 'No Changes';
+      var buttonText = justSaved ? 'Saved' : 'No Changes';
     }
-    return(
-      <div>
-        <a className={ "standard-width btn btn-success save-button" + Common.renderDisabledButtonClass(this.state.fetching || !this.state.changesToSave) } onClick={ this.clickSave.bind(this) }>
-          { buttonText }
-        </a>
-      </div>
+    return (
+      <>
+        <div>
+          <a className={ "standard-width btn btn-success save-button" + Common.renderDisabledButtonClass(spinner || !changesToSave) } onClick={ this.clickSave.bind(this) }>
+            { buttonText }
+          </a>
+        </div>
+        <style jsx>{`
+          a.btn, a.btn:hover {
+            color: white;
+          }
+        `}</style>
+      </>
     );
   }
 };
-
-const mapStateToProps = (reducers) => {
-  return reducers.standardReducer;
-};
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ fetchEntity, updateEntity }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(RecurringTaskDetails);
