@@ -1,11 +1,8 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
 import Modal from 'react-modal'
-import { Common, Index } from 'handy-components'
-import HandyTools from 'handy-tools'
+import { GrayedOut, Spinner, fetchEntities, deleteEntity, rearrangeFields, sendRequest } from 'handy-components'
+import { capitalize } from 'lodash'
 import RecurringTaskNew from './recurring-task-new'
-import { fetchEntities, rearrangeEntities, deleteEntity } from '../actions/index'
 
 const ModalStyles = {
   overlay: {
@@ -26,58 +23,46 @@ const TIMEFRAMES_FRONT_TO_BACK = {
   monthly: 'Month'
 }
 
-class RecurringTasksIndex extends React.Component {
+export default class RecurringTasksIndex extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
       modalOpen: false,
-      fetching: true,
+      spinner: true,
       dailyTasks: [],
       weekendTasks: [],
       monthlyTasks: [],
-      users: []
     }
   }
 
   componentDidMount() {
-    this.props.fetchEntities({ directory: 'recurring_tasks' }).then(() => {
+    fetchEntities({ directory: 'recurring_tasks' }).then((response) => {
+      const { dailyTasks, weekendTasks, monthlyTasks } = response;
       this.setState({
-        fetching: false,
-        dailyTasks: this.props.dailyTasks,
-        weekendTasks: this.props.weekendTasks,
-        monthlyTasks: this.props.monthlyTasks,
-        users: this.props.users
+        spinner: false,
+        dailyTasks,
+        weekendTasks,
+        monthlyTasks,
       });
-    });
-  }
-
-  clickNew() {
-    this.setState({
-      modalOpen: true
-    });
-  }
-
-  closeModal() {
-    this.setState({
-      modalOpen: false
     });
   }
 
   clickTask(e) {
     if (e.target.classList.contains('x-button')) {
       this.setState({
-        fetching: true
+        spinner: true,
       });
-      this.props.deleteEntity({
+      deleteEntity({
         directory: 'recurring_tasks',
         id: e.target.parentElement.parentElement.dataset.id
-      }).then(() => {
+      }).then((response) => {
+        const { dailyTasks, weekendTasks, monthlyTasks } = response;
         this.setState({
-          fetching: false,
-          dailyTasks: this.props.dailyTasks,
-          weekendTasks: this.props.weekendTasks,
-          monthlyTasks: this.props.monthlyTasks
+          spinner: false,
+          dailyTasks,
+          weekendTasks,
+          monthlyTasks,
         });
       });
     } else if (e.target.classList.contains('handle')) {
@@ -154,59 +139,65 @@ class RecurringTasksIndex extends React.Component {
           currentOrder[task.position] = task.id;
         });
     }
-    let newOrder = HandyTools.rearrangeFields({ currentOrder, draggedIndex, dropZoneIndex });
+    const newOrder = rearrangeFields({ currentOrder, draggedIndex, dropZoneIndex });
     this.setState({
-      fetching: true
+      spinner: true,
     });
-    this.props.rearrangeEntities({
-      directory: 'recurring_tasks',
-      data: { new_order: newOrder, timeframe: TIMEFRAMES_FRONT_TO_BACK[e.target.dataset.section] }
-    }).then(() => {
+    sendRequest('/api/recurring_tasks/rearrange', {
+      method: 'PATCH',
+      data: {
+        new_order: newOrder,
+        timeframe: TIMEFRAMES_FRONT_TO_BACK[e.target.dataset.section],
+      },
+    }).then((response) => {
+      const { dailyTasks, weekendTasks, monthlyTasks } = response;
       this.setState({
-        fetching: false,
-        dailyTasks: this.props.dailyTasks,
-        weekendTasks: this.props.weekendTasks,
-        monthlyTasks: this.props.monthlyTasks
+        spinner: false,
+        dailyTasks,
+        weekendTasks,
+        monthlyTasks,
       });
     });
   }
 
   afterCreate(response) {
+    const { dailyTasks, weekendTasks, monthlyTasks } = response;
     this.setState({
-      fetching: false,
+      spinner: false,
       modalOpen: false,
-      dailyTasks: this.props.dailyTasks,
-      weekendTasks: this.props.weekendTasks,
-      monthlyTasks: this.props.monthlyTasks
+      dailyTasks,
+      weekendTasks,
+      monthlyTasks,
     });
   }
 
   render() {
-    return(
-      <div className="container widened-container index-component">
+    const { spinner, modalOpen } = this.state;
+    return (
+      <div className="handy-component container widened-container index-component">
         <div className="row">
           <div className="col-xs-12">
             <div className="white-box">
-              { Common.renderSpinner(this.state.fetching) }
-              { Common.renderGrayedOut(this.state.fetching, -26, -26, 6) }
               { this.renderTable('daily') }
               { this.renderTable('weekend') }
               { this.renderTable('monthly') }
-              <div className="btn btn-success" onClick={ this.clickNew.bind(this) }>Add New</div>
+              <div className="btn btn-success" onClick={ () => this.setState({ modalOpen: true }) }>Add New</div>
+              <Spinner visible={ spinner } />
+              <GrayedOut visible={ spinner } />
             </div>
           </div>
         </div>
-        <Modal isOpen={ this.state.modalOpen } onRequestClose={ this.closeModal.bind(this) } contentLabel="Modal" style={ ModalStyles }>
-          <RecurringTaskNew users={ this.state.users } afterCreate={ (response) => this.afterCreate(response) } />
+        <Modal isOpen={ modalOpen } onRequestClose={ () => this.setState({ modalOpen: false }) } contentLabel="Modal" style={ ModalStyles }>
+          <RecurringTaskNew afterCreate={ (response) => this.afterCreate(response) } />
         </Modal>
       </div>
     );
   }
 
   renderTable(timeframe) {
-    return(
+    return (
       <div>
-        <h1>{ HandyTools.capitalize(timeframe) } Recurring Tasks</h1>
+        <h1>{ capitalize(timeframe) } Recurring Tasks</h1>
         <table className="extra-margin">
           <thead>
             <tr className="headers">
@@ -250,7 +241,7 @@ class RecurringTasksIndex extends React.Component {
 
   renderLine(condition) {
     if (condition) {
-      return(
+      return (
         <hr />
       );
     }
@@ -261,24 +252,14 @@ class RecurringTasksIndex extends React.Component {
       cursor: '-webkit-grabbing',
       handle: '.handle',
       helper: function() { return '<div></div>'; },
-      stop: this.dragEndHandler.bind(this)
+      stop: this.dragEndHandler.bind(this),
     });
     $('tr.drop-zone').droppable({
       accept: this.canIDrop,
       tolerance: 'pointer',
       over: this.dragOverHandler,
       out: this.dragOutHandler,
-      drop: this.dropHandler.bind(this)
+      drop: this.dropHandler.bind(this),
     });
   }
 };
-
-const mapStateToProps = (reducers) => {
-  return reducers.standardReducer;
-};
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ fetchEntities, rearrangeEntities, deleteEntity }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(RecurringTasksIndex);
