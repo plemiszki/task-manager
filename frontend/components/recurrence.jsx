@@ -1,5 +1,5 @@
 import React from 'react'
-import { Common, Details } from 'handy-components'
+import { Details, setUpNiceSelect, resetNiceSelect } from 'handy-components'
 import HandyTools from 'handy-tools'
 import ChangeCase from 'change-case'
 
@@ -42,21 +42,18 @@ export default class Recurrence extends React.Component {
     }
     this.state = {
       recurrence: result,
-      dateOptions: []
+      dateOptions: [],
+      errors: [],
     };
   }
 
   componentDidMount() {
-    HandyTools.setUpNiceSelect({
-      selector: '.recurrence-modal select',
-      func: Details.changeField.bind(this, this.changeFieldArgs())
-    });
+    setUpNiceSelect({ selector: '.recurrence-modal select', func: Details.changeDropdownField.bind(this) });
   }
 
   changeFieldArgs() {
     return {
-      allErrors: [],
-      errorsArray: []
+      entity: 'recurrence',
     }
   }
 
@@ -96,52 +93,58 @@ export default class Recurrence extends React.Component {
   }
 
   updateRecurrence() {
-    if (this.state.recurrence.type === 'Daily (Interval)' && +this.state.recurrence.interval <= 1) {
+    const { recurrence } = this.state;
+    if (recurrence.type === 'Daily (Interval)' && +recurrence.interval <= 1) {
       window.alert('Invalid Interval');
-    } else if (this.state.recurrence.type === 'Weekly' && this.state.recurrence.weekdays.length === 0) {
+    } else if (recurrence.type === 'Weekly' && recurrence.weekdays.length === 0) {
       window.alert('You must select at least one day of the week');
     } else {
-      this.props.updateRecurrence(this.state.recurrence);
+      this.props.updateRecurrence(recurrence);
     }
   }
 
   render() {
-    return(
-      <div className="admin-modal recurrence-modal">
-        <div className="white-box">
-          <div className="row">
-            <div className="col-xs-12">
-              <h2>Type</h2>
-              <select onChange={ () => {} } value={ this.state.recurrence.type } data-entity="recurrence" data-field="type">
-                <option value="Daily">Daily</option>
-                <option value="Daily (Interval)">Daily (Interval)</option>
-                <option value="Weekly">Weekly</option>
-                <option value="Monthly">Monthly</option>
-                <option value="Yearly">Yearly</option>
-              </select>
-              { Details.renderDropdownFieldError([], []) }
+    const { recurrence } = this.state;
+    return (
+      <>
+        <div className="admin-modal recurrence-modal handy-component">
+          <div className="white-box">
+            <div className="row">
+              <div className="col-xs-12">
+                <h2>Type</h2>
+                <select onChange={ () => {} } value={ recurrence.type } data-entity="recurrence" data-field="type">
+                  <option value="Daily">Daily</option>
+                  <option value="Daily (Interval)">Daily (Interval)</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Yearly">Yearly</option>
+                </select>
+                { Details.renderDropdownFieldError([], []) }
+              </div>
+            </div>
+            <div className="row">
+              { this.renderSecondRow() }
+            </div>
+            <div className="text-center">
+              <a className="btn btn-success standard-width update-recurrence-button" onClick={ this.updateRecurrence.bind(this) }>Update Recurrence</a>
             </div>
           </div>
-          <div className="row">
-            { this.renderSecondRow() }
-          </div>
-          <div className="text-center">
-            <a className="btn btn-success standard-width update-recurrence-button" onClick={ this.updateRecurrence.bind(this) }>Update Recurrence</a>
-          </div>
         </div>
-      </div>
+        <style jsx>{`
+          a.btn, a.btn:hover {
+            color: white;
+          }
+        `}</style>
+      </>
     );
   }
 
   renderSecondRow() {
-    if (this.state.recurrence.type === 'Daily (Interval)') {
-      return(
+    const { recurrence } = this.state;
+    if (recurrence.type === 'Daily (Interval)') {
+      return (
         <>
-          <div className="col-xs-5 second-row">
-            <h2>Interval</h2>
-            <input type="number" value={ this.state.recurrence.interval } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } data-entity="recurrence" data-field="interval" />
-            { Details.renderFieldError([], []) }
-          </div>
+          { Details.renderField.bind(this)({ columnWidth: 5, entity: 'recurrence', property: 'interval', containerClassSuffix: 'second-row' }) }
           <div className="col-xs-7 second-row select-scroll-2">
             <h2>Next Occurrence</h2>
             { this.renderDateOptions() }
@@ -149,27 +152,27 @@ export default class Recurrence extends React.Component {
           </div>
         </>
       );
-    } else if (this.state.recurrence.type === 'Weekly') {
-      return(
+    } else if (recurrence.type === 'Weekly') {
+      return (
         <div className="col-xs-12 second-row select-scroll-2">
           <h2>Weekdays</h2>
           <div className="weekday-checkboxes">
-            <input id="sun" type="checkbox" checked={ this.state.recurrence.weekdays.indexOf("Sunday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Sunday" /><label htmlFor="sun">Sun</label>
-            <input id="mon" type="checkbox" checked={ this.state.recurrence.weekdays.indexOf("Monday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Monday" /><label htmlFor="mon">Mon</label>
-            <input id="tue" type="checkbox" checked={ this.state.recurrence.weekdays.indexOf("Tuesday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Tuesday" /><label htmlFor="tue">Tue</label>
-            <input id="wed" type="checkbox" checked={ this.state.recurrence.weekdays.indexOf("Wednesday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Wednesday" /><label htmlFor="wed">Wed</label><br />
-            <input id="thu" type="checkbox" checked={ this.state.recurrence.weekdays.indexOf("Thursday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Thursday" /><label htmlFor="thu">Thu</label>
-            <input id="fri" type="checkbox" checked={ this.state.recurrence.weekdays.indexOf("Friday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Friday" /><label htmlFor="fri">Fri</label>
-            <input id="sat" type="checkbox" checked={ this.state.recurrence.weekdays.indexOf("Saturday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Saturday" /><label htmlFor="sat">Sat</label>
+            <input id="sun" type="checkbox" checked={ recurrence.weekdays.indexOf("Sunday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Sunday" /><label htmlFor="sun">Sun</label>
+            <input id="mon" type="checkbox" checked={ recurrence.weekdays.indexOf("Monday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Monday" /><label htmlFor="mon">Mon</label>
+            <input id="tue" type="checkbox" checked={ recurrence.weekdays.indexOf("Tuesday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Tuesday" /><label htmlFor="tue">Tue</label>
+            <input id="wed" type="checkbox" checked={ recurrence.weekdays.indexOf("Wednesday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Wednesday" /><label htmlFor="wed">Wed</label><br />
+            <input id="thu" type="checkbox" checked={ recurrence.weekdays.indexOf("Thursday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Thursday" /><label htmlFor="thu">Thu</label>
+            <input id="fri" type="checkbox" checked={ recurrence.weekdays.indexOf("Friday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Friday" /><label htmlFor="fri">Fri</label>
+            <input id="sat" type="checkbox" checked={ recurrence.weekdays.indexOf("Saturday") > -1 } onChange={ this.clickWeekdayCheckbox.bind(this) } data-day="Saturday" /><label htmlFor="sat">Sat</label>
           </div>
         </div>
       );
-    } else if (this.state.recurrence.type === 'Yearly') {
-      return(
+    } else if (recurrence.type === 'Yearly') {
+      return (
         <div>
           <div className="col-xs-7 second-row select-scroll-2">
             <h2>Month</h2>
-            <select onChange={ () => {} } value={ this.state.recurrence.month } data-entity="recurrence" data-field="month">
+            <select onChange={ () => {} } value={ recurrence.month } data-entity="recurrence" data-field="month">
               { HandyTools.MONTHS.map((month, index) => {
                 return(
                   <option key={ index } value={ month }>{ month }</option>
@@ -178,15 +181,11 @@ export default class Recurrence extends React.Component {
             </select>
             { Details.renderDropdownFieldError([], []) }
           </div>
-          <div className="col-xs-5 second-row select-scroll-2">
-            <h2>Day</h2>
-            <input type="number" value={ this.state.recurrence.monthday } onChange={ Details.changeField.bind(this, this.changeFieldArgs()) } data-entity="recurrence" data-field="monthday" />
-            { Details.renderFieldError([], []) }
-          </div>
+          { Details.renderField.bind(this)({ columnWidth: 5, entity: 'recurrence', property: 'monthday', containerClassSuffix: 'second-row', maxOptions: 2, columnHeader: 'Day' }) }
         </div>
       );
     } else {
-      return(
+      return (
         <div className="col-xs-6">
           <div style={ { height: 119 } }>
           </div>
@@ -196,11 +195,12 @@ export default class Recurrence extends React.Component {
   }
 
   renderDateOptions() {
+    const { recurrence } = this.state;
     const dateOptions = this.getDateOptions.call(this);
     return(
-      <select onChange={ () => {} } value={ this.state.recurrence.starts } data-entity="recurrence" data-field="starts">
+      <select onChange={ () => {} } value={ recurrence.starts } data-entity="recurrence" data-field="starts">
         { dateOptions.map((dateOption, index) => {
-          return(
+          return (
             <option key={ index } value={ HandyTools.stringifyDateWithHyphens(dateOption) }>{ HandyTools.stringifyDate(dateOption) }</option>
           );
         }) }
@@ -209,9 +209,10 @@ export default class Recurrence extends React.Component {
   }
 
   getDateOptions() {
+    const { recurrence } = this.state;
     const today = HandyTools.stripTimeFromDate(new Date());
     let result = [];
-    for (let i = 0; i < +this.state.recurrence.interval; i++) {
+    for (let i = 0; i < +recurrence.interval; i++) {
       const date = HandyTools.addDaysToDate(today, i);
       result.push(date);
     }
@@ -226,9 +227,6 @@ export default class Recurrence extends React.Component {
   }
 
   componentDidUpdate() {
-    HandyTools.resetNiceSelect({
-      selector: '.recurrence-modal .second-row select',
-      func: Details.changeField.bind(this, this.changeFieldArgs())
-    });
+    resetNiceSelect({ selector: '.recurrence-modal .second-row select', func: Details.changeDropdownField.bind(this) });
   }
 }

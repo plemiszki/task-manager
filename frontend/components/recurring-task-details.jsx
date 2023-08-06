@@ -1,6 +1,5 @@
 import React from 'react'
 import { Common, Details, deepCopy, fetchEntity, updateEntity, objectsAreEqual, setUpNiceSelect, GrayedOut, Spinner } from 'handy-components'
-import HandyTools from 'handy-tools'
 import DetailsComponent from './_details.jsx'
 import { ERRORS } from '../errors.js'
 
@@ -44,7 +43,6 @@ export default class RecurringTaskDetails extends DetailsComponent {
     return {
       entity: 'recurringTask',
       beforeSave: this.beforeSave,
-      errorsArray: this.state.errors,
       changesFunction: () => this.checkForChanges(),
     }
   }
