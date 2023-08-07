@@ -1,14 +1,10 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { Common, Index } from 'handy-components'
+import { Common, sendRequest } from 'handy-components'
 import ColorPicker from './color-picker'
-import HandyTools from 'handy-tools'
 import TasksCommon from '../../app/assets/javascripts/common.jsx'
 import TasksIndexItem from './tasks-index-item.jsx'
-import { fetchEntity, updateEntity } from '../actions/index'
 
-class TasksTimeframe extends React.Component {
+export default class TasksTimeframe extends React.Component {
 
   constructor(props) {
     super(props);
@@ -22,20 +18,18 @@ class TasksTimeframe extends React.Component {
   }
 
   componentDidMount() {
-    $('#' + this.props.timeframe + '-top-drop').droppable({
+    const { timeframe } = this.props;
+    $('#' + timeframe + '-top-drop').droppable({
       accept: TasksCommon.canIDrop,
       tolerance: 'pointer',
       over: TasksCommon.dragOverHandler,
       out: TasksCommon.dragOutHandler,
       drop: this.dropHandler.bind(this)
     });
-    if (this.props.timeframe == "weekend") {
-      this.props.fetchEntity({
-        url: '/api/user',
-        entityName: 'user'
-      }).then(() => {
+    if (timeframe == "weekend") {
+      sendRequest('/api/user').then((response) => {
         this.setState({
-          longWeekend: this.props.user.long_weekend
+          longWeekend: response.user.long_weekend
         });
       });
     }
@@ -137,15 +131,18 @@ class TasksTimeframe extends React.Component {
   }
 
   clickWeekend() {
-    this.props.updateEntity({
-      url: '/api/user',
-      entityName: 'user',
-      entity: {
-        longWeekend: !this.state.longWeekend
+    const { longWeekend } = this.state;
+    const { user } = this.props;
+    sendRequest('/api/user', {
+      method: 'PATCH',
+      data: {
+        user: {
+          longWeekend: !longWeekend,
+        },
       }
-    }).then(() => {
+    }).then((response) => {
       this.setState({
-        longWeekend: this.props.user.long_weekend
+        longWeekend: response.user.long_weekend,
       });
     })
   }
@@ -248,13 +245,3 @@ class TasksTimeframe extends React.Component {
     }
   }
 }
-
-const mapStateToProps = (reducers) => {
-  return reducers.standardReducer;
-};
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ fetchEntity, updateEntity }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(TasksTimeframe);
