@@ -197,7 +197,7 @@ export default class TasksTimeframe extends React.Component {
           );
         }) }
         <Spinner visible={ propsSpinner || spinner } />
-        <GrayedOut visible={ true } />
+        <GrayedOut visible={ propsSpinner || spinner } />
       </div>
     );
   }
