@@ -125,7 +125,7 @@ export default class _Details extends React.Component {
 
   renderColorField(columnWidth) {
     let entity = this.state.recurringTask || this.state.futureTask;
-    return(
+    return (
       <div className={ `col-xs-${columnWidth}` + (entity.jointUserId ? ' hidden' : '') }>
         <h2>Color</h2>
         <div className="colors">
@@ -145,12 +145,13 @@ export default class _Details extends React.Component {
   }
 
   renderButtons() {
+    let buttonText;
     if (this.state.changesToSave) {
-      let buttonText = 'Save';
+      buttonText = 'Save';
     } else {
-      let buttonText = this.state.justSaved ? 'Saved' : 'No Changes';
+      buttonText = this.state.justSaved ? 'Saved' : 'No Changes';
     }
-    return(
+    return (
       <div>
         <a className={ "blue-button standard-width btn save-button" + HandyTools.renderDisabledButtonClass(this.state.fetching || !this.state.changesToSave) } onClick={ this.clickSave.bind(this) }>
           { buttonText }

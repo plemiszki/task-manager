@@ -49,7 +49,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
   beforeSave(key, value) {
     if (value.jointUserId == '') {
       value.jointText = '';
-      // Details.removeFieldError(ERRORS, this.state.errors, 'jointText');
+      Details.removeFieldError(this.state.errors, "jointText");
     }
     return { key, value }
   }
@@ -140,7 +140,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
                 optional: true,
                 maxOptions: 2,
               }) }
-              { Details.renderField.bind(this)({ columnWidth: 3, entity: 'recurringTask', property: 'jointText', hidden: !recurringTask.jointUserId }) }
+              { Details.renderField.bind(this)({ columnWidth: 3, entity: 'recurringTask', property: 'jointText', hidden: !+recurringTask.jointUserId }) }
             </div>
             { this.renderButtons() }
             <GrayedOut visible={ spinner } />
