@@ -1,16 +1,7 @@
 import React from 'react'
 import ColorPicker from './color-picker'
-import ChangeCase from 'change-case'
 import HandyTools from 'handy-tools'
 import { Common as HandyComponentsCommon } from 'handy-components'
-
-const nextShortestTimeframe = {
-  'backlog': 'life',
-  'life': 'year',
-  'year': 'month',
-  'month': 'weekend',
-  'weekend': 'day'
-};
 
 export default class TaskIndexItem extends React.Component {
 
@@ -22,7 +13,7 @@ export default class TaskIndexItem extends React.Component {
       subtasks: this.props.task.subtasks || [],
       showColorPicker: false,
       showDropZoneColorPicker: false,
-      menuOpen: false
+      menuOpen: false,
     }
   }
 
@@ -47,7 +38,7 @@ export default class TaskIndexItem extends React.Component {
       handle: '.handle',
       helper: function() { return '<div></div>'; },
       start: this.dragStartHandler,
-      stop: this.dragEndHandler
+      stop: this.dragEndHandler,
     });
   }
 
@@ -57,7 +48,7 @@ export default class TaskIndexItem extends React.Component {
       tolerance: 'pointer',
       over: Common.dragOverHandler,
       out: Common.dragOutHandler,
-      drop: this.props.dropHandler
+      drop: this.props.dropHandler,
     });
   }
 
@@ -66,7 +57,7 @@ export default class TaskIndexItem extends React.Component {
     if ($(e.target.parentElement.parentElement).hasClass('duplicate') === false) {
       e.target.classList.remove('handle');
       this.setState({
-        editing: true
+        editing: true,
       });
     }
   }
@@ -75,7 +66,7 @@ export default class TaskIndexItem extends React.Component {
     var task = this.state.task;
     task.text = e.target.value;
     this.setState({
-      task: task
+      task,
     });
   }
 
@@ -83,7 +74,7 @@ export default class TaskIndexItem extends React.Component {
     if (e.key == 'Enter') {
       e.target.parentElement.children[0].classList.add('handle');
       this.setState({
-        editing: false
+        editing: false,
       });
       this.props.updateTask(this.state.task);
     }
@@ -93,7 +84,7 @@ export default class TaskIndexItem extends React.Component {
     let task = this.state.task;
     task.expanded = !task.expanded;
     this.setState({
-      task: task
+      task,
     }, () => {
       this.props.updateTask(this.state.task);
     });
@@ -109,7 +100,7 @@ export default class TaskIndexItem extends React.Component {
     let task = this.state.task;
     task.complete = !task.complete;
     this.setState({
-      task: task
+      task,
     }, () => {
       this.props.updateTask(this.state.task);
     });
@@ -328,7 +319,7 @@ export default class TaskIndexItem extends React.Component {
         <ul className="timeframe-menu hidden">
           { timeframes.map((timeframe, index) => {
             return(
-              <li key={ index } data-timeframe={ timeframe }>{ ChangeCase.titleCase(timeframe) }</li>
+              <li key={ index } data-timeframe={ timeframe }>{ titleCase(timeframe) }</li>
             );
           }) }
         </ul>

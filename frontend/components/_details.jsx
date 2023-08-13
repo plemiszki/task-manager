@@ -1,9 +1,10 @@
 import React from 'react'
 import Modal from 'react-modal'
-import { Common, Details } from 'handy-components'
+import { Details } from 'handy-components'
 import HandyTools from 'handy-tools'
 import Recurrence from './recurrence.jsx'
-import ChangeCase from 'change-case'
+import { titleCase } from 'title-case'
+import { lowerCase } from 'title-case'
 
 const RecurrenceModalStyles = {
   overlay: {
@@ -70,7 +71,7 @@ export default class _Details extends React.Component {
     } else if (recurrence.type === 'Daily (Interval)') {
       result = `{\"every\":\"day\",\"starts\":\"${recurrence.starts}\",\"interval\":${recurrence.interval}}`;
     } else if (recurrence.type === 'Weekly') {
-      result = `{\"every\":\"week\",\"on\":[${recurrence.weekdays.map((day) => `\"${ChangeCase.lowerCase(day)}\"`).join(',')}]}`;
+      result = `{\"every\":\"week\",\"on\":[${recurrence.weekdays.map((day) => `\"${lowerCase(day)}\"`).join(',')}]}`;
     } else if (recurrence.type === 'Monthly') {
       result = "{\"every\":\"month\",\"mday\":[1]}";
     } else if (recurrence.type === 'Yearly') {
@@ -105,7 +106,7 @@ export default class _Details extends React.Component {
         if (typeof input.on === 'string') {
           return `${HandyTools.capitalize(input.on)}s`;
         } else {
-          return input.on.map((day) => `${ChangeCase.titleCase(day)}s`).join(', ');
+          return input.on.map((day) => `${titleCase(day)}s`).join(', ');
         }
       } else if (input.every === 'month') {
         return 'Monthly';

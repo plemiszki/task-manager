@@ -1,7 +1,7 @@
 import React from 'react'
 import { Details, setUpNiceSelect, resetNiceSelect } from 'handy-components'
 import HandyTools from 'handy-tools'
-import ChangeCase from 'change-case'
+import { titleCase } from 'title-case'
 
 export default class Recurrence extends React.Component {
 
@@ -29,9 +29,9 @@ export default class Recurrence extends React.Component {
       result.type = 'Weekly';
       result.weekdays = [];
       if (typeof recurrence.on === 'string') {
-        result.weekdays.push(ChangeCase.titleCase(recurrence.on));
+        result.weekdays.push(titleCase(recurrence.on));
       } else {
-        result.weekdays = recurrence.on.map((day) => ChangeCase.titleCase(day));
+        result.weekdays = recurrence.on.map((day) => titleCase(day));
       }
     } else if (recurrence.every === 'month') {
       result.type = 'Monthly';
