@@ -136,10 +136,10 @@ export default class TaskIndexItem extends React.Component {
 
   convertToFutureTask() {
     this.setState({
-      menuOpen: false
+      menuOpen: false,
     });
     this.props.convertToFutureTask({
-      id: this.state.task.id
+      id: this.state.task.id,
     });
   }
 

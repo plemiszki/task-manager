@@ -119,11 +119,11 @@ export default class TasksIndex extends React.Component {
       spinner: true,
     });
     sendRequest(`/api/tasks/${args.id}/convert_to_future`, {
-      method: 'post'
-    }).then(() => {
+      method: 'post',
+    }).then((response) => {
       this.setState({
         spinner: false,
-        tasks: this.props.tasks,
+        tasks: response.tasks,
       });
     });
   }
