@@ -1,7 +1,6 @@
 import React from 'react'
 import { Common, Details, deepCopy, fetchEntity, updateEntity, objectsAreEqual, setUpNiceSelect, GrayedOut, Spinner } from 'handy-components'
 import DetailsComponent from './_details.jsx'
-import { ERRORS } from '../errors.js'
 
 export default class RecurringTaskDetails extends DetailsComponent {
 
@@ -50,7 +49,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
   beforeSave(key, value) {
     if (value.jointUserId == '') {
       value.jointText = '';
-      Details.removeFieldError(ERRORS, this.state.errors, 'jointText');
+      // Details.removeFieldError(ERRORS, this.state.errors, 'jointText');
     }
     return { key, value }
   }
