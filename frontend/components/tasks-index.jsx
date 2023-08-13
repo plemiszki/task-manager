@@ -102,11 +102,11 @@ export default class TasksIndex extends React.Component {
     this.setState({
       spinner: true,
     });
-    this.props.rearrangeEntities({
-      directory: 'tasks',
+    sendRequest('/api/tasks/rearrange', {
+      method: 'PATCH',
       data: {
-        tasks: args.newPositions
-      }
+        tasks: args.newPositions,
+      },
     }).then((response) => {
       this.updateComponentTasks(response);
     });
