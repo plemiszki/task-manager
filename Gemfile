@@ -16,7 +16,7 @@ gem 'puma'
 gem 'sassc-rails'
 gem 'sentry-ruby'
 gem 'timeliness'
-gem 'uglifier', '>= 1.3.0'
+gem 'uglifier'
 gem 'validates_timeliness', '~> 4.0'
 
 group :development, :test do

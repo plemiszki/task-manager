@@ -254,7 +254,7 @@ DEPENDENCIES
   sentry-ruby
   spring
   timeliness
-  uglifier (>= 1.3.0)
+  uglifier
   validates_timeliness (~> 4.0)
   web-console (~> 2.0)
 
