@@ -58,39 +58,39 @@ class Api::TasksController < ActionController::Base
   end
 
   def create
-    if params[:duplicate_of]
+    if task_params[:duplicate_of]
       if existing_dup?
         render_error = true
       else
-        task = Task.find(params[:duplicate_of]).dup
+        task = Task.find(task_params[:duplicate_of]).dup
         task.parent_id = nil
-        task.duplicate_id = params[:duplicate_of]
-        task.timeframe = params[:timeframe]
-        if params[:position]
-          update_existing_positions(timeframe: params[:timeframe], position: params[:position])
-          task.position = params[:position]
+        task.duplicate_id = task_params[:duplicate_of]
+        task.timeframe = task_params[:timeframe]
+        if task_params[:position]
+          update_existing_positions(timeframe: task_params[:timeframe], position: task_params[:position])
+          task.position = task_params[:position]
         else
-          task.position = Task.where(user: current_user, timeframe: params[:timeframe], parent_id: nil).length
+          task.position = Task.where(user: current_user, timeframe: task_params[:timeframe], parent_id: nil).length
         end
         task.save!
         create_duplicate_subtasks(task)
       end
-    elsif params[:parent_id]
+    elsif task_params[:parent_id]
 
       # reorder siblings if necessary
-      if params[:position]
-        Task.rearrange_after_position!(tasks: Task.where(parent_id: params[:parent_id]), position: params[:position].to_i)
+      if task_params[:position]
+        Task.rearrange_after_position!(tasks: Task.where(parent_id: task_params[:parent_id]), position: task_params[:position].to_i)
       end
 
       # create the new task
-      parent_task = Task.find(params[:parent_id])
-      tasks_length = Task.where(user_id: current_user.id, parent_id: params[:parent_id]).length
+      parent_task = Task.find(task_params[:parent_id])
+      tasks_length = Task.where(user_id: current_user.id, parent_id: task_params[:parent_id]).length
       task = Task.new(
         user_id: current_user.id,
         timeframe: parent_task.timeframe,
         parent_id: parent_task.id,
-        text: "New #{params[:timeframe]} task",
-        position: params[:position] || tasks_length,
+        text: "New #{task_params[:timeframe]} task",
+        position: task_params[:position] || tasks_length,
         color: parent_task.color
       )
       task.save!
@@ -105,7 +105,7 @@ class Api::TasksController < ActionController::Base
         duped_tasks = Task.where(duplicate_id: parent_task.id)
         while duped_tasks.length == 1
           dup_parent_task = duped_tasks.first
-          dup_child_task = Task.new(user_id: current_user.id, timeframe: dup_parent_task.timeframe, parent_id: dup_parent_task.id, duplicate_id: task.id, text: task.text, color: task.color, position: params[:position] || tasks_length)
+          dup_child_task = Task.new(user_id: current_user.id, timeframe: dup_parent_task.timeframe, parent_id: dup_parent_task.id, duplicate_id: task.id, text: task.text, color: task.color, position: task_params[:position] || tasks_length)
           dup_child_task.save!
           task = dup_child_task
           duped_tasks = Task.where(duplicate_id: dup_parent_task.id)
@@ -113,16 +113,16 @@ class Api::TasksController < ActionController::Base
       end
 
     else
-      timeframe_root_tasks = Task.where(user_id: current_user.id, timeframe: params[:timeframe], parent_id: nil).order(:position)
-      if params[:position]
-        Task.rearrange_after_position!(tasks: timeframe_root_tasks, position: params[:position].to_i)
+      timeframe_root_tasks = Task.where(user_id: current_user.id, timeframe: task_params[:timeframe], parent_id: nil).order(:position)
+      if task_params[:position]
+        Task.rearrange_after_position!(tasks: timeframe_root_tasks, position: task_params[:position].to_i)
       end
       task = Task.new(
         user_id: current_user.id,
-        timeframe: params[:timeframe],
-        text: "New #{params[:timeframe]} task",
-        position: (params[:position] || timeframe_root_tasks.length),
-        color: params[:color]
+        timeframe: task_params[:timeframe],
+        text: "New #{task_params[:timeframe]} task",
+        position: (task_params[:position] || timeframe_root_tasks.length),
+        color: task_params[:color]
       )
       task.save!
     end
@@ -130,7 +130,7 @@ class Api::TasksController < ActionController::Base
     if render_error
       render json: [], status: 422
     else
-      build_response(timeframe: (params[:duplicate_of] || params[:parent_id] ? nil : task.timeframe))
+      build_response(timeframe: (task_params[:duplicate_of] || task_params[:parent_id] ? nil : task.timeframe))
     end
   end
 

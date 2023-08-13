@@ -170,8 +170,6 @@ export default class TasksTimeframe extends React.Component {
     const { timeframe, timeframeTasks, spinner: propsSpinner } = this.props;
     return (
       <div className="tasks-timeframe match-height" data-index={ timeframe }>
-        <Spinner visible={ propsSpinner || spinner } />
-        <GrayedOut visible={ propsSpinner || spinner } />
         { this.renderHeader() }
         { this.renderAddButton() }
         <hr />
@@ -198,6 +196,8 @@ export default class TasksTimeframe extends React.Component {
             />
           );
         }) }
+        <Spinner visible={ propsSpinner || spinner } />
+        <GrayedOut visible={ true } />
       </div>
     );
   }

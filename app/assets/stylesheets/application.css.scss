@@ -36,3 +36,7 @@ $imgpath: 'handy-components/images';
 @import 'homepage';
 @import 'recurring-tasks';
 @import 'recurrence';
+
+.tasks-timeframe .grayed-out {
+  z-index: 100;
+}
