@@ -87,10 +87,7 @@ export default class TasksTimeframe extends React.Component {
       hash[index] = +id;
     })
 
-    var newHash;
-    this.setState({
-      spinner: true,
-    });
+    let newHash;
     if (draggedTimeFrame === droppedTimeFrame) {
       newHash = this.rearrangeFields(hash, draggedIndex, dropZoneIndex);
       this.props.rearrangeTasks({

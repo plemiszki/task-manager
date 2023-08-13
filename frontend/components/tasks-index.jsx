@@ -64,16 +64,14 @@ export default class TasksIndex extends React.Component {
     });
     createEntity({
       directory: 'tasks',
-      additionalData: {
+      entityName: 'task',
+      entity: {
         duplicateOf,
         timeframe,
         position,
       }
     }).then((response) => {
-      this.setState({
-        spinner: false,
-        tasks: response.tasks,
-      });
+      this.updateComponentTasks(response);
     }, () => {
       alert('A duplicate of this task already exists!');
       this.setState({

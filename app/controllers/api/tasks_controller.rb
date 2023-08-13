@@ -337,7 +337,7 @@ class Api::TasksController < ActionController::Base
   end
 
   def existing_dup?
-    master_task = Task.find(params[:duplicate_of])
+    master_task = Task.find(task_params[:duplicate_of])
     return true if Task.exists?(duplicate_id: master_task.id)
     tasks_queue = master_task.subtasks.to_a
     ids = []
@@ -396,7 +396,17 @@ class Api::TasksController < ActionController::Base
   end
 
   def task_params
-    params.require(:task).permit(:text, :color, :complete, :duplicate_id, :parent_id, :expanded, :timeframe, :position)
+    params.require(:task).permit(
+      :text,
+      :color,
+      :complete,
+      :duplicate_id,
+      :parent_id,
+      :expanded,
+      :timeframe,
+      :position,
+      :duplicate_of,
+    )
   end
 
 end
