@@ -1,13 +1,13 @@
 source 'https://rubygems.org'
-ruby '3.0.2'
+ruby '3.2.2'
 
-gem 'rails', '7.0.2.3'
-gem 'pg', '~> 1.1'
+gem 'rails'
+gem 'pg'
 
 gem 'bootstrap-sass'
 gem 'clearance', '1.17.0'
 gem 'httparty'
-gem 'jbuilder', '~> 2.5'
+gem 'jbuilder'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'montrose'
