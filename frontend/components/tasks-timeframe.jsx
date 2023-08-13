@@ -1,5 +1,5 @@
 import React from 'react'
-import { Common, sendRequest } from 'handy-components'
+import { Common, sendRequest, Spinner, GrayedOut } from 'handy-components'
 import ColorPicker from './color-picker'
 import TasksCommon from '../../app/assets/javascripts/common.jsx'
 import TasksIndexItem from './tasks-index-item.jsx'
@@ -9,11 +9,11 @@ export default class TasksTimeframe extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      fetching: true,
+      spinner: false,
       tasks: [],
       longWeekend: false,
       showNewTaskColorPicker: false,
-      showTopColorPicker: false
+      showTopColorPicker: false,
     }
   }
 
@@ -37,12 +37,12 @@ export default class TasksTimeframe extends React.Component {
 
   addTask(color, position) {
     this.setState({
-      showNewTaskColorPicker: false
+      showNewTaskColorPicker: false,
     });
     this.props.createTask({
       timeframe: this.props.timeframe,
       color,
-      position
+      position,
     });
   }
 
@@ -89,7 +89,7 @@ export default class TasksTimeframe extends React.Component {
 
     var newHash;
     this.setState({
-      fetching: true
+      spinner: true,
     });
     if (draggedTimeFrame === droppedTimeFrame) {
       newHash = this.rearrangeFields(hash, draggedIndex, dropZoneIndex);
@@ -166,21 +166,23 @@ export default class TasksTimeframe extends React.Component {
   }
 
   render() {
-    return(
-      <div className="tasks-timeframe match-height" data-index={ this.props.timeframe }>
-        { Common.renderSpinner(this.props.fetching) }
-        { Common.renderGrayedOut(this.props.fetching, -10, -15) }
+    const { showTopColorPicker, spinner } = this.state;
+    const { timeframe, timeframeTasks, spinner: propsSpinner } = this.props;
+    return (
+      <div className="tasks-timeframe match-height" data-index={ timeframe }>
+        <Spinner visible={ propsSpinner || spinner } />
+        <GrayedOut visible={ propsSpinner || spinner } />
         { this.renderHeader() }
         { this.renderAddButton() }
         <hr />
         { this.renderTopColorPicker() }
         <div
-          id={ this.props.timeframe + '-top-drop' }
+          id={ timeframe + '-top-drop' }
           className="drop-area"
-          onDoubleClick={ Common.changeState.bind(this, 'showTopColorPicker', !this.state.showTopColorPicker) }
+          onDoubleClick={ Common.changeState.bind(this, 'showTopColorPicker', !showTopColorPicker) }
         ></div>
-        { this.props.timeframeTasks.map((task, index) => {
-          return(
+        { timeframeTasks.map((task, index) => {
+          return (
             <TasksIndexItem
               key={ index }
               index={ index }
@@ -232,14 +234,14 @@ export default class TasksTimeframe extends React.Component {
 
   renderAddButton() {
     if (this.state.showNewTaskColorPicker) {
-      return(
+      return (
         <div className="color-picker-container index-top-color-picker-container">
           <ColorPicker func={ (color) => { this.addTask(color) } } />
           <div className="cancel-new" onClick={ Common.changeState.bind(this, 'showNewTaskColorPicker', false) }></div>
         </div>
       );
     } else {
-      return(
+      return (
         <div className="add-task" href="" onClick={ Common.changeState.bind(this, 'showNewTaskColorPicker', true) }>Add Task</div>
       );
     }

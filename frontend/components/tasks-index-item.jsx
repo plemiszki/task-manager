@@ -143,11 +143,11 @@ export default class TaskIndexItem extends React.Component {
     });
   }
 
-  clickAddSubtask(e, task) {
+  clickAddSubtask(e) {
     e.preventDefault();
     this.props.createTask({
-      timeframe: this.props.timeframe,
-      parentId: this.state.task.id
+      timeframe: this.props.task.timeframe,
+      parentId: this.state.task.id,
     });
   }
 
@@ -207,22 +207,22 @@ export default class TaskIndexItem extends React.Component {
   moveTask(e) {
     let timeframe = e.target.dataset.timeframe;
     this.setState({
-      menuOpen: false
+      menuOpen: false,
     });
     this.props.moveTask({
       id: this.state.task.id,
-      timeframe
+      timeframe,
     });
   }
 
   copyTask(e) {
     let timeframe = e.target.dataset.timeframe;
     this.setState({
-      menuOpen: false
+      menuOpen: false,
     });
     this.props.copyTask({
       duplicateOf: this.state.task.id,
-      timeframe
+      timeframe,
     });
   }
 
@@ -252,7 +252,7 @@ export default class TaskIndexItem extends React.Component {
     let hideDeleteButton = task.duplicateId && task.parentId;
     let hideSubtaskButton = task.duplicateId;
     let hideMenuButton = menuOptions.length === 0;
-    return(
+    return (
       <div className="group">
         <div id={ this.createTaskId() } className={ "task" + (task.expanded ? " expanded" : "") + (task.duplicateId ? " duplicate" : "") + (task.jointId ? " joint" : "") } style={ this.taskStyle() } data-taskid={ this.props.task.id } onMouseLeave={ this.mouseLeave.bind(this) }>
           <div className={ "controls" + (editing ? " hidden" : "") + ((hideDeleteButton && hideSubtaskButton) ? " narrow" : "") }>

@@ -1,87 +1,83 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { Common, Index } from 'handy-components'
-import HandyTools from 'handy-tools'
-import TasksCommon from '../../app/assets/javascripts/common.jsx'
 import TasksTimeframe from './tasks-timeframe.jsx'
-import { fetchEntities, createEntity, fetchEntity, updateEntity, deleteEntity, rearrangeEntities, sendRequest } from '../actions/index'
+import { fetchEntities, sendRequest, updateEntity, createEntity, deleteEntity } from 'handy-components'
 
-class TasksIndex extends React.Component {
+export default class TasksIndex extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      fetching: true,
+      spinner: true,
       tasks: {
         day: [],
         weekend: [],
         month: [],
         year: [],
         life: [],
-        backlog: []
+        backlog: [],
       }
     }
   }
 
   componentDidMount() {
-    this.props.fetchEntities({ directory: 'tasks' }).then(() => {
-      this.updateComponentTasks();
+    fetchEntities({ directory: 'tasks' }).then((response) => {
+      this.updateComponentTasks(response);
     });
   }
 
   createTask(args) {
     let { timeframe, parentId, color, position } = args;
     this.setState({
-      fetching: true
+      spinner: true,
     });
-    this.props.createEntity({
+    createEntity({
       directory: 'tasks',
-      additionalData: {
+      entityName: 'task',
+      entity: {
         timeframe,
         parentId,
         color,
-        position
+        position,
       }
-    }).then(() => {
-      this.updateComponentTasks();
+    }).then((response) => {
+      this.updateComponentTasks(response);
     });
   }
 
   updateTask(newTask) {
     this.setState({
-      fetching: true
+      spinner: true,
     });
-    this.props.updateEntity({
-      url: 'api/tasks',
+    updateEntity({
+      directory: 'tasks',
       entityName: 'task',
-      entity: newTask
-    }).then(() => {
-      this.updateComponentTasks();
+      entity: newTask,
+    }).then((response) => {
+      this.updateComponentTasks(response);
     });
   }
 
   copyTask(args) {
     let { duplicateOf, timeframe, position } = args;
     this.setState({
-      fetching: true
+      spinner: true,
     });
-    this.props.createEntity({
+    createEntity({
       directory: 'tasks',
       additionalData: {
         duplicateOf,
         timeframe,
-        position
+        position,
       }
-    }).then(() => {
+    }).then((response) => {
       this.setState({
-        fetching: false,
-        tasks: this.props.tasks
+        spinner: false,
+        tasks: response.tasks,
       });
     }, () => {
       alert('A duplicate of this task already exists!');
       this.setState({
-        fetching: false
+        spinner: false,
       });
     });
   }
@@ -89,77 +85,77 @@ class TasksIndex extends React.Component {
   moveTask(args) {
     let { timeframe, id } = args;
     this.setState({
-      fetching: true
+      spinner: true,
     });
-    this.props.sendRequest({
-      directory: `/api/tasks/${id}/move`,
-      method: 'patch',
+    sendRequest(`/api/tasks/${id}/move`, {
+      method: 'PATCH',
       data: {
-        timeframe
+        timeframe,
       }
-    }).then(() => {
+    }).then((response) => {
       this.setState({
-        fetching: false,
-        tasks: this.props.tasks
+        spinner: false,
+        tasks: response.tasks,
       });
     });
   }
 
   rearrangeTasks(args) {
     this.setState({
-      fetching: true
+      spinner: true,
     });
     this.props.rearrangeEntities({
       directory: 'tasks',
       data: {
         tasks: args.newPositions
       }
-    }).then(() => {
-      this.updateComponentTasks();
+    }).then((response) => {
+      this.updateComponentTasks(response);
     });
   }
 
   convertToFutureTask(args) {
     this.setState({
-      fetching: true
+      spinner: true,
     });
-    this.props.sendRequest({
-      directory: `/api/tasks/${args.id}/convert_to_future`,
+    sendRequest(`/api/tasks/${args.id}/convert_to_future`, {
       method: 'post'
     }).then(() => {
       this.setState({
-        fetching: false,
-        tasks: this.props.tasks
+        spinner: false,
+        tasks: this.props.tasks,
       });
     });
   }
 
   deleteTask(id) {
     this.setState({
-      fetching: true
+      spinner: true,
     });
-    this.props.deleteEntity({
+    deleteEntity({
       id,
       directory: 'tasks',
-      entityName: 'task'
-    }).then(() => {
-      this.updateComponentTasks();
+      entityName: 'task',
+    }).then((response) => {
+      this.updateComponentTasks(response);
     });
   }
 
-  updateComponentTasks() {
-    let tasks;
-    let timeframeKeys = Object.keys(this.props.tasks);
-    if (timeframeKeys.length === 1) {
-      tasks = this.state.tasks;
-      tasks[timeframeKeys[0]] = this.props.tasks[timeframeKeys[0]];
-    } else {
-      tasks = this.props.tasks;
+  updateComponentTasks(response) {
+    const timeframeKeys = Object.keys(response.tasks);
+    if (timeframeKeys.length === 1) { // response from an update, etc.
+      let { tasks } = this.state;
+      tasks[timeframeKeys[0]] = response.tasks[timeframeKeys[0]];
+      this.setState({
+        spinner: false,
+        tasks,
+      });
+    } else { // response from fetch entities
+      this.setState({
+        spinner: false,
+        tasks: response.tasks,
+      });
     }
-    this.setState({
-      fetching: false,
-      tasks
-    });
   }
 
   render() {
@@ -177,7 +173,7 @@ class TasksIndex extends React.Component {
       return(
         <div key={ timeframe } id={ `tasks-index-${timeframe}` } className="col-xs-12 col-md-4">
           <TasksTimeframe
-            fetching={ this.state.fetching }
+            spinner={ this.state.spinner }
             timeframe={ timeframe }
             timeframeTasks={ this.state.tasks[timeframe] }
             createTask={ this.createTask.bind(this) }
@@ -197,13 +193,3 @@ class TasksIndex extends React.Component {
     $('.match-height').matchHeight();
   }
 }
-
-const mapStateToProps = (reducers) => {
-  return reducers.standardReducer;
-};
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ fetchEntities, createEntity, fetchEntity, updateEntity, deleteEntity, rearrangeEntities, sendRequest }, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(TasksIndex);
