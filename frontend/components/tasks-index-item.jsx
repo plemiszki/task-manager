@@ -2,6 +2,7 @@ import React from 'react'
 import ColorPicker from './color-picker'
 import HandyTools from 'handy-tools'
 import { Common as HandyComponentsCommon } from 'handy-components'
+import { titleCase } from 'title-case'
 
 export default class TaskIndexItem extends React.Component {
 
