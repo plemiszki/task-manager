@@ -69,7 +69,7 @@ class RecipeDetails extends DetailsComponent {
   }
 
   render() {
-    return(
+    return (
       <div className="container widened-container">
         <div className="recipe-details component">
           <h1>Edit Recipe</h1>

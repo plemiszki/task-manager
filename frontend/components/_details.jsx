@@ -4,7 +4,7 @@ import { Details } from 'handy-components'
 import HandyTools from 'handy-tools'
 import Recurrence from './recurrence.jsx'
 import { titleCase } from 'title-case'
-import { lowerCase } from 'title-case'
+import { lowerCase } from 'lower-case'
 
 const RecurrenceModalStyles = {
   overlay: {

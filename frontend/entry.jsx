@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const recipeDetails = document.getElementById('recipe-details');
   if (recipeDetails) {
     createRoot(recipeDetails).render(
-      <div class="container widened-container">
+      <div className="container widened-container">
         <SimpleDetails
           entityName='recipe'
           header='Edit Recipe'
