@@ -127,7 +127,7 @@ export default class RecurringTaskDetails extends DetailsComponent {
                 { Details.renderFieldError([], []) }
               </div>
               { Details.renderDropDown.bind(this)({ columnWidth: 1, boolean: true, entity: 'recurringTask', property: 'expires' }) }
-              { Details.renderDropDown.bind(this)({ columnWidth: 1, boolean: true, entity: 'recurringTask', property: 'active' }) }
+              { Details.renderSwitch.bind(this)({ columnWidth: 1, boolean: true, entity: 'recurringTask', property: 'active', color: '5cb85c' }) }
               { Details.renderDropDown.bind(this)({
                 columnWidth: 3,
                 entity: 'recurringTask',
