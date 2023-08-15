@@ -77,7 +77,7 @@ class Task < ActiveRecord::Base
   end
 
   def convert_to_future_task!
-    FutureTask.create!(text: text, timeframe: timeframe.capitalize, color: "rgb(#{color})", user_id: user_id, date: Date.today + 1.day, add_to_end: true)
+    FutureTask.create!(text: text, timeframe: timeframe.capitalize, color: "rgb(#{color})", user_id: user_id, date: DateTime.now.in_time_zone("America/New_York").to_date + 1.day, add_to_end: true)
   end
 
   def self.clear_daily_tasks
