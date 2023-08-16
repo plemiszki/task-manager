@@ -1,6 +1,6 @@
 import React from 'react'
 import Modal from 'react-modal'
-import { GrayedOut, Spinner, fetchEntities, deleteEntity, rearrangeFields, sendRequest } from 'handy-components'
+import { GrayedOut, Spinner, fetchEntities, deleteEntity, rearrangeFields, sendRequest, Common } from 'handy-components'
 import { capitalize } from 'lodash'
 import RecurringTaskNew from './recurring-task-new'
 
@@ -49,7 +49,8 @@ export default class RecurringTasksIndex extends React.Component {
   }
 
   clickTask(e) {
-    if (e.target.classList.contains('x-button')) {
+    const classList = e.target.classList;
+    if (classList.contains('x-button')) {
       this.setState({
         spinner: true,
       });
@@ -65,7 +66,7 @@ export default class RecurringTasksIndex extends React.Component {
           monthlyTasks,
         });
       });
-    } else if (e.target.classList.contains('handle')) {
+    } else if (classList.contains('handle') || classList.contains('oval') || classList.contains('switch')) {
       // do nothing
     } else {
       window.location.pathname = `/recurring_tasks/${e.target.parentElement.dataset.id}`
@@ -206,7 +207,7 @@ export default class RecurringTasksIndex extends React.Component {
               <th>Position</th>
               <th>Expires</th>
               <th>Color</th>
-              <th>Position</th>
+              <th>Active</th>
               <th></th>
               <th className="x-button-column"></th>
             </tr>
@@ -223,7 +224,15 @@ export default class RecurringTasksIndex extends React.Component {
                   <td>{ task.addToEnd ? "End" : "Beginning" }</td>
                   <td>{ task.expires ? "Yes" : "No" }</td>
                   <td><div className="swatch" style={ { backgroundColor } }></div></td>
-                  <td>{ task.position }</td>
+                  <td>{ Common.renderSwitchComponent({
+                    onChange: () => console.log('click'),
+                    color: '5cb85c',
+                    height: 17,
+                    width: 30,
+                    circleSize: 9,
+                    inputClassName: 'switch',
+                    checked: task.active,
+                  }) }</td>
                   <td><div className="handle" onMouseDown={ this.mouseDownHandle.bind(this) } onMouseUp={ this.mouseUpHandle.bind(this) }></div></td>
                   <td><div className="x-button"></div></td>
                 </tr>,
