@@ -1,6 +1,6 @@
 import React from 'react'
 import Modal from 'react-modal'
-import { GrayedOut, Spinner, fetchEntities, deleteEntity, rearrangeFields, sendRequest, Common } from 'handy-components'
+import { GrayedOut, Spinner, fetchEntities, deleteEntity, rearrangeFields, sendRequest, Common, updateEntity } from 'handy-components'
 import { capitalize } from 'lodash'
 import RecurringTaskNew from './recurring-task-new'
 
@@ -225,7 +225,26 @@ export default class RecurringTasksIndex extends React.Component {
                   <td>{ task.expires ? "Yes" : "No" }</td>
                   <td><div className="swatch" style={ { backgroundColor } }></div></td>
                   <td>{ Common.renderSwitchComponent({
-                    onChange: () => console.log('click'),
+                    onChange: () => {
+                      task.active = !task.active;
+                      this.setState({
+                        spinner: true,
+                      });
+                      sendRequest('/api/recurring_tasks/toggle_active', {
+                        method: 'PATCH',
+                        data: {
+                          id: task.id,
+                        },
+                      }).then((response) => {
+                        const { dailyTasks, weekendTasks, monthlyTasks } = response;
+                        this.setState({
+                          spinner: false,
+                          dailyTasks,
+                          weekendTasks,
+                          monthlyTasks,
+                        });
+                      });
+                    },
                     color: '5cb85c',
                     height: 17,
                     width: 30,

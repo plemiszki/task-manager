@@ -40,6 +40,15 @@ class Api::RecurringTasksController < ActionController::Base
     end
   end
 
+  def toggle_active
+    recurring_task = RecurringTask.find(params[:id])
+    recurring_task.update!({ active: !recurring_task.active })
+    @daily_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Day').order(:position)
+    @weekend_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Weekend').order(:position)
+    @monthly_recurring_tasks = RecurringTask.where(user_id: current_user.id, timeframe: 'Month').order(:position)
+    render 'index'
+  end
+
   def destroy
     recurring_task = RecurringTask.find(params[:id])
     recurring_task.destroy
