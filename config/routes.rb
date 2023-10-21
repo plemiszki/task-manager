@@ -22,6 +22,7 @@ Rails.application.routes.draw do
     patch '/recurring_tasks/toggle_active' => '/api/recurring_tasks#toggle_active'
     resources :recurring_tasks, only: [:index, :create, :show, :update, :destroy]
     resources :recipes, only: [:index, :create, :show, :update, :destroy]
+    resources :grocery_stores, only: [:index, :create, :show, :update, :destroy]
   end
 
 end
