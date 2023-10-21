@@ -4,6 +4,7 @@ ruby '3.2.2'
 gem 'rails'
 gem 'pg'
 
+gem 'american_date'
 gem 'bootstrap-sass'
 gem 'clearance', '1.17.0'
 gem 'httparty'
