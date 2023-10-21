@@ -251,8 +251,6 @@ GEM
       concurrent-ruby (~> 1.0)
     uglifier (4.2.0)
       execjs (>= 0.3.0, < 3)
-    validates_timeliness (4.1.1)
-      timeliness (>= 0.3.10, < 1)
     web-console (2.3.0)
       activemodel (>= 4.0)
       binding_of_caller (>= 0.7.2)
@@ -288,7 +286,6 @@ DEPENDENCIES
   spring
   timeliness
   uglifier
-  validates_timeliness (~> 4.0)
   web-console (~> 2.0)
 
 RUBY VERSION

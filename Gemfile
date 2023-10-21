@@ -17,7 +17,6 @@ gem 'sassc-rails'
 gem 'sentry-ruby'
 gem 'timeliness'
 gem 'uglifier'
-gem 'validates_timeliness', '~> 4.0'
 
 group :development, :test do
   gem 'byebug'
