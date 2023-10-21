@@ -10,17 +10,72 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2020_12_05_154207) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_21_174526) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "future_tasks", force: :cascade do |t|
+  create_table "future_tasks", id: :serial, force: :cascade do |t|
     t.string "text", null: false
     t.string "timeframe", default: "day"
     t.string "color", default: "210, 206, 200"
     t.integer "user_id"
     t.date "date", null: false
     t.boolean "add_to_end", default: false
+  end
+
+  create_table "grocery_items", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_grocery_items_on_name", unique: true
+  end
+
+  create_table "grocery_list_items", force: :cascade do |t|
+    t.integer "grocery_item_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["grocery_item_id"], name: "index_grocery_list_items_on_grocery_item_id"
+  end
+
+  create_table "grocery_lists", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_grocery_lists_on_name", unique: true
+  end
+
+  create_table "grocery_section_items", force: :cascade do |t|
+    t.integer "position", null: false
+    t.integer "grocery_item_id", null: false
+    t.integer "grocery_section_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["grocery_section_id", "grocery_item_id"], name: "no_duplicate_grocery_section_items", unique: true
+  end
+
+  create_table "grocery_sections", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "position", null: false
+    t.integer "grocery_store_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["grocery_store_id", "name"], name: "index_grocery_sections_on_grocery_store_id_and_name", unique: true
+    t.index ["grocery_store_id"], name: "index_grocery_sections_on_grocery_store_id"
+  end
+
+  create_table "grocery_stores", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_grocery_stores_on_name", unique: true
+  end
+
+  create_table "recipe_items", force: :cascade do |t|
+    t.integer "position"
+    t.integer "recipe_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipe_id"], name: "index_recipe_items_on_recipe_id"
   end
 
   create_table "recipes", force: :cascade do |t|
@@ -31,7 +86,7 @@ ActiveRecord::Schema[7.0].define(version: 2020_12_05_154207) do
     t.string "time", default: ""
   end
 
-  create_table "recurring_tasks", force: :cascade do |t|
+  create_table "recurring_tasks", id: :serial, force: :cascade do |t|
     t.string "text", null: false
     t.string "color", default: "210, 206, 200"
     t.string "timeframe", default: "day"
@@ -45,7 +100,7 @@ ActiveRecord::Schema[7.0].define(version: 2020_12_05_154207) do
     t.boolean "active", default: true
   end
 
-  create_table "tasks", force: :cascade do |t|
+  create_table "tasks", id: :serial, force: :cascade do |t|
     t.string "text", null: false
     t.string "timeframe", default: "day"
     t.string "color", default: "yellow"
@@ -62,7 +117,7 @@ ActiveRecord::Schema[7.0].define(version: 2020_12_05_154207) do
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", id: :serial, force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.string "email", null: false
