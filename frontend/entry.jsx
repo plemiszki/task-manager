@@ -2,12 +2,29 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import ReactModal from 'react-modal'
 import CurrentUser from './components/current-user.jsx'
+
+import NewEntity from './components/new-entity'
 import TasksIndex from './components/tasks-index.jsx'
 import FutureTasksIndex from './components/future-tasks-index.jsx'
 import RecurringTasksIndex from './components/recurring-tasks-index.jsx'
 import RecurringTaskDetails from './components/recurring-task-details.jsx'
 import RecipesIndex from './components/recipes-index.jsx'
-import { SimpleDetails } from 'handy-components'
+import { SimpleDetails, FullIndex } from 'handy-components'
+
+const renderFullIndex = (id, props = {}, args = {}) => {
+  const { newEntity: newEntityProps } = args;
+  const node = document.getElementById(id);
+  if (node) {
+    const root = createRoot(node);
+    root.render(
+      <div className="container widened-container">
+        <FullIndex csrfToken={ true } { ...props }>
+          { newEntityProps && (<NewEntity { ...newEntityProps } />) }
+        </FullIndex>
+      </div>
+    );
+  }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -79,6 +96,45 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               { columnWidth: 6, property: 'ingredients', type: 'textbox', rows: 11 },
               { columnWidth: 6, property: 'prep', columnHeader: 'Preparation', type: 'textbox', rows: 11 },
+            ],
+          ]}
+        />
+      </div>
+    );
+  }
+
+  renderFullIndex('grocery-stores-index', {
+    entityName: 'groceryStore',
+    entityNamePlural: 'groceryStores',
+    columns: [
+      'name',
+    ],
+    modalRows: 1,
+    modalDimensions: { width: 700 },
+    includeLinks: true,
+    includeHover: true,
+    includeNewButton: true,
+    includeSearchBar: false,
+    addButtonText: 'Add New',
+  }, { newEntity: {
+    initialEntity: { name: '' },
+    buttonText: 'Add Grocery Store',
+  }});
+
+  const groceryStoreDetails = document.getElementById('grocery-store-details');
+  if (groceryStoreDetails) {
+    createRoot(groceryStoreDetails).render(
+      <div className="container widened-container">
+        <SimpleDetails
+          entityName='recipe'
+          header='Edit Grocery Store'
+          hideDeleteButton={ true }
+          initialEntity={{
+            name: '',
+          }}
+          fields = {[
+            [
+              { columnWidth: 12, property: 'name' },
             ],
           ]}
         />

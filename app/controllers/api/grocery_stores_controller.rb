@@ -12,7 +12,7 @@ class Api::GroceryStoresController < ActionController::Base
   end
 
   def create
-    grocery_store = GroceryStore.new(recipe_params)
+    grocery_store = GroceryStore.new(grocery_store_params)
     if grocery_store.save
       @grocery_stores = GroceryStore.all.order(:name)
       render 'index'

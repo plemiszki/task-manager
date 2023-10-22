@@ -16,6 +16,11 @@
 $highlight-color: black;
 $imgpath: 'handy-components/images';
 
+:root {
+  --button-color: black;
+  --highlight-color: black;
+}
+
 @import 'bootstrap-sprockets';
 @import 'bootstrap';
 @import 'library/nice-select';
@@ -30,6 +35,8 @@ $imgpath: 'handy-components/images';
 //  @import 'handy-components/styles/admin-layout-rails';
 
 @import 'handy-components/styles/styles';
+
+@import 'reset';
 
 @import 'general';
 @import 'nav-bar';

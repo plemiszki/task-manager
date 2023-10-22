@@ -1,8 +1,17 @@
 body {
   font-family: 'TeachableSans-SemiBold', sans-serif;
   font-size: 12px;
+  line-height: 17px;
   letter-spacing: 1.08px;
   background-color: #F5F6F7;
+}
+
+* {
+  background-repeat: no-repeat;
+
+  &:focus {
+      outline: none !important;
+  }
 }
 
 .grabbed-element {
@@ -48,12 +57,17 @@ body {
   }
 }
 
-.handy-component .white-box {
+.handy-component:not(.admin-modal) .white-box {
   padding: 26px 26px;
   background-color: white;
   color: black;
   margin-bottom: 30px;
   position: relative;
+}
+
+.full-index .add-button {
+  padding: 7px 13px;
+  border-radius: 4px;
 }
 
 .admin-modal .white-box {
