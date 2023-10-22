@@ -23,7 +23,7 @@ class Api::GroceryStoresController < ActionController::Base
 
   def update
     @grocery_store = GroceryStore.find(params[:id])
-    if @grocery_store.update(recipe_params)
+    if @grocery_store.update(grocery_store_params)
       render 'show'
     else
       render_errors(@grocery_store)

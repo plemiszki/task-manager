@@ -126,9 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
     createRoot(groceryStoreDetails).render(
       <div className="container widened-container">
         <SimpleDetails
-          entityName='recipe'
+          entityName='groceryStore'
           header='Edit Grocery Store'
-          hideDeleteButton={ true }
           initialEntity={{
             name: '',
           }}
