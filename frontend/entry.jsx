@@ -136,6 +136,46 @@ document.addEventListener('DOMContentLoaded', () => {
               { columnWidth: 12, property: 'name' },
             ],
           ]}
+          deleteCallback={ () => { window.location.pathname = '/groceries' }}
+        />
+      </div>
+    );
+  }
+
+  renderFullIndex('grocery-items-index', {
+    entityName: 'groceryItem',
+    entityNamePlural: 'groceryItems',
+    columns: [
+      'name',
+    ],
+    modalRows: 1,
+    modalDimensions: { width: 700 },
+    includeLinks: true,
+    includeHover: true,
+    includeNewButton: true,
+    includeSearchBar: false,
+    addButtonText: 'Add New',
+  }, { newEntity: {
+    initialEntity: { name: '' },
+    buttonText: 'Add Grocery Item',
+  }});
+
+  const groceryItemDetails = document.getElementById('grocery-item-details');
+  if (groceryItemDetails) {
+    createRoot(groceryItemDetails).render(
+      <div className="container widened-container">
+        <SimpleDetails
+          entityName='groceryItem'
+          header='Edit Grocery Item'
+          initialEntity={{
+            name: '',
+          }}
+          fields = {[
+            [
+              { columnWidth: 12, property: 'name' },
+            ],
+          ]}
+          deleteCallback={ () => { window.location.pathname = '/groceries' }}
         />
       </div>
     );

@@ -5,6 +5,9 @@ class StaticPagesController < ApplicationController
   def root
   end
 
+  def groceries
+  end
+
   def on_call_auth
     google_client = GoogleClient.new
     redirect_to google_client.authorization_uri

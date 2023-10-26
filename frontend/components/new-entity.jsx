@@ -121,6 +121,12 @@ export default class NewEntity extends React.Component {
             { Details.renderField.bind(this)({ columnWidth: 12, entity: 'groceryStore', property: 'name' }) }
           </div>,
         ]);
+      case 'groceryItem':
+        return([
+          <div key="1" className="row">
+            { Details.renderField.bind(this)({ columnWidth: 12, entity: 'groceryItem', property: 'name' }) }
+          </div>,
+        ]);
     }
   }
 }
