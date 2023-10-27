@@ -180,4 +180,43 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     );
   }
+
+  renderFullIndex('grocery-lists-index', {
+    entityName: 'groceryList',
+    entityNamePlural: 'groceryLists',
+    columns: [
+      'name',
+    ],
+    modalRows: 1,
+    modalDimensions: { width: 700 },
+    includeLinks: true,
+    includeHover: true,
+    includeNewButton: true,
+    includeSearchBar: false,
+    addButtonText: 'Add New',
+  }, { newEntity: {
+    initialEntity: { name: '' },
+    buttonText: 'Add Grocery List',
+  }});
+
+  const groceryListDetails = document.getElementById('grocery-list-details');
+  if (groceryListDetails) {
+    createRoot(groceryListDetails).render(
+      <div className="container widened-container">
+        <SimpleDetails
+          entityName='groceryList'
+          header='Edit Grocery List'
+          initialEntity={{
+            name: '',
+          }}
+          fields = {[
+            [
+              { columnWidth: 12, property: 'name' },
+            ],
+          ]}
+          deleteCallback={ () => { window.location.pathname = '/groceries' }}
+        />
+      </div>
+    );
+  }
 });
