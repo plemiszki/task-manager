@@ -29,6 +29,7 @@ Rails.application.routes.draw do
     resources :grocery_stores, only: [:index, :create, :show, :update, :destroy]
     resources :grocery_items, only: [:index, :create, :show, :update, :destroy]
     resources :grocery_lists, only: [:index, :create, :show, :update, :destroy]
+    resources :grocery_list_items, only: [:create, :destroy]
   end
 
 end

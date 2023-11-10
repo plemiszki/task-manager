@@ -9,6 +9,8 @@ class Api::GroceryListsController < ActionController::Base
 
   def show
     @grocery_list = GroceryList.find(params[:id])
+    @grocery_list_items = @grocery_list.sorted_list_items
+    @grocery_items = GroceryItem.where.not(id: @grocery_list_items.pluck(:grocery_item_id))
   end
 
   def create
