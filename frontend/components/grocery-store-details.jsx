@@ -1,4 +1,6 @@
 import React from 'react'
+import Modal from 'react-modal'
+import NewEntity from './new-entity';
 import { Table, Common, BottomButtons, Details, deepCopy, objectsAreEqual, fetchEntity, createEntity, updateEntity, deleteEntity, Spinner, GrayedOut, OutlineButton, ModalSelect, ListBox } from 'handy-components'
 
 export default class GroceryStoreDetails extends React.Component {
@@ -14,6 +16,7 @@ export default class GroceryStoreDetails extends React.Component {
       changesToSave: false,
       justSaved: false,
       deleteModalOpen: false,
+      newSectionModalOpen: false,
     };
   }
 
@@ -68,7 +71,7 @@ export default class GroceryStoreDetails extends React.Component {
   }
 
   render() {
-    const { justSaved, changesToSave, spinner, grocerySections } = this.state;
+    const { justSaved, changesToSave, spinner, grocerySections, newSectionModalOpen, groceryStore } = this.state;
     return (
       <>
         <div className="handy-component">
@@ -133,8 +136,7 @@ export default class GroceryStoreDetails extends React.Component {
             <OutlineButton
               color="#5F5F5F"
               text="Add Section"
-              // onClick={ () => this.setState({ newMatchBinModalOpen: true }) }
-              onClick={ () => console.log('new section') }
+              onClick={ () => this.setState({ newSectionModalOpen: true }) }
               marginBottom
             />
             <hr />
@@ -150,6 +152,15 @@ export default class GroceryStoreDetails extends React.Component {
             <Spinner visible={ spinner } />
           </div>
         </div>
+        <Modal isOpen={ newSectionModalOpen } onRequestClose={ Common.closeModals.bind(this) } contentLabel="Modal" style={ Common.newEntityModalStyles({ width: 500 }, 1) }>
+          <NewEntity
+            entityName="grocerySection"
+            initialEntity={ { name: '', groceryStoreId: groceryStore.id } }
+            callback={ grocerySections => this.setState({ grocerySections, newSectionModalOpen: false }) }
+            responseKey="grocerySections"
+            buttonText="Add Section"
+          />
+        </Modal>
         {/* <ModalSelect
           isOpen={ this.state.itemsModalOpen }
           onClose={ Common.closeModals.bind(this) }
