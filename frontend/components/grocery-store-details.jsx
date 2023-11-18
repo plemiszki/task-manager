@@ -1,7 +1,7 @@
 import React from 'react'
 import Modal from 'react-modal'
 import NewEntity from './new-entity';
-import { Table, Common, BottomButtons, Details, deepCopy, objectsAreEqual, fetchEntity, createEntity, updateEntity, deleteEntity, Spinner, GrayedOut, OutlineButton, ModalSelect, ListBox } from 'handy-components'
+import { Table, Common, BottomButtons, Details, deepCopy, objectsAreEqual, fetchEntity, createEntity, updateEntity, deleteEntity, Spinner, GrayedOut, OutlineButton, ModalSelect } from 'handy-components'
 
 export default class GroceryStoreDetails extends React.Component {
 
@@ -101,35 +101,36 @@ export default class GroceryStoreDetails extends React.Component {
                 return ({
                   type: 'section',
                   text: section.name,
+                  id: section.id,
                 })
               })}
               links={ false }
               sortable={ false }
               clickDelete={ row => {
-                console.log('click delete')
-                // const { type, id } = row;
-                // this.setState({ spinner: true })
-                // if (type === 'bin') {
-                //   deleteEntity({
-                //     directory: 'match_bins',
-                //     id,
-                //   }).then((response) => {
-                //     this.setState({
-                //       spinner: false,
-                //       matchBins: response.matchBins,
-                //     });
-                //   });
-                // } else {
-                //   deleteEntity({
-                //     directory: 'match_items',
-                //     id,
-                //   }).then((response) => {
-                //     this.setState({
-                //       spinner: false,
-                //       matchBins: response.matchBins,
-                //     });
-                //   });;
-                // }
+                const { type, id } = row;
+                this.setState({ spinner: true })
+                if (type === 'section') {
+                  deleteEntity({
+                    directory: 'grocery_sections',
+                    id,
+                  }).then((response) => {
+                    const { grocerySections } = response;
+                    this.setState({
+                      spinner: false,
+                      grocerySections,
+                    });
+                  });
+                } else {
+                  // deleteEntity({
+                  //   directory: 'match_items',
+                  //   id,
+                  // }).then((response) => {
+                  //   this.setState({
+                  //     spinner: false,
+                  //     matchBins: response.matchBins,
+                  //   });
+                  // });
+                }
               } }
               marginBottom
             />
