@@ -3,15 +3,17 @@ import { createRoot } from 'react-dom/client'
 import ReactModal from 'react-modal'
 import CurrentUser from './components/current-user.jsx'
 
-import NewEntity from './components/new-entity'
-import TasksIndex from './components/tasks-index.jsx'
-import FutureTasksIndex from './components/future-tasks-index.jsx'
-import RecurringTasksIndex from './components/recurring-tasks-index.jsx'
-import RecurringTaskDetails from './components/recurring-task-details.jsx'
-import RecipesIndex from './components/recipes-index.jsx'
 import { SimpleDetails, FullIndex } from 'handy-components'
+
+import FutureTasksIndex from './components/future-tasks-index.jsx'
 import GroceryListDetails from './components/grocery-list-details.jsx'
+import GroceryStoreDetails from './components/grocery-store-details.jsx'
+import NewEntity from './components/new-entity'
 import RecipeDetails from './components/recipe-details.jsx'
+import RecipesIndex from './components/recipes-index.jsx'
+import RecurringTaskDetails from './components/recurring-task-details.jsx'
+import RecurringTasksIndex from './components/recurring-tasks-index.jsx'
+import TasksIndex from './components/tasks-index.jsx'
 
 const renderFullIndex = (id, props = {}, args = {}) => {
   const { newEntity: newEntityProps } = args;
@@ -105,19 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (groceryStoreDetails) {
     createRoot(groceryStoreDetails).render(
       <div className="container widened-container">
-        <SimpleDetails
-          entityName='groceryStore'
-          header='Edit Grocery Store'
-          initialEntity={{
-            name: '',
-          }}
-          fields = {[
-            [
-              { columnWidth: 12, property: 'name' },
-            ],
-          ]}
-          deleteCallback={ () => { window.location.pathname = '/groceries' }}
-        />
+        <GroceryStoreDetails />
       </div>
     );
   }
