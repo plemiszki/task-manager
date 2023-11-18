@@ -11,6 +11,7 @@ import RecurringTaskDetails from './components/recurring-task-details.jsx'
 import RecipesIndex from './components/recipes-index.jsx'
 import { SimpleDetails, FullIndex } from 'handy-components'
 import GroceryListDetails from './components/grocery-list-details.jsx'
+import RecipeDetails from './components/recipe-details.jsx'
 
 const renderFullIndex = (id, props = {}, args = {}) => {
   const { newEntity: newEntityProps } = args;
@@ -77,29 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (recipeDetails) {
     createRoot(recipeDetails).render(
       <div className="container widened-container">
-        <SimpleDetails
-          entityName='recipe'
-          header='Edit Recipe'
-          hideDeleteButton={ true }
-          initialEntity={{
-            name: '',
-            category: '',
-            time: '',
-            ingredients: '',
-            prep: '',
-          }}
-          fields = {[
-            [
-              { columnWidth: 6, property: 'name' },
-              { columnWidth: 4, property: 'category' },
-              { columnWidth: 2, property: 'time' }
-            ],
-            [
-              { columnWidth: 6, property: 'ingredients', type: 'textbox', rows: 11 },
-              { columnWidth: 6, property: 'prep', columnHeader: 'Preparation', type: 'textbox', rows: 11 },
-            ],
-          ]}
-        />
+        <RecipeDetails />
       </div>
     );
   }
