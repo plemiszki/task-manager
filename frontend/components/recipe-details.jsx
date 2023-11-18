@@ -1,5 +1,5 @@
 import React from 'react'
-import { SaveButton, Details, deepCopy, objectsAreEqual, fetchEntity, updateEntity, Spinner, GrayedOut } from 'handy-components'
+import { SaveButton, Details, deepCopy, objectsAreEqual, fetchEntity, updateEntity, Spinner, GrayedOut, ListBox, OutlineButton } from 'handy-components'
 
 export default class RecipeDetails extends React.Component {
 
@@ -9,6 +9,7 @@ export default class RecipeDetails extends React.Component {
       spinner: true,
       recipe: {},
       recipedSaved: {},
+      recipeItems: [],
       errors: {},
       changesToSave: false,
       justSaved: false,
@@ -18,11 +19,12 @@ export default class RecipeDetails extends React.Component {
 
   componentDidMount() {
     fetchEntity().then((response) => {
-      const { recipe } = response;
+      const { recipe, recipeItems } = response;
       this.setState({
         spinner: false,
         recipe,
         recipeSaved: deepCopy(recipe),
+        recipeItems,
       });
     });
   }
@@ -36,6 +38,31 @@ export default class RecipeDetails extends React.Component {
     return {
       changesFunction: this.checkForChanges.bind(this),
     }
+  }
+
+  clickAddItem() {
+    console.log('click add item')
+    // this.setState({
+    //   itemsModalOpen: true,
+    // });
+  }
+
+  clickDeleteItem(id) {
+    console.log('click delete')
+    // this.setState({
+    //   spinner: true,
+    // });
+    // deleteEntity({
+    //   directory: 'recipe_items',
+    //   id,
+    // }).then((response) => {
+    //   const { groceryItems, recipeListItems } = response;
+    //   this.setState({
+    //     spinner: false,
+    //     groceryItems,
+    //     groceryListItems,
+    //   });
+    // });
   }
 
   clickSave() {
@@ -66,7 +93,7 @@ export default class RecipeDetails extends React.Component {
   }
 
   render() {
-    const { justSaved, changesToSave, spinner } = this.state;
+    const { justSaved, changesToSave, spinner, recipeItems } = this.state;
     return (
       <>
         <div className="handy-component">
@@ -80,6 +107,23 @@ export default class RecipeDetails extends React.Component {
             <div className="row">
               { Details.renderField.bind(this)({ columnWidth: 6, entity: 'recipe', type: 'textbox', rows: 11, property: 'ingredients' }) }
               { Details.renderField.bind(this)({ columnWidth: 6, entity: 'recipe', type: 'textbox', rows: 11, columnHeader: 'Preparation', property: 'prep' }) }
+            </div>
+            <div className="row">
+              <div className="col-xs-12">
+                <p className="section-header">Items</p>
+                <ListBox
+                  entityName="recipeItem"
+                  entities={ recipeItems }
+                  clickDelete={ recipeItem => { this.clickDeleteItem(recipeItem.id) } }
+                  displayProperty="name"
+                  style={ { marginBottom: 15 } }
+                />
+                <OutlineButton
+                  text="Add Item"
+                  onClick={ () => { this.clickAddItem() } }
+                  marginBottom
+                />
+              </div>
             </div>
             <SaveButton
               justSaved={ justSaved }
