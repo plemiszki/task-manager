@@ -1,5 +1,5 @@
 import React from 'react'
-import { Common, BottomButtons, Details, deepCopy, objectsAreEqual, fetchEntity, createEntity, updateEntity, deleteEntity, Spinner, GrayedOut, OutlineButton, ModalSelect, ListBox } from 'handy-components'
+import { Table, Common, BottomButtons, Details, deepCopy, objectsAreEqual, fetchEntity, createEntity, updateEntity, deleteEntity, Spinner, GrayedOut, OutlineButton, ModalSelect, ListBox } from 'handy-components'
 
 export default class GroceryStoreDetails extends React.Component {
 
@@ -67,6 +67,17 @@ export default class GroceryStoreDetails extends React.Component {
 
   render() {
     const { justSaved, changesToSave, spinner } = this.state;
+
+    const tableData = [
+      {
+        type: 'section',
+        text: 'Dairy',
+      },
+      {
+        text: 'Milk',
+      },
+    ];
+
     return (
       <>
         <div className="handy-component">
@@ -75,6 +86,62 @@ export default class GroceryStoreDetails extends React.Component {
             <div className="row">
               { Details.renderField.bind(this)({ columnWidth: 12, entity: 'groceryStore', property: 'name' }) }
             </div>
+            <hr />
+            <Table
+              columns={ [
+                {
+                  name: 'text',
+                  header: 'Sections',
+                  boldIf: row => row.type === 'section',
+                },
+                {
+                  isButton: true,
+                  buttonText: 'Add Item',
+                  width: 120,
+                  // clickButton: row => { this.setState({ newMatchItemModalOpen: true, selectedMatchBinId: row.id }) },
+                  clickButton: row => console.log('add item'),
+                  displayIf: row => row.type === 'section',
+                },
+              ] }
+              rows={ tableData }
+              links={ false }
+              sortable={ false }
+              clickDelete={ row => {
+                console.log('click delete')
+                // const { type, id } = row;
+                // this.setState({ spinner: true })
+                // if (type === 'bin') {
+                //   deleteEntity({
+                //     directory: 'match_bins',
+                //     id,
+                //   }).then((response) => {
+                //     this.setState({
+                //       spinner: false,
+                //       matchBins: response.matchBins,
+                //     });
+                //   });
+                // } else {
+                //   deleteEntity({
+                //     directory: 'match_items',
+                //     id,
+                //   }).then((response) => {
+                //     this.setState({
+                //       spinner: false,
+                //       matchBins: response.matchBins,
+                //     });
+                //   });;
+                // }
+              } }
+              marginBottom
+            />
+            <OutlineButton
+              color="#5F5F5F"
+              text="Add Section"
+              // onClick={ () => this.setState({ newMatchBinModalOpen: true }) }
+              onClick={ () => console.log('new section') }
+              marginBottom
+            />
+            <hr />
             <BottomButtons
               entityName="groceryStore"
               confirmDelete={ Details.confirmDelete.bind(this) }
