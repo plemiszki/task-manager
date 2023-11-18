@@ -1,5 +1,5 @@
 import React from 'react'
-import { SaveButton, Details, deepCopy, objectsAreEqual, fetchEntity, updateEntity, Spinner, GrayedOut, ListBox, OutlineButton } from 'handy-components'
+import { SaveButton, Details, deepCopy, objectsAreEqual, fetchEntity, updateEntity, Spinner, GrayedOut, ListBox, OutlineButton, ModalSelect, Common } from 'handy-components'
 
 export default class RecipeDetails extends React.Component {
 
@@ -10,21 +10,24 @@ export default class RecipeDetails extends React.Component {
       recipe: {},
       recipedSaved: {},
       recipeItems: [],
+      groceryItems: [],
       errors: {},
       changesToSave: false,
       justSaved: false,
       deleteModalOpen: false,
+      itemsModalOpen: false,
     };
   }
 
   componentDidMount() {
     fetchEntity().then((response) => {
-      const { recipe, recipeItems } = response;
+      const { recipe, recipeItems, groceryItems } = response;
       this.setState({
         spinner: false,
         recipe,
         recipeSaved: deepCopy(recipe),
         recipeItems,
+        groceryItems,
       });
     });
   }
@@ -41,10 +44,9 @@ export default class RecipeDetails extends React.Component {
   }
 
   clickAddItem() {
-    console.log('click add item')
-    // this.setState({
-    //   itemsModalOpen: true,
-    // });
+    this.setState({
+      itemsModalOpen: true,
+    });
   }
 
   clickDeleteItem(id) {
@@ -57,6 +59,30 @@ export default class RecipeDetails extends React.Component {
     //   id,
     // }).then((response) => {
     //   const { groceryItems, recipeListItems } = response;
+    //   this.setState({
+    //     spinner: false,
+    //     groceryItems,
+    //     groceryListItems,
+    //   });
+    // });
+  }
+
+  selectItem(option) {
+    console.log('select item')
+    // const { groceryList } = this.state;
+    // this.setState({
+    //   itemsModalOpen: false,
+    //   spinner: true,
+    // });
+    // createEntity({
+    //   directory: 'grocery_list_items',
+    //   entityName: 'grocery_list_item',
+    //   entity: {
+    //     groceryListId: groceryList.id,
+    //     groceryItemId: option.id,
+    //   }
+    // }).then((response) => {
+    //   const { groceryItems, groceryListItems } = response;
     //   this.setState({
     //     spinner: false,
     //     groceryItems,
@@ -93,7 +119,7 @@ export default class RecipeDetails extends React.Component {
   }
 
   render() {
-    const { justSaved, changesToSave, spinner, recipeItems } = this.state;
+    const { justSaved, changesToSave, spinner, recipeItems, groceryItems, itemsModalOpen } = this.state;
     return (
       <>
         <div className="handy-component">
@@ -135,6 +161,13 @@ export default class RecipeDetails extends React.Component {
             <Spinner visible={ spinner } />
           </div>
         </div>
+        <ModalSelect
+          isOpen={ itemsModalOpen }
+          onClose={ Common.closeModals.bind(this) }
+          options={ groceryItems }
+          property="name"
+          func={ this.selectItem.bind(this) }
+        />
       </>
     );
   }

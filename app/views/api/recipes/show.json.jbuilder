@@ -10,3 +10,7 @@ json.recipeItems @recipe_items do |item|
   json.id item.id
   json.name item.grocery_item.name
 end
+json.groceryItems @grocery_items do |item|
+  json.id item.id
+  json.name item.name
+end
