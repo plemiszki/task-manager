@@ -1,5 +1,5 @@
 import React from 'react'
-import { SaveButton, Details, deepCopy, objectsAreEqual, fetchEntity, updateEntity, Spinner, GrayedOut, ListBox, OutlineButton, ModalSelect, Common } from 'handy-components'
+import { SaveButton, Details, deepCopy, objectsAreEqual, fetchEntity, updateEntity, Spinner, GrayedOut, ListBox, OutlineButton, ModalSelect, Common, createEntity } from 'handy-components'
 
 export default class RecipeDetails extends React.Component {
 
@@ -69,26 +69,26 @@ export default class RecipeDetails extends React.Component {
 
   selectItem(option) {
     console.log('select item')
-    // const { groceryList } = this.state;
-    // this.setState({
-    //   itemsModalOpen: false,
-    //   spinner: true,
-    // });
-    // createEntity({
-    //   directory: 'grocery_list_items',
-    //   entityName: 'grocery_list_item',
-    //   entity: {
-    //     groceryListId: groceryList.id,
-    //     groceryItemId: option.id,
-    //   }
-    // }).then((response) => {
-    //   const { groceryItems, groceryListItems } = response;
-    //   this.setState({
-    //     spinner: false,
-    //     groceryItems,
-    //     groceryListItems,
-    //   });
-    // });
+    const { recipe } = this.state;
+    this.setState({
+      itemsModalOpen: false,
+      spinner: true,
+    });
+    createEntity({
+      directory: 'recipe_items',
+      entityName: 'recipe_item',
+      entity: {
+        recipeId: recipe.id,
+        groceryItemId: option.id,
+      }
+    }).then((response) => {
+      const { groceryItems, recipeItems } = response;
+      this.setState({
+        spinner: false,
+        groceryItems,
+        recipeItems,
+      });
+    });
   }
 
   clickSave() {

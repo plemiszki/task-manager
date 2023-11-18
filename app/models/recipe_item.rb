@@ -4,6 +4,8 @@ class RecipeItem < ActiveRecord::Base
   validates :grocery_item_id, uniqueness: { scope: :recipe_id }
 
   belongs_to :recipe
+
   belongs_to :grocery_item
+  alias_attribute :item, :grocery_item
 
 end
