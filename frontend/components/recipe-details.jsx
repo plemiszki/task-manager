@@ -1,5 +1,5 @@
 import React from 'react'
-import { SaveButton, Details, deepCopy, objectsAreEqual, fetchEntity, updateEntity, Spinner, GrayedOut, ListBox, OutlineButton, ModalSelect, Common, createEntity } from 'handy-components'
+import { SaveButton, Details, deepCopy, objectsAreEqual, fetchEntity, updateEntity, Spinner, GrayedOut, ListBox, OutlineButton, ModalSelect, Common, createEntity, deleteEntity } from 'handy-components'
 
 export default class RecipeDetails extends React.Component {
 
@@ -50,21 +50,20 @@ export default class RecipeDetails extends React.Component {
   }
 
   clickDeleteItem(id) {
-    console.log('click delete')
-    // this.setState({
-    //   spinner: true,
-    // });
-    // deleteEntity({
-    //   directory: 'recipe_items',
-    //   id,
-    // }).then((response) => {
-    //   const { groceryItems, recipeListItems } = response;
-    //   this.setState({
-    //     spinner: false,
-    //     groceryItems,
-    //     groceryListItems,
-    //   });
-    // });
+    this.setState({
+      spinner: true,
+    });
+    deleteEntity({
+      directory: 'recipe_items',
+      id,
+    }).then((response) => {
+      const { groceryItems, recipeItems } = response;
+      this.setState({
+        spinner: false,
+        groceryItems,
+        recipeItems,
+      });
+    });
   }
 
   selectItem(option) {

@@ -9,7 +9,7 @@ class Api::RecipesController < ActionController::Base
 
   def show
     @recipe = Recipe.find(params[:id])
-    @recipe_items = @recipe.recipe_items.includes(:grocery_item)
+    @recipe_items = @recipe.sorted_list_items
     @grocery_items = GroceryItem.where.not(id: @recipe_items.pluck(:grocery_item_id))
   end
 

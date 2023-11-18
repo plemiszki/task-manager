@@ -15,9 +15,9 @@ class Api::RecipeItemsController < ActionController::Base
   end
 
   def destroy
-    deleted_list_item = GroceryListItem.find(params[:id]).destroy
-    @grocery_list_items = GroceryList.find(deleted_list_item.grocery_list_id).sorted_list_items
-    @grocery_items = GroceryItem.where.not(id: @grocery_list_items.pluck(:grocery_item_id))
+    recipe_item = RecipeItem.find(params[:id]).destroy
+    @recipe_items = Recipe.find(recipe_item.recipe_id).sorted_list_items
+    @grocery_items = GroceryItem.where.not(id: @recipe_items.pluck(:grocery_item_id))
     render 'index'
   end
 
