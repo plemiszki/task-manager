@@ -9,6 +9,7 @@ class Api::RecipesController < ActionController::Base
 
   def show
     @recipe = Recipe.find(params[:id])
+    @recipe_items = @recipe.recipe_items.includes(:grocery_item)
   end
 
   def create
