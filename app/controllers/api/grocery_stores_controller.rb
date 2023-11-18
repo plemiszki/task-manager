@@ -9,6 +9,7 @@ class Api::GroceryStoresController < ActionController::Base
 
   def show
     @grocery_store = GroceryStore.find(params[:id])
+    @grocery_sections = @grocery_store.sections
     @grocery_items = GroceryItem.all()
   end
 

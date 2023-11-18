@@ -9,6 +9,7 @@ export default class GroceryStoreDetails extends React.Component {
       spinner: true,
       groceryStore: {},
       groceryStoreSaved: {},
+      grocerySections: [],
       errors: {},
       changesToSave: false,
       justSaved: false,
@@ -18,11 +19,12 @@ export default class GroceryStoreDetails extends React.Component {
 
   componentDidMount() {
     fetchEntity().then((response) => {
-      const { groceryStore } = response;
+      const { groceryStore, grocerySections } = response;
       this.setState({
         spinner: false,
         groceryStore,
         groceryStoreSaved: deepCopy(groceryStore),
+        grocerySections,
       });
     });
   }
@@ -66,18 +68,7 @@ export default class GroceryStoreDetails extends React.Component {
   }
 
   render() {
-    const { justSaved, changesToSave, spinner } = this.state;
-
-    const tableData = [
-      {
-        type: 'section',
-        text: 'Dairy',
-      },
-      {
-        text: 'Milk',
-      },
-    ];
-
+    const { justSaved, changesToSave, spinner, grocerySections } = this.state;
     return (
       <>
         <div className="handy-component">
@@ -103,7 +94,12 @@ export default class GroceryStoreDetails extends React.Component {
                   displayIf: row => row.type === 'section',
                 },
               ] }
-              rows={ tableData }
+              rows={ grocerySections.map(section => {
+                return ({
+                  type: 'section',
+                  text: section.name,
+                })
+              })}
               links={ false }
               sortable={ false }
               clickDelete={ row => {
