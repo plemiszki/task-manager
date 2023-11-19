@@ -72,6 +72,24 @@ export default class GroceryStoreDetails extends React.Component {
 
   render() {
     const { justSaved, changesToSave, spinner, grocerySections, newSectionModalOpen, groceryStore } = this.state;
+
+    let tableData = [];
+    grocerySections.forEach(section => {
+      const { id, name, grocerySectionItems } = section;
+      tableData.push({
+        id,
+        text: name,
+        section: true,
+      });
+      grocerySectionItems.forEach(item => {
+        const { id, name } = item;
+        tableData.push({
+          id,
+          text: name,
+        });
+      })
+    })
+
     return (
       <>
         <div className="handy-component">
@@ -86,7 +104,7 @@ export default class GroceryStoreDetails extends React.Component {
                 {
                   name: 'text',
                   header: 'Sections',
-                  boldIf: row => row.type === 'section',
+                  boldIf: row => row.section,
                 },
                 {
                   isButton: true,
@@ -94,22 +112,16 @@ export default class GroceryStoreDetails extends React.Component {
                   width: 120,
                   // clickButton: row => { this.setState({ newMatchItemModalOpen: true, selectedMatchBinId: row.id }) },
                   clickButton: row => console.log('add item'),
-                  displayIf: row => row.type === 'section',
+                  displayIf: row => row.section,
                 },
               ] }
-              rows={ grocerySections.map(section => {
-                return ({
-                  type: 'section',
-                  text: section.name,
-                  id: section.id,
-                })
-              })}
+              rows={ tableData }
               links={ false }
               sortable={ false }
               clickDelete={ row => {
-                const { type, id } = row;
+                const { section, id } = row;
                 this.setState({ spinner: true })
-                if (type === 'section') {
+                if (section) {
                   deleteEntity({
                     directory: 'grocery_sections',
                     id,

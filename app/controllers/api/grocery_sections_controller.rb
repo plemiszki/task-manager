@@ -7,7 +7,7 @@ class Api::GrocerySectionsController < ActionController::Base
     current_length = GrocerySection.where(grocery_store_id: grocery_section_params[:grocery_store_id]).length
     grocery_section = GrocerySection.new({ position: current_length }.merge(grocery_section_params))
     if grocery_section.save
-      @grocery_sections = GrocerySection.where(grocery_store_id: grocery_section.grocery_store_id)
+      @grocery_sections = GrocerySection.where(grocery_store_id: grocery_section.grocery_store_id).includes(grocery_section_items: [:grocery_item])
       render 'index'
     else
       render_errors(grocery_section)
