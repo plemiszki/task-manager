@@ -1,5 +1,5 @@
 import React from 'react'
-import { Spinner, GrayedOut, sendRequest } from 'handy-components'
+import { Spinner, GrayedOut, sendRequest, ModalSelect, Common } from 'handy-components'
 
 export default class GroceryList extends React.Component {
 
@@ -10,36 +10,75 @@ export default class GroceryList extends React.Component {
       groceryItems: [],
       groceryLists: [],
       groceryStores: [],
+      recipes: [],
+      itemsModalOpen: false,
+      listsModalOpen: false,
+      storesModalOpen: false,
     }
   }
 
   componentDidMount() {
     sendRequest('/api/active_list').then(response => {
-      const { groceryLists, groceryItems, groceryStores } = response;
+      const { groceryLists, groceryItems, groceryStores, recipes } = response;
       this.setState({
         spinner: false,
         groceryItems,
         groceryLists,
         groceryStores,
+        recipes,
       });
     });
   }
 
+  selectItem(option) {
+    console.log('select item')
+  }
+
+  selectRecipe(option) {
+    console.log('select recipe')
+  }
+
+  selectList(option) {
+    console.log('select list')
+  }
+
   render() {
-    const { spinner } = this.state;
+    const { spinner, itemsModalOpen, listsModalOpen, recipesModalOpen, groceryItems, groceryLists, recipes } = this.state;
     return (
       <>
         <div className="root">
           <p>Grocery list will go here.</p>
-          <GrayedOut visible={ spinner } />
-          <Spinner visible={ spinner } />
+
           <div className="buttons">
-            <a className="btn btn-primary" rel="nofollow">Add Item</a>
-            <a className="btn btn-success" rel="nofollow">Add List</a>
-            <a className="btn btn-info recipe-button" rel="nofollow">Add From Recipe</a>
+            <a className="btn btn-primary" rel="nofollow" onClick={ () => this.setState({ itemsModalOpen: true }) }>Add Item</a>
+            <a className="btn btn-success" rel="nofollow" onClick={ () => this.setState({ listsModalOpen: true }) }>Add List</a>
+            <a className="btn btn-info recipe-button" rel="nofollow" onClick={ () => this.setState({ recipesModalOpen: true }) }>Add From Recipe</a>
             <a className="btn btn-warning" rel="nofollow">Clear</a>
             <a className="btn btn-primary" rel="nofollow">Export</a>
           </div>
+          <ModalSelect
+            isOpen={ itemsModalOpen }
+            onClose={ Common.closeModals.bind(this) }
+            options={ groceryItems }
+            property="name"
+            func={ this.selectItem.bind(this) }
+          />
+          <ModalSelect
+            isOpen={ recipesModalOpen }
+            onClose={ Common.closeModals.bind(this) }
+            options={ recipes }
+            property="name"
+            func={ this.selectRecipe.bind(this) }
+          />
+          <ModalSelect
+            isOpen={ listsModalOpen }
+            onClose={ Common.closeModals.bind(this) }
+            options={ groceryLists }
+            property="name"
+            func={ this.selectList.bind(this) }
+          />
+          <GrayedOut visible={ spinner } />
+          <Spinner visible={ spinner } />
         </div>
         <style jsx>{`
           .root {
