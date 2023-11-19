@@ -5,8 +5,6 @@ class Recipe < ActiveRecord::Base
   has_many :recipe_items, dependent: :destroy
   alias_attribute :items, :recipe_items
 
-  scope :all_with_items, -> { where.associated(:recipe_items) }
-
   def sorted_list_items
     recipe_items.includes(:grocery_item).sort_by { |recipe_item| recipe_item.item.name.downcase }
   end
