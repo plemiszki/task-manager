@@ -145,28 +145,16 @@ export default class GroceryStoreDetails extends React.Component {
               clickDelete={ row => {
                 const { section, id } = row;
                 this.setState({ spinner: true })
-                if (section) {
-                  deleteEntity({
-                    directory: 'grocery_sections',
-                    id,
-                  }).then((response) => {
-                    const { grocerySections } = response;
-                    this.setState({
-                      spinner: false,
-                      grocerySections,
-                    });
+                deleteEntity({
+                  directory: (section ? 'grocery_sections' : 'grocery_section_items'),
+                  id,
+                }).then((response) => {
+                  const { grocerySections } = response;
+                  this.setState({
+                    spinner: false,
+                    grocerySections,
                   });
-                } else {
-                  // deleteEntity({
-                  //   directory: 'match_items',
-                  //   id,
-                  // }).then((response) => {
-                  //   this.setState({
-                  //     spinner: false,
-                  //     matchBins: response.matchBins,
-                  //   });
-                  // });
-                }
+                });
               } }
               marginBottom
             />

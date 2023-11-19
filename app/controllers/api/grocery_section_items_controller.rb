@@ -14,12 +14,14 @@ class Api::GrocerySectionItemsController < ActionController::Base
     end
   end
 
-  # def destroy
-  #   deleted_list_item = GroceryListItem.find(params[:id]).destroy
-  #   @grocery_list_items = GroceryList.find(deleted_list_item.grocery_list_id).sorted_list_items
-  #   @grocery_items = GroceryItem.where.not(id: @grocery_list_items.pluck(:grocery_item_id))
-  #   render 'index'
-  # end
+  def destroy
+    grocery_section_item = GrocerySectionItem.find(params[:id]).destroy
+    GrocerySectionItem.where(grocery_section_id: grocery_section_item.grocery_section_id).order(:position).each_with_index do |grocery_section_item, index|
+      grocery_section_item.update(position: index)
+    end
+    @grocery_sections = GrocerySection.where(grocery_store: grocery_section_item.section.store).includes(grocery_section_items: [:grocery_item])
+    render 'index'
+  end
 
   private
 
