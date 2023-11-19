@@ -8,6 +8,7 @@ class Api::GrocerySectionsController < ActionController::Base
     grocery_section = GrocerySection.new({ position: current_length }.merge(grocery_section_params))
     if grocery_section.save
       @grocery_sections = GrocerySection.where(grocery_store_id: grocery_section.grocery_store_id).includes(grocery_section_items: [:grocery_item])
+      @grocery_items = GroceryItem.where.not(id: @grocery_sections.map { |section| section.items.pluck(:id) }.flatten)
       render 'index'
     else
       render_errors(grocery_section)
@@ -20,6 +21,7 @@ class Api::GrocerySectionsController < ActionController::Base
       grocery_section.update(position: index)
     end
     @grocery_sections = GrocerySection.where(grocery_store_id: grocery_section.grocery_store_id)
+    @grocery_items = GroceryItem.where.not(id: @grocery_sections.map { |section| section.items.pluck(:id) }.flatten)
     render 'index'
   end
 
