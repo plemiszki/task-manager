@@ -55,6 +55,14 @@ body {
       background-color: darken($recipe-button-color, 10%);
     }
   }
+
+  &.groceries-button {
+    background-color: gray;
+
+    &:hover {
+      background-color: darken(gray, 10%);
+    }
+  }
 }
 
 .handy-component:not(.admin-modal) .white-box {
