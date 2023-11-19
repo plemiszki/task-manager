@@ -49,10 +49,11 @@ export default class GroceryStoreDetails extends React.Component {
         groceryStoreId: groceryStore.id,
       }
     }).then((response) => {
-      const { grocerySections } = response;
+      const { grocerySections, groceryItems } = response;
       this.setState({
         spinner: false,
         grocerySections,
+        groceryItems,
       });
     });
   }
@@ -149,10 +150,11 @@ export default class GroceryStoreDetails extends React.Component {
                   directory: (section ? 'grocery_sections' : 'grocery_section_items'),
                   id,
                 }).then((response) => {
-                  const { grocerySections } = response;
+                  const { grocerySections, groceryItems } = response;
                   this.setState({
                     spinner: false,
                     grocerySections,
+                    groceryItems,
                   });
                 });
               } }

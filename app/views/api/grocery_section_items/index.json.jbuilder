@@ -7,3 +7,7 @@ json.grocerySections @grocery_sections do |grocery_section|
     json.name grocery_section_item.grocery_item.name
   end
 end
+json.groceryItems @grocery_items do |grocery_item|
+  json.id grocery_item.id
+  json.name grocery_item.name
+end
