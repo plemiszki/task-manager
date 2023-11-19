@@ -1,6 +1,7 @@
 import React from 'react'
 import Modal from 'react-modal'
-import { sendRequest, Common } from 'handy-components';
+import GroceryList from './grocery-list'
+import { sendRequest, Common } from 'handy-components'
 
 const modalStyles = {
   overlay: {
@@ -90,9 +91,7 @@ export default class CurrentUser extends React.Component {
             </div>
           </div>
           <Modal isOpen={ groceryListModalOpen } onRequestClose={ Common.closeModals.bind(this) } contentLabel="Modal" style={ modalStyles }>
-            <div className="grocery-list-modal">
-              grocery list will go here
-            </div>
+            <GroceryList />
           </Modal>
         </div>
         <style jsx>{`
@@ -103,9 +102,6 @@ export default class CurrentUser extends React.Component {
             display: block;
             height: 58px;
             cursor: pointer;
-          }
-          .grocery-list-modal {
-            z-index: 100;
           }
         `}</style>
       </>
