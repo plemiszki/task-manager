@@ -1,5 +1,5 @@
 import React from 'react'
-import { Spinner, GrayedOut } from 'handy-components'
+import { Spinner, GrayedOut, sendRequest } from 'handy-components'
 
 export default class GroceryList extends React.Component {
 
@@ -7,7 +7,22 @@ export default class GroceryList extends React.Component {
     super(props);
     this.state = {
       spinner: true,
+      groceryItems: [],
+      groceryLists: [],
+      groceryStores: [],
     }
+  }
+
+  componentDidMount() {
+    sendRequest('/api/active_list').then(response => {
+      const { groceryLists, groceryItems, groceryStores } = response;
+      this.setState({
+        spinner: false,
+        groceryItems,
+        groceryLists,
+        groceryStores,
+      });
+    });
   }
 
   render() {
