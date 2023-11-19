@@ -6,7 +6,7 @@ class Api::ActiveListController < ActionController::Base
     @grocery_items = GroceryItem.all.order(:name)
     @grocery_lists = GroceryList.all.order(:name)
     @grocery_stores = GroceryStore.all.order(:name)
-    @recipes = Recipe.all.order(:name)
+    @recipes = Recipe.all_with_items.order(:name)
   end
 
   def add
