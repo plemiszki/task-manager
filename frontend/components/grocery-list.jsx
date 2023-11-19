@@ -78,7 +78,12 @@ export default class GroceryList extends React.Component {
             property="name"
             func={ this.selectList.bind(this) }
           />
-          <GrayedOut visible={ spinner } />
+          <GrayedOut visible={ spinner } style={{
+            top: -20,
+            left: -20,
+            width: 'calc(100% + 40px)',
+            height: 'calc(100% + 40px)',
+          }} />
           <Spinner visible={ spinner } />
         </div>
         <style jsx>{`
