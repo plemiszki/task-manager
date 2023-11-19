@@ -62,6 +62,7 @@ export default class GroceryList extends React.Component {
             options={ groceryItems }
             property="name"
             func={ this.selectItem.bind(this) }
+            zIndex={ 3 }
           />
           <ModalSelect
             isOpen={ recipesModalOpen }
