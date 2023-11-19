@@ -12,6 +12,7 @@ export default class GroceryStoreDetails extends React.Component {
       groceryStore: {},
       groceryStoreSaved: {},
       grocerySections: [],
+      groceryItems: [],
       errors: {},
       changesToSave: false,
       justSaved: false,
@@ -22,11 +23,35 @@ export default class GroceryStoreDetails extends React.Component {
 
   componentDidMount() {
     fetchEntity().then((response) => {
-      const { groceryStore, grocerySections } = response;
+      const { groceryStore, grocerySections, groceryItems } = response;
       this.setState({
         spinner: false,
         groceryStore,
         groceryStoreSaved: deepCopy(groceryStore),
+        grocerySections,
+        groceryItems,
+      });
+    });
+  }
+
+  selectItem(option) {
+    const { selectedSectionId, groceryStore } = this.state;
+    this.setState({
+      itemsModalOpen: false,
+      spinner: true,
+    });
+    createEntity({
+      directory: 'grocery_section_items',
+      entityName: 'grocery_section_item',
+      entity: {
+        grocerySectionId: selectedSectionId,
+        groceryItemId: option.id,
+        groceryStoreId: groceryStore.id,
+      }
+    }).then((response) => {
+      const { grocerySections } = response;
+      this.setState({
+        spinner: false,
         grocerySections,
       });
     });
@@ -71,7 +96,7 @@ export default class GroceryStoreDetails extends React.Component {
   }
 
   render() {
-    const { justSaved, changesToSave, spinner, grocerySections, newSectionModalOpen, groceryStore } = this.state;
+    const { justSaved, changesToSave, spinner, grocerySections, newSectionModalOpen, groceryStore, groceryItems } = this.state;
 
     let tableData = [];
     grocerySections.forEach(section => {
@@ -110,8 +135,7 @@ export default class GroceryStoreDetails extends React.Component {
                   isButton: true,
                   buttonText: 'Add Item',
                   width: 120,
-                  // clickButton: row => { this.setState({ newMatchItemModalOpen: true, selectedMatchBinId: row.id }) },
-                  clickButton: row => console.log('add item'),
+                  clickButton: row => { this.setState({ itemsModalOpen: true, selectedSectionId: row.id }) },
                   displayIf: row => row.section,
                 },
               ] }
@@ -174,13 +198,13 @@ export default class GroceryStoreDetails extends React.Component {
             buttonText="Add Section"
           />
         </Modal>
-        {/* <ModalSelect
+        <ModalSelect
           isOpen={ this.state.itemsModalOpen }
           onClose={ Common.closeModals.bind(this) }
           options={ groceryItems }
           property="name"
           func={ this.selectItem.bind(this) }
-        /> */}
+        />
       </>
     );
   }
