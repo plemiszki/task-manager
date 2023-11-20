@@ -14,24 +14,34 @@ export default class GroceryList extends React.Component {
       itemsModalOpen: false,
       listsModalOpen: false,
       storesModalOpen: false,
+      itemIds: [],
     }
   }
 
   componentDidMount() {
     sendRequest('/api/active_list').then(response => {
-      const { groceryLists, groceryItems, groceryStores, recipes } = response;
+      const { groceryLists, groceryItems, groceryStores, recipes, ids } = response;
       this.setState({
         spinner: false,
         groceryItems,
         groceryLists,
         groceryStores,
         recipes,
+        itemIds: ids,
       });
     });
   }
 
   selectItem(option) {
-    console.log('select item')
+    sendRequest(`/api/active_list/${option.id}`, {
+      method: 'post',
+    }).then(response => {
+      const { ids } = response;
+      this.setState({
+        itemIds: ids,
+        itemsModalOpen: false,
+      });
+    });
   }
 
   selectRecipe(option) {
@@ -43,12 +53,18 @@ export default class GroceryList extends React.Component {
   }
 
   render() {
-    const { spinner, itemsModalOpen, listsModalOpen, recipesModalOpen, groceryItems, groceryLists, recipes } = this.state;
+    const { spinner, itemsModalOpen, listsModalOpen, recipesModalOpen, groceryItems, groceryLists, recipes, itemIds } = this.state;
+    const itemNames = itemIds.map(id => groceryItems.find(item => item.id === +id).name);
     return (
       <>
         <div className="root">
-          <p>Grocery list will go here.</p>
-
+          {
+            itemNames.sort().map(name => {
+              return (
+                <p key={ name }>{ name }</p>
+              );
+            })
+          }
           <div className="buttons">
             <a className="btn btn-primary" rel="nofollow" onClick={ () => this.setState({ itemsModalOpen: true }) }>Add Item</a>
             <a className="btn btn-success" rel="nofollow" onClick={ () => this.setState({ listsModalOpen: true }) }>Add List</a>
