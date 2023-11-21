@@ -58,13 +58,15 @@ export default class GroceryList extends React.Component {
     return (
       <>
         <div className="root">
-          {
-            itemNames.sort().map(name => {
-              return (
-                <p key={ name }>{ name }</p>
-              );
-            })
-          }
+          <div className="list">
+            {
+              itemNames.sort().map(name => {
+                return (
+                  <p key={ name }>{ name }</p>
+                );
+              })
+            }
+          </div>
           <div className="buttons">
             <a className="btn btn-primary" rel="nofollow" onClick={ () => this.setState({ itemsModalOpen: true }) }>Add Item</a>
             <a className="btn btn-success" rel="nofollow" onClick={ () => this.setState({ listsModalOpen: true }) }>Add List</a>
@@ -106,6 +108,11 @@ export default class GroceryList extends React.Component {
           .root {
             position: relative;
             height: 100%;
+          }
+          .list {
+            display: grid;
+            grid-auto-flow: column;
+            grid-template: repeat(15, 1fr) / repeat(3, 1fr);
           }
           .buttons {
             display: flex;
