@@ -10,12 +10,12 @@ class Api::ActiveListController < ActionController::Base
     @grocery_lists = GroceryList.all.order(:name)
     @grocery_stores = GroceryStore.all.order(:name)
     @recipes = Recipe.where.associated(:recipe_items).order(:name).uniq
-    redis = Redis.new(url: REDIS_URL)
+    redis = create_redis_instance
     @ids = redis.smembers(REDIS_KEY)
   end
 
   def add
-    redis = Redis.new(url: REDIS_URL)
+    redis = create_redis_instance
     redis.sadd(REDIS_KEY, params[:id])
     render json: { ids: redis.smembers(REDIS_KEY) }
   end
@@ -30,6 +30,12 @@ class Api::ActiveListController < ActionController::Base
   end
 
   def clear
+  end
+
+  private
+
+  def create_redis_instance
+    Redis.new(url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
   end
 
 end
