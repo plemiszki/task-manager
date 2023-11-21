@@ -30,6 +30,9 @@ class Api::ActiveListController < ActionController::Base
   end
 
   def clear
+    redis = create_redis_instance
+    redis.del(REDIS_KEY)
+    render json: { ids: redis.smembers(REDIS_KEY) }
   end
 
   private

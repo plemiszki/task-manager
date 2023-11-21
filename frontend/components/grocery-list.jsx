@@ -33,6 +33,7 @@ export default class GroceryList extends React.Component {
   }
 
   selectItem(option) {
+    this.setState({ spinner: true });
     sendRequest(`/api/active_list/${option.id}`, {
       method: 'post',
     }).then(response => {
@@ -40,6 +41,7 @@ export default class GroceryList extends React.Component {
       this.setState({
         itemIds: ids,
         itemsModalOpen: false,
+        spinner: false,
       });
     });
   }
@@ -50,6 +52,19 @@ export default class GroceryList extends React.Component {
 
   selectList(option) {
     console.log('select list')
+  }
+
+  clearList() {
+    this.setState({ spinner: true });
+    sendRequest('/api/active_list/', {
+      method: 'delete',
+    }).then(response => {
+      const { ids } = response;
+      this.setState({
+        itemIds: ids,
+        spinner: false,
+      });
+    });
   }
 
   render() {
@@ -71,7 +86,7 @@ export default class GroceryList extends React.Component {
             <a className="btn btn-primary" rel="nofollow" onClick={ () => this.setState({ itemsModalOpen: true }) }>Add Item</a>
             <a className="btn btn-success" rel="nofollow" onClick={ () => this.setState({ listsModalOpen: true }) }>Add List</a>
             <a className="btn btn-info recipe-button" rel="nofollow" onClick={ () => this.setState({ recipesModalOpen: true }) }>Add From Recipe</a>
-            <a className="btn btn-warning" rel="nofollow">Clear</a>
+            <a className="btn btn-warning" rel="nofollow" onClick={ () => this.clearList() }>Clear</a>
             <a className="btn btn-primary" rel="nofollow">Export</a>
           </div>
           <ModalSelect
