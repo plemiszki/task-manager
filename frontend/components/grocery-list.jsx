@@ -51,7 +51,17 @@ export default class GroceryList extends React.Component {
   }
 
   selectList(option) {
-    console.log('select list')
+    this.setState({ spinner: true });
+    sendRequest(`/api/active_list/add_from_list/${option.id}`, {
+      method: 'post',
+    }).then(response => {
+      const { ids } = response;
+      this.setState({
+        itemIds: ids,
+        spinner: false,
+        listsModalOpen: false,
+      });
+    });
   }
 
   clearList() {
@@ -128,6 +138,11 @@ export default class GroceryList extends React.Component {
             display: grid;
             grid-auto-flow: column;
             grid-template: repeat(15, 1fr) / repeat(3, 1fr);
+          }
+          .list p {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
           }
           .buttons {
             display: flex;

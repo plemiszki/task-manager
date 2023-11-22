@@ -21,6 +21,10 @@ class Api::ActiveListController < ActionController::Base
   end
 
   def add_from_list
+    list = GroceryList.find(params[:id])
+    redis = create_redis_instance
+    redis.sadd(REDIS_KEY, list.grocery_items.pluck(:id))
+    render json: { ids: redis.smembers(REDIS_KEY) }
   end
 
   def add_from_recipe
