@@ -36,6 +36,7 @@ Rails.application.routes.draw do
     get '/active_list' => '/api/active_list#show'
     post '/active_list/:id' => '/api/active_list#add'
     post '/active_list/add_from_list/:id' => '/api/active_list#add_from_list'
+    post '/active_list/add_from_recipe/:id' => '/api/active_list#add_from_recipe'
     delete '/active_list/:id' => '/api/active_list#remove'
     delete '/active_list' => '/api/active_list#clear'
   end

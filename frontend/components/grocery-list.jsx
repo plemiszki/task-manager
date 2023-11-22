@@ -47,7 +47,17 @@ export default class GroceryList extends React.Component {
   }
 
   selectRecipe(option) {
-    console.log('select recipe')
+    this.setState({ spinner: true });
+    sendRequest(`/api/active_list/add_from_recipe/${option.id}`, {
+      method: 'post',
+    }).then(response => {
+      const { ids } = response;
+      this.setState({
+        itemIds: ids,
+        spinner: false,
+        recipesModalOpen: false,
+      });
+    });
   }
 
   selectList(option) {

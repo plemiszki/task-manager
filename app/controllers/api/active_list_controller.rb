@@ -28,6 +28,10 @@ class Api::ActiveListController < ActionController::Base
   end
 
   def add_from_recipe
+    recipe = Recipe.find(params[:id])
+    redis = create_redis_instance
+    redis.sadd(REDIS_KEY, recipe.grocery_items.pluck(:id))
+    render json: { ids: redis.smembers(REDIS_KEY) }
   end
 
   def remove
