@@ -109,7 +109,7 @@ export default class GroceryList extends React.Component {
         name: groceryItem.name,
       }
     });
-    const sortedItems = items.sort((itemA, itemB) => itemA.name - itemB.name)
+    const sortedItems = items.sort((itemA, itemB) => itemA.name.localeCompare(itemB.name))
 
     return (
       <>
