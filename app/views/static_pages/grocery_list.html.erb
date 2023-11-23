@@ -12,4 +12,12 @@
       <% end %>
     </div>
   <% end %>
+  <h4>Misc</h4>
+  <div class="store-grid">
+    <ul class="section-container">
+      <% @misc_items.each do |item| %>
+        <li><%= item.name %></li>
+      <% end %>
+    </ul>
+  </div>
 </div>
