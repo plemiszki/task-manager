@@ -35,6 +35,9 @@ class Api::ActiveListController < ActionController::Base
   end
 
   def remove
+    redis = create_redis_instance
+    redis.srem(REDIS_KEY, params[:id])
+    render json: { ids: redis.smembers(REDIS_KEY) }
   end
 
   def clear

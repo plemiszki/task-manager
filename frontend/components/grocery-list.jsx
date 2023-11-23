@@ -87,9 +87,30 @@ export default class GroceryList extends React.Component {
     });
   }
 
+  removeItem(id) {
+    this.setState({ spinner: true });
+    sendRequest(`/api/active_list/${id}`, {
+      method: 'delete',
+    }).then(response => {
+      const { ids } = response;
+      this.setState({
+        itemIds: ids,
+        spinner: false,
+      });
+    });
+  }
+
   render() {
     const { spinner, itemsModalOpen, listsModalOpen, recipesModalOpen, groceryItems, groceryLists, recipes, itemIds } = this.state;
-    const itemNames = itemIds.map(id => groceryItems.find(item => item.id === +id).name);
+    const items = itemIds.map(id => {
+      const groceryItem = groceryItems.find(item => item.id === +id);
+      return {
+        id,
+        name: groceryItem.name,
+      }
+    });
+    const sortedItems = items.sort((itemA, itemB) => itemA.name - itemB.name)
+
     return (
       <>
         <div className="root">
@@ -102,9 +123,9 @@ export default class GroceryList extends React.Component {
           </div>
           <div className="list">
             {
-              itemNames.sort().map(name => {
+              sortedItems.map(item => {
                 return (
-                  <p key={ name }>{ name }</p>
+                  <p key={ item.id } onDoubleClick={ () => this.removeItem(item.id) }>{ item.name }</p>
                 );
               })
             }
