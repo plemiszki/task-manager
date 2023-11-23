@@ -93,6 +93,13 @@ export default class GroceryList extends React.Component {
     return (
       <>
         <div className="root">
+          <div className="buttons">
+            <a className="btn btn-primary" rel="nofollow" onClick={ () => this.setState({ itemsModalOpen: true }) }>Add Item</a>
+            <a className="btn btn-success" rel="nofollow" onClick={ () => this.setState({ listsModalOpen: true }) }>Add List</a>
+            <a className="btn btn-info recipe-button" rel="nofollow" onClick={ () => this.setState({ recipesModalOpen: true }) }>Add From Recipe</a>
+            <a className="btn btn-warning" rel="nofollow" onClick={ () => this.clearList() }>Clear</a>
+            <a className="btn btn-primary" rel="nofollow" href="/grocery_list" target="_blank">Export</a>
+          </div>
           <div className="list">
             {
               itemNames.sort().map(name => {
@@ -101,13 +108,6 @@ export default class GroceryList extends React.Component {
                 );
               })
             }
-          </div>
-          <div className="buttons">
-            <a className="btn btn-primary" rel="nofollow" onClick={ () => this.setState({ itemsModalOpen: true }) }>Add Item</a>
-            <a className="btn btn-success" rel="nofollow" onClick={ () => this.setState({ listsModalOpen: true }) }>Add List</a>
-            <a className="btn btn-info recipe-button" rel="nofollow" onClick={ () => this.setState({ recipesModalOpen: true }) }>Add From Recipe</a>
-            <a className="btn btn-warning" rel="nofollow" onClick={ () => this.clearList() }>Clear</a>
-            <a className="btn btn-primary" rel="nofollow" href="/grocery_list" target="_blank">Export</a>
           </div>
           <ModalSelect
             isOpen={ itemsModalOpen }
@@ -147,19 +147,20 @@ export default class GroceryList extends React.Component {
           .list {
             display: grid;
             grid-auto-flow: column;
-            grid-template: repeat(15, 1fr) / repeat(3, 1fr);
+            grid-template: repeat(15, 1fr) / repeat(4, 1fr);
           }
           .list p {
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
+            user-select: none;
           }
           .buttons {
-            display: flex;
-            position: absolute;
-            bottom: 0;
-            justify-content: space-between;
             width: 100%;
+            margin-bottom: 20px;
+          }
+          .buttons a:not(:last-of-type) {
+            margin-right: 10px;
           }
         `}</style>
       </>

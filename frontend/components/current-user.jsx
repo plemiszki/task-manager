@@ -11,7 +11,7 @@ const modalStyles = {
   content: {
     background: 'white',
     margin: 'auto',
-    width: 500,
+    width: 700,
     maxWidth: '90%',
     height: 535.5,
     border: 'solid 1px black',
