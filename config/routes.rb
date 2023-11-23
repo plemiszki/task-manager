@@ -8,8 +8,7 @@ Rails.application.routes.draw do
   resources :grocery_items, only: [:show]
   resources :grocery_lists, only: [:show]
   get '/groceries' => 'static_pages#groceries'
-  get '/on_call_auth' => 'static_pages#on_call_auth'
-  get '/on_call_callback' => 'static_pages#on_call_callback'
+  get '/grocery_list' => 'static_pages#grocery_list'
 
   namespace :api, defaults: { format: :json } do
     resources :users, only: [:index]

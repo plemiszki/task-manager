@@ -1,0 +1,28 @@
+.grocery-list-export {
+
+  h4 {
+    margin-bottom: 15px;
+  }
+
+  .store-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-row-gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .section-container {
+    margin-bottom: 10px;
+  }
+
+  h5 {
+    font-weight: bold;
+    text-decoration: underline;
+    margin-bottom: 8px;
+  }
+
+  li {
+    list-style: disc;
+    margin-bottom: 2px;
+  }
+}

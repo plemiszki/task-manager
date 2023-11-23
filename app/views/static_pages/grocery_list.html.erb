@@ -1,0 +1,15 @@
+<div class="container grocery-list-export">
+  <% @result.each do |store| %>
+    <h4><%= store[:name] %></h4>
+    <div class="store-grid">
+      <% store[:sections].each do |section| %>
+        <ul class="section-container">
+          <h5><%= section[:name] %></h5>
+          <% section[:items].each do |item| %>
+            <li><%= item %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+  <% end %>
+</div>

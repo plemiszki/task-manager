@@ -107,7 +107,7 @@ export default class GroceryList extends React.Component {
             <a className="btn btn-success" rel="nofollow" onClick={ () => this.setState({ listsModalOpen: true }) }>Add List</a>
             <a className="btn btn-info recipe-button" rel="nofollow" onClick={ () => this.setState({ recipesModalOpen: true }) }>Add From Recipe</a>
             <a className="btn btn-warning" rel="nofollow" onClick={ () => this.clearList() }>Clear</a>
-            <a className="btn btn-primary" rel="nofollow">Export</a>
+            <a className="btn btn-primary" rel="nofollow" href="/grocery_list" target="_blank">Export</a>
           </div>
           <ModalSelect
             isOpen={ itemsModalOpen }
