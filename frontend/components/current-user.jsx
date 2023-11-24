@@ -66,7 +66,7 @@ export default class CurrentUser extends React.Component {
             <div className="col-xs-12">
               <div className="current-user group">
                 <a className="btn btn-primary" rel="nofollow" data-method="delete" href="/sign_out">Log Out</a>
-                <a className="btn btn-info groceries-button" rel="nofollow" href="/groceries">Groceries</a>
+                <a className="btn btn-info settings-button" rel="nofollow" href="/settings">Settings</a>
                 <a className="btn btn-info recipe-button" rel="nofollow" href="/recipes">Recipes</a>
                 <a className="btn btn-success" rel="nofollow" href="/recurring_tasks">Recurring Tasks</a>
                 <a className="btn btn-info" rel="nofollow" href="/future_tasks">Future Tasks</a>

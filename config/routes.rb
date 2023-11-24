@@ -4,10 +4,11 @@ Rails.application.routes.draw do
   resources :future_tasks, only: [:index]
   resources :recurring_tasks, only: [:index, :show]
   resources :recipes, only: [:index, :show]
+  resources :lists, only: [:show]
   resources :grocery_stores, only: [:show]
   resources :grocery_items, only: [:show]
   resources :grocery_lists, only: [:show]
-  get '/groceries' => 'static_pages#groceries'
+  get '/settings' => 'static_pages#settings'
   get '/grocery_list' => 'static_pages#grocery_list'
 
   namespace :api, defaults: { format: :json } do
@@ -25,6 +26,7 @@ Rails.application.routes.draw do
     patch '/recurring_tasks/toggle_active' => '/api/recurring_tasks#toggle_active'
     resources :recurring_tasks, only: [:index, :create, :show, :update, :destroy]
     resources :recipes, only: [:index, :create, :show, :update, :destroy]
+    resources :lists, only: [:index, :create, :show, :update, :destroy]
     resources :grocery_stores, only: [:index, :create, :show, :update, :destroy]
     resources :grocery_items, only: [:index, :create, :show, :update, :destroy]
     resources :grocery_lists, only: [:index, :create, :show, :update, :destroy]

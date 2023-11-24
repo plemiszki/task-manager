@@ -8,7 +8,7 @@ class StaticPagesController < ApplicationController
   def root
   end
 
-  def groceries
+  def settings
   end
 
   def grocery_list

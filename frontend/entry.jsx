@@ -85,6 +85,44 @@ document.addEventListener('DOMContentLoaded', () => {
     );
   }
 
+  renderFullIndex('lists-index', {
+    entityName: 'list',
+    columns: [
+      'name',
+    ],
+    modalRows: 1,
+    modalDimensions: { width: 700 },
+    includeLinks: true,
+    includeHover: true,
+    includeNewButton: true,
+    includeSearchBar: false,
+    addButtonText: 'Add New',
+  }, { newEntity: {
+    initialEntity: { name: '' },
+    buttonText: 'Add List',
+  }});
+
+  const listDetails = document.getElementById('list-details');
+  if (listDetails) {
+    createRoot(listDetails).render(
+      <div className="container widened-container">
+        <SimpleDetails
+          entityName='list'
+          header='Edit List'
+          initialEntity={{
+            name: '',
+          }}
+          fields = {[
+            [
+              { columnWidth: 12, property: 'name' },
+            ],
+          ]}
+          deleteCallback={ () => { window.location.pathname = '/settings' }}
+        />
+      </div>
+    );
+  }
+
   renderFullIndex('grocery-stores-index', {
     entityName: 'groceryStore',
     entityNamePlural: 'groceryStores',
@@ -145,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
               { columnWidth: 12, property: 'name' },
             ],
           ]}
-          deleteCallback={ () => { window.location.pathname = '/groceries' }}
+          deleteCallback={ () => { window.location.pathname = '/settings' }}
         />
       </div>
     );
