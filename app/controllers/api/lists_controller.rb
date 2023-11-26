@@ -9,6 +9,7 @@ class Api::ListsController < ActionController::Base
 
   def show
     @list = List.includes(:list_items).find(params[:id])
+    @list_items = @list.list_items
   end
 
   def create

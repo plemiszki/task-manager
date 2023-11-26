@@ -8,6 +8,7 @@ import { SimpleDetails, FullIndex } from 'handy-components'
 import FutureTasksIndex from './components/future-tasks-index.jsx'
 import GroceryListDetails from './components/grocery-list-details.jsx'
 import GroceryStoreDetails from './components/grocery-store-details.jsx'
+import ListDetails from './components/list-details.jsx'
 import NewEntity from './components/new-entity'
 import RecipeDetails from './components/recipe-details.jsx'
 import RecipesIndex from './components/recipes-index.jsx'
@@ -106,19 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (listDetails) {
     createRoot(listDetails).render(
       <div className="container widened-container">
-        <SimpleDetails
-          entityName='list'
-          header='Edit List'
-          initialEntity={{
-            name: '',
-          }}
-          fields = {[
-            [
-              { columnWidth: 12, property: 'name' },
-            ],
-          ]}
-          deleteCallback={ () => { window.location.pathname = '/settings' }}
-        />
+        <ListDetails />
       </div>
     );
   }
