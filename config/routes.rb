@@ -27,6 +27,7 @@ Rails.application.routes.draw do
     resources :recurring_tasks, only: [:index, :create, :show, :update, :destroy]
     resources :recipes, only: [:index, :create, :show, :update, :destroy]
     resources :lists, only: [:index, :create, :show, :update, :destroy]
+    resources :list_items, only: [:create, :destroy]
     resources :grocery_stores, only: [:index, :create, :show, :update, :destroy]
     resources :grocery_items, only: [:index, :create, :show, :update, :destroy]
     resources :grocery_lists, only: [:index, :create, :show, :update, :destroy]
