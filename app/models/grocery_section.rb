@@ -6,7 +6,7 @@ class GrocerySection < ActiveRecord::Base
   belongs_to :grocery_store
   alias_attribute :store, :grocery_store
 
-  has_many :grocery_section_items, dependent: :destroy
+  has_many :grocery_section_items, -> { order(:position) }, dependent: :destroy
   has_many :grocery_items, through: :grocery_section_items
   alias_attribute :items, :grocery_items
 
