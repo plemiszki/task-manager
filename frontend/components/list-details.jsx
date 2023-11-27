@@ -1,5 +1,5 @@
 import React from 'react'
-import { SaveButton, Details, deepCopy, objectsAreEqual, fetchEntity, updateEntity, Spinner, GrayedOut, ListBox, OutlineButton, createEntity, deleteEntity } from 'handy-components'
+import { SaveButton, Details, deepCopy, objectsAreEqual, fetchEntity, updateEntity, Spinner, GrayedOut, ListBoxReorderable, OutlineButton, createEntity, deleteEntity } from 'handy-components'
 
 export default class ListDetails extends React.Component {
 
@@ -112,7 +112,6 @@ export default class ListDetails extends React.Component {
 
   render() {
     const { justSaved, changesToSave, spinner, listItems } = this.state;
-    console.log(listItems)
     return (
       <>
         <div className="handy-component">
@@ -124,20 +123,16 @@ export default class ListDetails extends React.Component {
             <div className="row">
               <div className="col-xs-12">
                 <p className="section-header">Items</p>
-                <ListBox
+                <ListBoxReorderable
                   entityName="listItem"
                   entities={ listItems }
-                  clickDelete={ listItem => { this.clickDeleteItem(listItem.id) } }
+                  clickDelete={ listItemId => this.clickDeleteItem(listItemId) }
                   displayProperty="text"
                   style={ { marginBottom: 15 } }
                 />
-                <OutlineButton
-                  text="Add Item"
-                  onClick={ () => { this.clickAddItem() } }
-                  marginBottom
-                />
               </div>
             </div>
+            <hr />
             <SaveButton
               justSaved={ justSaved }
               changesToSave={ changesToSave }
