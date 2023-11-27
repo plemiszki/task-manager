@@ -145,6 +145,12 @@ export default class NewEntity extends React.Component {
             { Details.renderField.bind(this)({ columnWidth: 12, entity: 'list', property: 'name' }) }
           </div>,
         ]);
+      case 'listItem':
+        return([
+          <div key="1" className="row">
+            { Details.renderField.bind(this)({ columnWidth: 12, entity: 'listItem', property: 'text' }) }
+          </div>,
+        ]);
     }
   }
 }

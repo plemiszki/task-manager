@@ -1,5 +1,7 @@
 import React from 'react'
-import { SaveButton, Details, deepCopy, objectsAreEqual, fetchEntity, updateEntity, Spinner, GrayedOut, ListBoxReorderable, OutlineButton, createEntity, deleteEntity } from 'handy-components'
+import Modal from 'react-modal'
+import { SaveButton, Details, Common, deepCopy, objectsAreEqual, fetchEntity, updateEntity, Spinner, GrayedOut, ListBoxReorderable, createEntity, deleteEntity } from 'handy-components'
+import NewEntity from './new-entity'
 
 export default class ListDetails extends React.Component {
 
@@ -14,6 +16,7 @@ export default class ListDetails extends React.Component {
       changesToSave: false,
       justSaved: false,
       deleteModalOpen: false,
+      newItemModalOpen: false,
     };
   }
 
@@ -111,7 +114,7 @@ export default class ListDetails extends React.Component {
   }
 
   render() {
-    const { justSaved, changesToSave, spinner, listItems } = this.state;
+    const { justSaved, changesToSave, spinner, listItems, newItemModalOpen, list } = this.state;
     return (
       <>
         <div className="handy-component">
@@ -126,6 +129,7 @@ export default class ListDetails extends React.Component {
                 <ListBoxReorderable
                   entityName="listItem"
                   entities={ listItems }
+                  clickAdd={ () => { this.setState({ newItemModalOpen: true }) } }
                   clickDelete={ listItemId => this.clickDeleteItem(listItemId) }
                   displayProperty="text"
                   style={ { marginBottom: 15 } }
@@ -143,6 +147,15 @@ export default class ListDetails extends React.Component {
             <Spinner visible={ spinner } />
           </div>
         </div>
+        <Modal isOpen={ newItemModalOpen } onRequestClose={ Common.closeModals.bind(this) } contentLabel="Modal" style={ Common.newEntityModalStyles({ width: 500 }, 1) }>
+          <NewEntity
+            entityName="listItem"
+            initialEntity={ { text: '', listId: list.id } }
+            callback={ listItems => this.setState({ listItems, newItemModalOpen: false, spinner: false }) }
+            responseKey="listItems"
+            buttonText="Add Item"
+          />
+        </Modal>
       </>
     );
   }

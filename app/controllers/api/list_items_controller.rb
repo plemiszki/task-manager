@@ -4,13 +4,13 @@ class Api::ListItemsController < ActionController::Base
   include RenderErrors
 
   def create
-    current_length = ListItem.where(list_item_id: list_item_params[:list_item_id]).length
+    current_length = ListItem.where(list_id: list_item_params[:list_id]).length
     @list_item = ListItem.new({ position: current_length }.merge(list_item_params))
     if @list_item.save
       @list_items = get_list_items
       render 'index'
     else
-      render_errors(list_item)
+      render_errors(@list_item)
     end
   end
 
@@ -30,7 +30,7 @@ class Api::ListItemsController < ActionController::Base
   end
 
   def list_item_params
-    params.require(:list_item).permit(:grocery_item_id, :grocery_section_id, :grocery_store_id)
+    params.require(:list_item).permit(:text, :list_id)
   end
 
 end
