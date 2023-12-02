@@ -13,7 +13,7 @@ const ModalStyles = {
     padding: 0,
     margin: 'auto',
     maxWidth: 1270,
-    height: 323
+    height: 343,
   }
 };
 
