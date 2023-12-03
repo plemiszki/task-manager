@@ -1,6 +1,21 @@
 import React from 'react'
 import Modal from 'react-modal'
-import { SaveButton, Details, Common, deepCopy, objectsAreEqual, fetchEntity, updateEntity, Spinner, GrayedOut, ListBoxReorderable, createEntity, deleteEntity } from 'handy-components'
+import {
+  Common,
+  createEntity,
+  deepCopy,
+  deleteEntity,
+  Details,
+  fetchEntity,
+  GrayedOut,
+  ListBoxReorderable,
+  objectsAreEqual,
+  rearrangeFields,
+  SaveButton,
+  sendRequest,
+  Spinner,
+  updateEntity,
+} from 'handy-components'
 import NewEntity from './new-entity'
 
 export default class ListDetails extends React.Component {
@@ -41,6 +56,64 @@ export default class ListDetails extends React.Component {
     return {
       changesFunction: this.checkForChanges.bind(this),
     }
+  }
+
+  dragOverHandler(e) {
+    e.target.classList.add('highlight');
+  }
+
+  dragOutHandler(e) {
+    e.target.classList.remove('highlight');
+  }
+
+  dragEndHandler() {
+    $('*').removeClass('grabbing');
+    $('body').removeAttr('style');
+    $('.grabbed-element').removeClass('grabbed-element');
+    $('.highlight').removeClass('highlight');
+  }
+
+  dropHandler(e, ui) {
+    const { list, listItems } = this.state;
+    console.log('drop handler')
+    let draggedIndex = ui.draggable[0].dataset.index;
+    let dropZoneIndex = e.target.dataset.index;
+    let currentOrder = {};
+    listItems.forEach((listItem) => {
+      currentOrder[listItem.position] = listItem.id;
+    });
+    let newOrder = rearrangeFields({ currentOrder, draggedIndex, dropZoneIndex });
+    this.setState({
+      spinner: true,
+    });
+    sendRequest('/api/list_items/rearrange', {
+      method: 'PATCH',
+      data: {
+        new_order: newOrder,
+        list_id: list.id,
+      },
+    }).then((response) => {
+      const { listItems } = response;
+      this.setState({
+        spinner: false,
+        listItems,
+      });
+    });
+  }
+
+  canIDrop($e) {
+    var draggedIndex = $e[0].dataset.index;
+    var dropZoneIndex = this.dataset.index;
+    if ($e[0].dataset.section !== this.dataset.section) {
+      return false;
+    }
+    var difference = Math.abs(draggedIndex - dropZoneIndex);
+    if (difference >= 2) {
+      return true;
+    } else if (difference == 1 && draggedIndex < dropZoneIndex) {
+      return true;
+    }
+    return false;
   }
 
   clickAddItem() {
@@ -158,5 +231,21 @@ export default class ListDetails extends React.Component {
         </Modal>
       </>
     );
+  }
+
+  componentDidUpdate() {
+    $("li:not('drop-zone'), div.quote").draggable({
+      cursor: '-webkit-grabbing',
+      handle: '.handle',
+      helper: () => '<div></div>',
+      stop: this.dragEndHandler
+    });
+    $('li.drop-zone, .quote-drop-zone').droppable({
+      accept: this.canIDrop,
+      tolerance: 'pointer',
+      over: this.dragOverHandler,
+      out: this.dragOutHandler,
+      drop: this.dropHandler.bind(this)
+    });
   }
 };

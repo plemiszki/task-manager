@@ -23,6 +23,16 @@ class Api::ListItemsController < ActionController::Base
     render 'index'
   end
 
+  def rearrange
+    params[:new_order].each do |index, id|
+      listItem = ListItem.find(id)
+      listItem.update(position: index)
+    end
+    @list_item = ListItem.find(params["new_order"]["0"])
+    @list_items = get_list_items
+    render 'index', formats: [:json], handlers: [:jbuilder]
+  end
+
   private
 
   def get_list_items
