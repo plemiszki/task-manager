@@ -220,8 +220,33 @@ class Api::TasksController < ActionController::Base
   end
 
   def add_subtasks_from_list
-    p params[:task_id]
-    p params[:list_id]
+    task = Task.find(params[:task_id])
+    duplicates = task.duplicates
+    current_subtasks_length = task.subtasks.length
+    list = List.find(params[:list_id])
+    list_items = list.items
+    list_items.each_with_index do |item, index|
+      task_from_item = Task.create!({
+        parent_id: task.id,
+        user_id: current_user.id,
+        timeframe: task.timeframe,
+        position: current_subtasks_length + index,
+        text: item.text,
+        color: task.color,
+      })
+      duplicates.each do |duplicate|
+        Task.create!({
+          duplicate_id: task_from_item.id,
+          parent_id: duplicate.id,
+          timeframe: duplicate.timeframe,
+          position: current_subtasks_length + index,
+          text: item.text,
+          user_id: current_user.id,
+          color: task.color,
+        })
+      end
+    end
+    task.update!(expanded: true) unless list_items.empty?
 
     build_response
   end
