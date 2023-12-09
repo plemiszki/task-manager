@@ -228,7 +228,7 @@ export default class TaskIndexItem extends React.Component {
 
   render() {
     let { task, editing, subtasks } = this.state;
-    const { openListsModal } = this.props;
+    const { openListsModal, setActiveTaskId } = this.props;
 
     let menuOptions = [];
     if (!task.duplicateId && !task.parentId) {
@@ -246,6 +246,7 @@ export default class TaskIndexItem extends React.Component {
     if (!task.duplicateId && !task.parentId) {
       menuOptions.push({ label: 'Add From List', func: () => {
         this.setState({ menuOpen: false });
+        setActiveTaskId(task.id);
         openListsModal();
       }});
     }

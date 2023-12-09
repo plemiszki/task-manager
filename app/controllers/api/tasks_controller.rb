@@ -219,6 +219,13 @@ class Api::TasksController < ActionController::Base
     build_response(timeframe: timeframe)
   end
 
+  def add_subtasks_from_list
+    p params[:task_id]
+    p params[:list_id]
+
+    build_response
+  end
+
   def convert_to_future
     task = Task.find(params[:id])
     task.convert_to_future_task!

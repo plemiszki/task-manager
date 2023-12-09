@@ -1,6 +1,7 @@
 import React from 'react'
 import TasksTimeframe from './tasks-timeframe.jsx'
 import { fetchEntities, sendRequest, updateEntity, createEntity, deleteEntity, ModalSelect, Common } from 'handy-components'
+import { pascalCaseTransform } from 'change-case';
 
 export default class TasksIndex extends React.Component {
 
@@ -145,6 +146,22 @@ export default class TasksIndex extends React.Component {
     });
   }
 
+  addSubtasksFromList(list) {
+    const { activeTaskId } = this.state;
+    this.setState({
+      listModalOpen: false,
+      spinner: true,
+    });
+    sendRequest(`/api/tasks/${activeTaskId}/add_subtasks_from_list/${list.id}`, {
+      method: 'post',
+    }).then((response) => {
+      this.updateComponentTasks(response);
+      this.setState({
+        spinner: false,
+      });
+    });
+  }
+
   updateComponentTasks(response) {
     const timeframeKeys = Object.keys(response.tasks);
     if (timeframeKeys.length === 1) { // response from an update, etc.
@@ -173,7 +190,7 @@ export default class TasksIndex extends React.Component {
           isOpen={ listModalOpen }
           options={ lists }
           property="name"
-          func={ list => console.log(list) }
+          func={ list => this.addSubtasksFromList(list) }
           onClose={ Common.closeModals.bind(this) }
           zIndex= { 3 }
         />
@@ -196,7 +213,8 @@ export default class TasksIndex extends React.Component {
             moveTask={ this.moveTask.bind(this) }
             deleteTask={ this.deleteTask.bind(this) }
             rearrangeTasks={ this.rearrangeTasks.bind(this) }
-            openListsModal={ () => this.setState({ listModalOpen: true }) }
+            openListsModal={ task => this.setState({ listModalOpen: true }) }
+            setActiveTaskId={ id => this.setState({ activeTaskId: id }) }
           />
         </div>
       );
