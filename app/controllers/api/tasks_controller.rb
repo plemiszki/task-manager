@@ -2,57 +2,6 @@ class Api::TasksController < ActionController::Base
 
   include Clearance::Controller
 
-  ITEMS_TO_PACK = [
-    'laptop',
-    'laptop charger',
-    'phone',
-    'phone charger',
-    'wallet',
-    'passport?',
-    'printed visa?',
-    'keys',
-    'kindle',
-    'kindle usb cable',
-    'headphones',
-    'headphones usb cable',
-    'airpods',
-    'electronics adapter?',
-    'underwear',
-    't-shirts',
-    'pants',
-    'long socks',
-    'shirts',
-    'belt',
-    'pajama pants',
-    'warm socks?',
-    'shorts?',
-    'short socks?',
-    'bathing suit?',
-    'sandals?',
-    'light sweatshirts?',
-    'nice shirts?',
-    'nice pants?',
-    'tie?',
-    'nice shoes?',
-    'dark socks?',
-    'plastic bag for laundry',
-    'sunglasses',
-    'umbrella',
-    'pens',
-    'toothbrush',
-    'toothpaste',
-    'razor',
-    'shaving brush',
-    'shaving mug and soap',
-    'nail clippers',
-    'floss',
-    'tissues',
-    'vitamin d',
-    'sunscreen?',
-    'advil?',
-    'pepto bismol?'
-  ]
-
   def index
     build_response
   end
@@ -150,8 +99,6 @@ class Api::TasksController < ActionController::Base
         task_text = params[:task][:text]
         numbered_subtasks_regex = /\$-- (?<text>.*)\$(?<n>\d+)/
         numbered_subtasks_match_data = numbered_subtasks_regex.match(task_text)
-        packing_regex = /\$-- items to pack/
-        packing_regex_match_data = packing_regex.match(task_text)
         if numbered_subtasks_match_data && @task.parent_id
           n = numbered_subtasks_match_data[:n].to_i
           text = numbered_subtasks_match_data[:text]
@@ -171,26 +118,6 @@ class Api::TasksController < ActionController::Base
               duplicate_extra_task.save!
             end
           end
-        elsif packing_regex_match_data && @task.parent_id
-          duplicates = @task.duplicates
-          current_subtasks_length = @task.parent.subtasks.length
-          ITEMS_TO_PACK.each_with_index do |item, index|
-            if index == 0
-              @task.update(task_params.merge({ text: item }))
-              duplicates.each do |duplicate|
-                duplicate.update({ text: item })
-              end
-            else
-              extra_task = Task.new(task_params.merge({ text: item, position: current_subtasks_length + index }))
-              extra_task.user_id = current_user.id
-              extra_task.save!
-              duplicates.each do |duplicate|
-                duplicate_extra_task = Task.new(task_params.merge({ timeframe: duplicate.timeframe, duplicate_id: extra_task.id ,parent_id: duplicate.parent_id, text: item, position: current_subtasks_length + index }))
-                duplicate_extra_task.user_id = current_user.id
-                duplicate_extra_task.save!
-              end
-            end
-          end
         else
           @task.update(task_params)
           if @task.joint_id
@@ -205,7 +132,7 @@ class Api::TasksController < ActionController::Base
           update_subtask_colors(@task) if (original_color != @task.color)
         end
       end
-      if numbered_subtasks_match_data || packing_regex_match_data # <-- if this is a multiple subtask creation, duplicates are dealt with above
+      if numbered_subtasks_match_data # <-- if this is a multiple subtask creation, duplicates are dealt with above
         id = nil
       else
         check_if_all_siblings_complete(@task)
