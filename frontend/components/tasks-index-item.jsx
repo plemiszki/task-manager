@@ -241,6 +241,9 @@ export default class TaskIndexItem extends React.Component {
     if (!task.duplicateId && !task.parentId) {
       menuOptions.push({ label: 'Change Color', func: () => { this.setState({ showColorPicker: !this.state.showColorPicker, menuOpen: false }) } });
     }
+    if (!task.duplicateId && !task.parentId) {
+      menuOptions.push({ label: 'Add From List', func: () => { console.log('add from list') } });
+    }
     let hideDeleteButton = task.duplicateId && task.parentId;
     let hideSubtaskButton = task.duplicateId;
     let hideMenuButton = menuOptions.length === 0;
