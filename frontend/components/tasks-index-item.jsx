@@ -228,6 +228,8 @@ export default class TaskIndexItem extends React.Component {
 
   render() {
     let { task, editing, subtasks } = this.state;
+    const { openListsModal } = this.props;
+
     let menuOptions = [];
     if (!task.duplicateId && !task.parentId) {
       menuOptions.push({ label: 'Move', expandTimeframes: true, func: (e) => { this.moveTask(e) } });
@@ -242,7 +244,10 @@ export default class TaskIndexItem extends React.Component {
       menuOptions.push({ label: 'Change Color', func: () => { this.setState({ showColorPicker: !this.state.showColorPicker, menuOpen: false }) } });
     }
     if (!task.duplicateId && !task.parentId) {
-      menuOptions.push({ label: 'Add From List', func: () => { console.log('add from list') } });
+      menuOptions.push({ label: 'Add From List', func: () => {
+        this.setState({ menuOpen: false });
+        openListsModal();
+      }});
     }
     let hideDeleteButton = task.duplicateId && task.parentId;
     let hideSubtaskButton = task.duplicateId;

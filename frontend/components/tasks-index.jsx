@@ -1,6 +1,6 @@
 import React from 'react'
 import TasksTimeframe from './tasks-timeframe.jsx'
-import { fetchEntities, sendRequest, updateEntity, createEntity, deleteEntity } from 'handy-components'
+import { fetchEntities, sendRequest, updateEntity, createEntity, deleteEntity, ModalSelect, Common } from 'handy-components'
 
 export default class TasksIndex extends React.Component {
 
@@ -15,13 +15,19 @@ export default class TasksIndex extends React.Component {
         year: [],
         life: [],
         backlog: [],
-      }
+      },
+      lists: [],
+      listModalOpen: false,
     }
   }
 
   componentDidMount() {
-    fetchEntities({ directory: 'tasks' }).then((response) => {
-      this.updateComponentTasks(response);
+    fetchEntities({ directory: 'lists' }).then((response) => {
+      const { lists } = response;
+      this.setState({ lists });
+      fetchEntities({ directory: 'tasks' }).then((response) => {
+        this.updateComponentTasks(response);
+      });
     });
   }
 
@@ -157,11 +163,20 @@ export default class TasksIndex extends React.Component {
   }
 
   render() {
+    const { lists, listModalOpen } = this.state;
     return(
       <div className="container widened-container">
         <div className="row">
           { this.renderTimeframes() }
         </div>
+        <ModalSelect
+          isOpen={ listModalOpen }
+          options={ lists }
+          property="name"
+          func={ list => console.log(list) }
+          onClose={ Common.closeModals.bind(this) }
+          zIndex= { 3 }
+        />
       </div>
     );
   }
@@ -181,6 +196,7 @@ export default class TasksIndex extends React.Component {
             moveTask={ this.moveTask.bind(this) }
             deleteTask={ this.deleteTask.bind(this) }
             rearrangeTasks={ this.rearrangeTasks.bind(this) }
+            openListsModal={ () => this.setState({ listModalOpen: true }) }
           />
         </div>
       );

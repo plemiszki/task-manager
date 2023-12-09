@@ -164,7 +164,7 @@ export default class TasksTimeframe extends React.Component {
 
   render() {
     const { showTopColorPicker, spinner } = this.state;
-    const { timeframe, timeframeTasks, spinner: propsSpinner } = this.props;
+    const { timeframe, timeframeTasks, spinner: propsSpinner, openListsModal } = this.props;
     return (
       <div className="tasks-timeframe match-height" data-index={ timeframe }>
         { this.renderHeader() }
@@ -190,6 +190,7 @@ export default class TasksTimeframe extends React.Component {
               deleteTask={ this.props.deleteTask.bind(this) }
               convertToFutureTask={ this.props.convertToFutureTask.bind(this) }
               dropHandler={ this.dropHandler.bind(this) }
+              openListsModal={ openListsModal }
             />
           );
         }) }
