@@ -1,7 +1,7 @@
 import React from 'react'
 import Modal from 'react-modal'
 import NewEntity from './new-entity';
-import { Table, Common, BottomButtons, Details, deepCopy, objectsAreEqual, fetchEntity, createEntity, updateEntity, deleteEntity, Spinner, GrayedOut, OutlineButton, ModalSelect } from 'handy-components'
+import { Common, BottomButtons, Details, deepCopy, objectsAreEqual, fetchEntity, createEntity, updateEntity, deleteEntity, Spinner, GrayedOut, OutlineButton, ModalSelect, ListBoxReorderable } from 'handy-components'
 
 export default class GroceryStoreDetails extends React.Component {
 
@@ -96,6 +96,21 @@ export default class GroceryStoreDetails extends React.Component {
     }
   }
 
+  clickDeleteItem(id) {
+    this.setState({ spinner: true })
+    deleteEntity({
+      directory: 'grocery_section_items',
+      id,
+    }).then((response) => {
+      const { grocerySections, groceryItems } = response;
+      this.setState({
+        spinner: false,
+        grocerySections,
+        groceryItems,
+      });
+    });
+  }
+
   render() {
     const { justSaved, changesToSave, spinner, grocerySections, newSectionModalOpen, groceryStore, groceryItems } = this.state;
 
@@ -124,49 +139,6 @@ export default class GroceryStoreDetails extends React.Component {
             <div className="row">
               { Details.renderField.bind(this)({ columnWidth: 12, entity: 'groceryStore', property: 'name' }) }
             </div>
-            <hr />
-            <Table
-              columns={ [
-                {
-                  name: 'text',
-                  header: 'Sections',
-                  boldIf: row => row.section,
-                },
-                {
-                  isButton: true,
-                  buttonText: 'Add Item',
-                  width: 120,
-                  clickButton: row => { this.setState({ itemsModalOpen: true, selectedSectionId: row.id }) },
-                  displayIf: row => row.section,
-                },
-              ] }
-              rows={ tableData }
-              links={ false }
-              sortable={ false }
-              clickDelete={ row => {
-                const { section, id } = row;
-                this.setState({ spinner: true })
-                deleteEntity({
-                  directory: (section ? 'grocery_sections' : 'grocery_section_items'),
-                  id,
-                }).then((response) => {
-                  const { grocerySections, groceryItems } = response;
-                  this.setState({
-                    spinner: false,
-                    grocerySections,
-                    groceryItems,
-                  });
-                });
-              } }
-              marginBottom
-            />
-            <OutlineButton
-              color="#5F5F5F"
-              text="Add Section"
-              onClick={ () => this.setState({ newSectionModalOpen: true }) }
-              marginBottom
-            />
-            <hr />
             <BottomButtons
               entityName="groceryStore"
               confirmDelete={ Details.confirmDelete.bind(this) }
@@ -174,7 +146,31 @@ export default class GroceryStoreDetails extends React.Component {
               changesToSave={ changesToSave }
               disabled={ spinner }
               clickSave={ () => { this.clickSave() } }
+              marginBottom
             />
+            <hr />
+            <OutlineButton
+              color="#5F5F5F"
+              text="Add Section"
+              onClick={ () => this.setState({ newSectionModalOpen: true }) }
+              marginBottom
+            />
+            { grocerySections.map((grocerySection, index) => {
+              let lastSection = grocerySections.length === (index + 1);
+              return (
+                <React.Fragment key={ index }>
+                  <h2>{ grocerySection.name }</h2>
+                  <ListBoxReorderable
+                    entityName="grocerySectionItem"
+                    entities={ grocerySection.grocerySectionItems }
+                    clickAdd={ () => { this.setState({ itemsModalOpen: true, selectedSectionId: grocerySection.id }) } }
+                    clickDelete={ listItemId => this.clickDeleteItem(listItemId) }
+                    displayProperty="name"
+                    style={ lastSection ? null : { marginBottom: 30 } }
+                  />
+                </React.Fragment>
+              );
+            })}
             <GrayedOut visible={ spinner } />
             <Spinner visible={ spinner } />
           </div>
