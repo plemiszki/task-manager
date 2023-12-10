@@ -37,6 +37,7 @@ Rails.application.routes.draw do
     resources :recipe_items, only: [:create, :destroy]
     resources :grocery_sections, only: [:create, :destroy]
     resources :grocery_section_items, only: [:create, :destroy]
+    patch '/grocery_section_items/rearrange' => '/api/grocery_section_items#rearrange'
     get '/active_list' => '/api/active_list#show'
     post '/active_list/:id' => '/api/active_list#add'
     post '/active_list/add_from_list/:id' => '/api/active_list#add_from_list'

@@ -1,7 +1,24 @@
 import React from 'react'
 import Modal from 'react-modal'
 import NewEntity from './new-entity';
-import { Common, BottomButtons, Details, deepCopy, objectsAreEqual, fetchEntity, createEntity, updateEntity, deleteEntity, Spinner, GrayedOut, OutlineButton, ModalSelect, ListBoxReorderable } from 'handy-components'
+import {
+  BottomButtons,
+  Common,
+  createEntity,
+  deepCopy,
+  deleteEntity,
+  Details,
+  fetchEntity,
+  GrayedOut,
+  ListBoxReorderable,
+  ModalSelect,
+  objectsAreEqual,
+  OutlineButton,
+  rearrangeFields,
+  sendRequest,
+  Spinner,
+  updateEntity,
+} from 'handy-components'
 
 export default class GroceryStoreDetails extends React.Component {
 
@@ -96,6 +113,66 @@ export default class GroceryStoreDetails extends React.Component {
     }
   }
 
+  canIDrop($e) {
+    var draggedIndex = $e[0].dataset.index;
+    var dropZoneIndex = this.dataset.index;
+    if ($e[0].dataset.section !== this.dataset.section) {
+      return false;
+    }
+    var difference = Math.abs(draggedIndex - dropZoneIndex);
+    if (difference >= 2) {
+      return true;
+    } else if (difference == 1 && draggedIndex < dropZoneIndex) {
+      return true;
+    }
+    return false;
+  }
+
+  dragOverHandler(e) {
+    e.target.classList.add('highlight');
+  }
+
+  dragOutHandler(e) {
+    e.target.classList.remove('highlight');
+  }
+
+  dragEndHandler() {
+    $('*').removeClass('grabbing');
+    $('body').removeAttr('style');
+    $('.grabbed-element').removeClass('grabbed-element');
+    $('.highlight').removeClass('highlight');
+  }
+
+  dropHandler(e, ui) {
+    let sectionDiv = e.target.closest("div.section");
+    let sectionId = sectionDiv.dataset["grocerySectionId"];
+    const { grocerySections } = this.state;
+    const grocerySection = grocerySections.find(section => section.id == sectionId)
+    let draggedIndex = ui.draggable[0].dataset.index;
+    let dropZoneIndex = e.target.dataset.index;
+    let currentOrder = {};
+    grocerySection.grocerySectionItems.forEach((item) => {
+      currentOrder[item.position] = item.id;
+    });
+    let newOrder = rearrangeFields({ currentOrder, draggedIndex, dropZoneIndex });
+    this.setState({
+      spinner: true,
+    });
+    sendRequest('/api/grocery_section_items/rearrange', {
+      method: 'PATCH',
+      data: {
+        new_order: newOrder,
+        grocery_section_id: sectionId,
+      },
+    }).then((response) => {
+      const { grocerySections } = response;
+      this.setState({
+        spinner: false,
+        grocerySections,
+      });
+    });
+  }
+
   clickDeleteItem(id) {
     this.setState({ spinner: true })
     deleteEntity({
@@ -158,7 +235,7 @@ export default class GroceryStoreDetails extends React.Component {
             { grocerySections.map((grocerySection, index) => {
               let lastSection = grocerySections.length === (index + 1);
               return (
-                <React.Fragment key={ index }>
+                <div className="section" key={ grocerySection.id } data-grocery-section-id={ grocerySection.id }>
                   <h2>{ grocerySection.name }</h2>
                   <ListBoxReorderable
                     entityName="grocerySectionItem"
@@ -168,7 +245,7 @@ export default class GroceryStoreDetails extends React.Component {
                     displayProperty="name"
                     style={ lastSection ? null : { marginBottom: 30 } }
                   />
-                </React.Fragment>
+                </div>
               );
             })}
             <GrayedOut visible={ spinner } />
@@ -193,5 +270,21 @@ export default class GroceryStoreDetails extends React.Component {
         />
       </>
     );
+  }
+
+  componentDidUpdate() {
+    $("li:not('drop-zone'), div.quote").draggable({
+      cursor: '-webkit-grabbing',
+      handle: '.handle',
+      helper: () => '<div></div>',
+      stop: this.dragEndHandler
+    });
+    $('li.drop-zone, .quote-drop-zone').droppable({
+      accept: this.canIDrop,
+      tolerance: 'pointer',
+      over: this.dragOverHandler,
+      out: this.dragOutHandler,
+      drop: this.dropHandler.bind(this)
+    });
   }
 }

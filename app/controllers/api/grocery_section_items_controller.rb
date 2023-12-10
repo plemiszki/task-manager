@@ -25,6 +25,17 @@ class Api::GrocerySectionItemsController < ActionController::Base
     render 'index'
   end
 
+  def rearrange
+    grocery_section = GrocerySection.find(params[:grocery_section_id])
+    params[:new_order].each do |index, id|
+      grocerySectionItem = GrocerySectionItem.find(id)
+      grocerySectionItem.update(position: index)
+    end
+
+    @grocery_sections = GrocerySection.where(grocery_store: grocery_section.store).includes(grocery_section_items: [:grocery_item])
+    render 'index'
+  end
+
   private
 
   def grocery_section_item_params

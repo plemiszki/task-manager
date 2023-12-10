@@ -75,7 +75,6 @@ export default class ListDetails extends React.Component {
 
   dropHandler(e, ui) {
     const { list, listItems } = this.state;
-    console.log('drop handler')
     let draggedIndex = ui.draggable[0].dataset.index;
     let dropZoneIndex = e.target.dataset.index;
     let currentOrder = {};
