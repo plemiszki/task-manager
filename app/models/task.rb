@@ -139,7 +139,8 @@ class Task < ActiveRecord::Base
 
   def self.delete_task_and_subs_and_dups(task)
     tasks_queue = [task]
-    until tasks_queue.empty?
+    loop_count = 0
+    until tasks_queue.empty? || loop_count > 100
       tasks_queue += tasks_queue.first.subtasks.to_a
       tasks_queue += tasks_queue.first.duplicates.to_a
       task = tasks_queue.first
@@ -157,6 +158,7 @@ class Task < ActiveRecord::Base
         task.update(position: index)
       end
       tasks_queue.shift
+      loop_count += 1
     end
   end
 
