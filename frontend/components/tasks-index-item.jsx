@@ -231,7 +231,7 @@ export default class TaskIndexItem extends React.Component {
     const { openListsModal, setActiveTaskId } = this.props;
 
     let menuOptions = [];
-    if (!task.duplicateId && !task.parentId) {
+    if (!task.duplicateId) {
       menuOptions.push({ label: 'Move', expandTimeframes: true, func: (e) => { this.moveTask(e) } });
     }
     if (['day', 'backlog'].indexOf(this.state.task.timeframe) === -1) {
