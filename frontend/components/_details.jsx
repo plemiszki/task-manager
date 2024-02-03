@@ -14,7 +14,7 @@ const RecurrenceModalStyles = {
     background: '#FFFFFF',
     margin: 'auto',
     maxWidth: 300,
-    height: 328,
+    height: 348,
     border: 'solid 1px black',
     borderRadius: '6px',
     padding: 0
