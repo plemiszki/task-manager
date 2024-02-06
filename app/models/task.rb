@@ -30,7 +30,7 @@ class Task < ActiveRecord::Base
   end
 
   def serialize
-    self.serializable_hash(include: { subtasks: { include: { subtasks: { include: :subtasks } } } })
+    self.serializable_hash(include: { subtasks: { include: { subtasks: { include: { subtasks: { include: :subtasks } } } } } })
   end
 
   def has_dups?
