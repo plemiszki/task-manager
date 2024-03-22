@@ -54,7 +54,15 @@ class Api::TasksController < ActionController::Base
         duped_tasks = Task.where(duplicate_id: parent_task.id)
         while duped_tasks.length == 1
           dup_parent_task = duped_tasks.first
-          dup_child_task = Task.new(user_id: current_user.id, timeframe: dup_parent_task.timeframe, parent_id: dup_parent_task.id, duplicate_id: task.id, text: task.text, color: task.color, position: task_params[:position] || tasks_length)
+          dup_child_task = Task.new(
+            user_id: current_user.id,
+            timeframe: dup_parent_task.timeframe,
+            parent_id: dup_parent_task.id,
+            duplicate_id: task.id,
+            text: task.text,
+            color: task.color,
+            position: task_params[:position] || tasks_length,
+          )
           dup_child_task.save!
           task = dup_child_task
           duped_tasks = Task.where(duplicate_id: dup_parent_task.id)
@@ -102,20 +110,37 @@ class Api::TasksController < ActionController::Base
         if numbered_subtasks_match_data && @task.parent_id
           n = numbered_subtasks_match_data[:n].to_i
           text = numbered_subtasks_match_data[:text]
-          duplicates = @task.duplicates
+          duplicate = @task.duplicates.first
           @task.update(task_params.merge({ text: "#{text}1" }))
-          duplicates.each do |duplicate|
+          until duplicate.nil?
             duplicate.update({ text: "#{text}1" })
+            duplicate = duplicate.duplicates.first
           end
           current_length = @task.parent.subtasks.length
           (n - 1).times do |index|
-            extra_task = Task.new(task_params.merge({ text: "#{text}#{index + 2}", position: current_length + index }))
+            extra_task = Task.new(
+              task_params.merge({
+                text: "#{text}#{index + 2}",
+                position: current_length + index,
+              })
+            )
             extra_task.user_id = current_user.id
             extra_task.save!
-            duplicates.each do |duplicate|
-              duplicate_extra_task = Task.new(task_params.merge({ timeframe: duplicate.timeframe, duplicate_id: extra_task.id ,parent_id: duplicate.parent_id, text: "#{text}#{index + 2}", position: current_length + index }))
+
+            duplicate = @task.duplicates.first
+            until duplicate.nil?
+              duplicate_extra_task = Task.new(
+                task_params.merge({
+                  timeframe: duplicate.timeframe,
+                  duplicate_id: extra_task.id,
+                  parent_id: duplicate.parent_id,
+                  text: "#{text}#{index + 2}",
+                  position: current_length + index,
+                })
+              )
               duplicate_extra_task.user_id = current_user.id
               duplicate_extra_task.save!
+              duplicate = duplicate.duplicates.first
             end
           end
         else
