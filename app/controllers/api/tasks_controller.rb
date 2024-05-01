@@ -160,11 +160,11 @@ class Api::TasksController < ActionController::Base
       if numbered_subtasks_match_data # <-- if this is a multiple subtask creation, duplicates are dealt with above
         id = nil
       else
-        check_if_all_siblings_complete(@task)
         @dup_task = Task.where(duplicate_id: id).first
         id = @dup_task ? @dup_task.id : nil
         updating_dups = true
       end
+      check_if_all_siblings_complete(@task)
     end
 
     timeframe = (@task.timeframe == 'day' && !@task.duplicate_id) ? 'day' : nil
