@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
-ruby '3.2.2'
+ruby '3.3.1'
 
-gem 'rails'
+gem 'rails', '7.1.3.2'
 gem 'pg'
 
 gem 'american_date'
