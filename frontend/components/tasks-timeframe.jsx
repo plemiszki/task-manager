@@ -1,11 +1,10 @@
-import React from 'react'
-import { Common, sendRequest, Spinner, GrayedOut } from 'handy-components'
-import ColorPicker from './color-picker'
-import TasksCommon from '../../app/assets/javascripts/common.jsx'
-import TasksIndexItem from './tasks-index-item.jsx'
+import React from "react";
+import { Common, sendRequest, Spinner, GrayedOut } from "handy-components";
+import ColorPicker from "./color-picker";
+import TasksCommon from "../../app/assets/javascripts/common.jsx";
+import TasksIndexItem from "./tasks-index-item.jsx";
 
 export default class TasksTimeframe extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -14,22 +13,22 @@ export default class TasksTimeframe extends React.Component {
       longWeekend: false,
       showNewTaskColorPicker: false,
       showTopColorPicker: false,
-    }
+    };
   }
 
   componentDidMount() {
     const { timeframe } = this.props;
-    $('#' + timeframe + '-top-drop').droppable({
+    $("#" + timeframe + "-top-drop").droppable({
       accept: TasksCommon.canIDrop,
-      tolerance: 'pointer',
+      tolerance: "pointer",
       over: TasksCommon.dragOverHandler,
       out: TasksCommon.dragOutHandler,
-      drop: this.dropHandler.bind(this)
+      drop: this.dropHandler.bind(this),
     });
     if (timeframe == "weekend") {
-      sendRequest('/api/user').then((response) => {
+      sendRequest("/api/user").then((response) => {
         this.setState({
-          longWeekend: response.user.long_weekend
+          longWeekend: response.user.long_weekend,
         });
       });
     }
@@ -47,51 +46,61 @@ export default class TasksTimeframe extends React.Component {
   }
 
   dropHandler(e, ui) {
-    let draggedTimeFrame = ui.draggable.attr('id').split('-')[0];
-    let droppedTimeFrame = e.target.getAttribute('id').split('-')[0];
-    let draggedIndex = this.getIndexFromId(ui.draggable.attr('id'));
-    let dropZoneArray = e.target.getAttribute('id').split('-');
+    let draggedTimeFrame = ui.draggable.attr("id").split("-")[0];
+    let droppedTimeFrame = e.target.getAttribute("id").split("-")[0];
+    let draggedIndex = this.getIndexFromId(ui.draggable.attr("id"));
+    let dropZoneArray = e.target.getAttribute("id").split("-");
     let dropZoneIndex = dropZoneArray[dropZoneArray.length - 2];
-    if (dropZoneIndex == "top") { dropZoneIndex = -1; }
+    if (dropZoneIndex == "top") {
+      dropZoneIndex = -1;
+    }
 
     let hash = {};
     let parent = e.target.parentElement;
     let parentId, $tasks, timeframe;
-    if (parent.classList[0] == "tasks-timeframe") { // top drop zone
-      parentId = parent.parentElement.getAttribute('id');
-      $tasks = $('#' + parentId + ' > .tasks-timeframe > .group > .task');
-    } else if (parent.parentElement.classList[0] == "tasks-timeframe") { // root level
-      parentId = parent.parentElement.parentElement.getAttribute('id');
-      $tasks = $('#' + parentId + ' > .tasks-timeframe > .group > .task');
-    } else if (parent.getAttribute('id') && parent.getAttribute('id').split('-')[0] == "subtasks") { // subtasks top drop zone
-      parentId = parent.getAttribute('id');
-      $tasks = $('#' + parentId + ' .task'); // <-- this will grab all of the child tasks within the subtask, even grandchildren (etc.) not involved in the rearrange
-      var properLevelsDeep = parentId.split('-').length - 1;
+    if (parent.classList[0] == "tasks-timeframe") {
+      // top drop zone
+      parentId = parent.parentElement.getAttribute("id");
+      $tasks = $("#" + parentId + " > .tasks-timeframe > .group > .task");
+    } else if (parent.parentElement.classList[0] == "tasks-timeframe") {
+      // root level
+      parentId = parent.parentElement.parentElement.getAttribute("id");
+      $tasks = $("#" + parentId + " > .tasks-timeframe > .group > .task");
+    } else if (
+      parent.getAttribute("id") &&
+      parent.getAttribute("id").split("-")[0] == "subtasks"
+    ) {
+      // subtasks top drop zone
+      parentId = parent.getAttribute("id");
+      $tasks = $("#" + parentId + " .task"); // <-- this will grab all of the child tasks within the subtask, even grandchildren (etc.) not involved in the rearrange
+      var properLevelsDeep = parentId.split("-").length - 1;
       $tasks = $tasks.filter((index, task) => {
-        var levelsDeep = task.id.split('-').length - 1;
+        var levelsDeep = task.id.split("-").length - 1;
         return properLevelsDeep === levelsDeep;
       });
-    } else { // subtasks
-      parentId = parent.parentElement.parentElement.children[0].getAttribute('id');
-      $tasks = $('#subtasks-' + parentId + ' .task');
-      var properLevelsDeep = parentId.split('-').length;
+    } else {
+      // subtasks
+      parentId =
+        parent.parentElement.parentElement.children[0].getAttribute("id");
+      $tasks = $("#subtasks-" + parentId + " .task");
+      var properLevelsDeep = parentId.split("-").length;
       $tasks = $tasks.filter((index, task) => {
-        var levelsDeep = task.id.split('-').length - 1;
+        var levelsDeep = task.id.split("-").length - 1;
         return properLevelsDeep === levelsDeep;
       });
     }
 
     $tasks.each((index, task) => {
-      var index = this.getIndexFromId(task.getAttribute('id'));
+      var index = this.getIndexFromId(task.getAttribute("id"));
       var id = task.dataset.taskid;
       hash[index] = +id;
-    })
+    });
 
     let newHash;
     if (draggedTimeFrame === droppedTimeFrame) {
       newHash = this.rearrangeFields(hash, draggedIndex, dropZoneIndex);
       this.props.rearrangeTasks({
-        newPositions: newHash
+        newPositions: newHash,
       });
     } else {
       let taskId = ui.draggable[0].dataset.taskid;
@@ -99,7 +108,7 @@ export default class TasksTimeframe extends React.Component {
       this.props.copyTask({
         timeframe: dropZoneTimeFrame,
         position: newTaskPosition,
-        duplicateOf: taskId
+        duplicateOf: taskId,
       });
     }
   }
@@ -123,33 +132,36 @@ export default class TasksTimeframe extends React.Component {
   }
 
   getIndexFromId(id) {
-    var array = id.split('-');
+    var array = id.split("-");
     return array[array.length - 1];
   }
 
   clickWeekend() {
     const { longWeekend } = this.state;
     const { user } = this.props;
-    sendRequest('/api/user', {
-      method: 'PATCH',
+    sendRequest("/api/user", {
+      method: "PATCH",
       data: {
         user: {
           longWeekend: !longWeekend,
         },
-      }
+      },
     }).then((response) => {
       this.setState({
         longWeekend: response.user.long_weekend,
       });
-    })
+    });
   }
 
   renderTopColorPicker() {
     if (this.state.showTopColorPicker) {
-      return(
+      return (
         <div className="color-picker-container drop-zone-color-picker-container">
-          <ColorPicker func={ this.addTaskAtBeginning.bind(this) } />
-          <div className="cancel-new" onClick={ Common.changeState.bind(this, 'showTopColorPicker', false) }></div>
+          <ColorPicker func={this.addTaskAtBeginning.bind(this)} />
+          <div
+            className="cancel-new"
+            onClick={Common.changeState.bind(this, "showTopColorPicker", false)}
+          ></div>
         </div>
       );
     }
@@ -157,77 +169,81 @@ export default class TasksTimeframe extends React.Component {
 
   addTaskAtBeginning(color) {
     this.setState({
-      showTopColorPicker: false
+      showTopColorPicker: false,
     });
-    this.addTask(color, '0');
+    this.addTask(color, "0");
   }
 
   render() {
+    const { debug } = this.props;
     const { showTopColorPicker, spinner } = this.state;
-    const { timeframe, timeframeTasks, spinner: propsSpinner, openListsModal, setActiveTaskId } = this.props;
+    const {
+      timeframe,
+      timeframeTasks,
+      spinner: propsSpinner,
+      openListsModal,
+      setActiveTaskId,
+    } = this.props;
     return (
-      <div className="tasks-timeframe match-height" data-index={ timeframe }>
-        { this.renderHeader() }
-        { this.renderAddButton() }
+      <div className="tasks-timeframe match-height" data-index={timeframe}>
+        {this.renderHeader()}
+        {this.renderAddButton()}
         <hr />
-        { this.renderTopColorPicker() }
+        {this.renderTopColorPicker()}
         <div
-          id={ timeframe + '-top-drop' }
+          id={timeframe + "-top-drop"}
           className="drop-area"
-          onDoubleClick={ Common.changeState.bind(this, 'showTopColorPicker', !showTopColorPicker) }
+          onDoubleClick={Common.changeState.bind(
+            this,
+            "showTopColorPicker",
+            !showTopColorPicker
+          )}
         ></div>
-        { timeframeTasks.map((task, index) => {
+        {timeframeTasks.map((task, index) => {
           return (
             <TasksIndexItem
-              key={ index }
-              index={ index }
-              task={ task }
+              key={index}
+              index={index}
+              task={task}
               level="0"
-              createTask={ this.props.createTask.bind(this) }
-              updateTask={ this.props.updateTask.bind(this) }
-              copyTask={ this.props.copyTask.bind(this) }
-              moveTask={ this.props.moveTask.bind(this) }
-              deleteTask={ this.props.deleteTask.bind(this) }
-              convertToFutureTask={ this.props.convertToFutureTask.bind(this) }
-              dropHandler={ this.dropHandler.bind(this) }
-              openListsModal={ openListsModal }
-              setActiveTaskId={ setActiveTaskId }
+              createTask={this.props.createTask.bind(this)}
+              updateTask={this.props.updateTask.bind(this)}
+              copyTask={this.props.copyTask.bind(this)}
+              moveTask={this.props.moveTask.bind(this)}
+              deleteTask={this.props.deleteTask.bind(this)}
+              convertToFutureTask={this.props.convertToFutureTask.bind(this)}
+              dropHandler={this.dropHandler.bind(this)}
+              openListsModal={openListsModal}
+              setActiveTaskId={setActiveTaskId}
+              debug={debug}
             />
           );
-        }) }
-        <Spinner visible={ propsSpinner || spinner } />
-        <GrayedOut visible={ propsSpinner || spinner } />
+        })}
+        <Spinner visible={propsSpinner || spinner} />
+        <GrayedOut visible={propsSpinner || spinner} />
       </div>
     );
   }
 
   renderHeader() {
     switch (this.props.timeframe) {
-      case 'day':
-        return(
-          <h1>Today</h1>
-        )
-      case 'weekend':
-        var text = this.state.longWeekend ? 'Long Weekend' : 'Weekend';
-        return(
-          <h1 id="weekend-header" onClick={ this.clickWeekend.bind(this) }>{ text }</h1>
-        )
-      case 'month':
-        return(
-          <h1>This Month</h1>
-        )
-      case 'year':
-        return(
-          <h1>This Year</h1>
-        )
-      case 'life':
-        return(
-          <h1>Lifetime</h1>
-        )
-      case 'backlog':
-        return(
-          <h1>Backlog</h1>
-        )
+      case "day":
+        return <h1>Today</h1>;
+      case "weekend":
+        var text = this.state.longWeekend ? "Long Weekend" : "Weekend";
+        return (
+          <h1 id="weekend-header" onClick={this.clickWeekend.bind(this)}>
+            {text}
+          </h1>
+        );
+      case "month":
+        return <h1>This Month</h1>;
+      case "year":
+        return <h1>This Year</h1>;
+      case "life":
+        return <h1>Lifetime</h1>;
+      case "backlog":
+        return <h1>Backlog</h1>;
     }
   }
 
@@ -235,13 +251,34 @@ export default class TasksTimeframe extends React.Component {
     if (this.state.showNewTaskColorPicker) {
       return (
         <div className="color-picker-container index-top-color-picker-container">
-          <ColorPicker func={ (color) => { this.addTask(color) } } />
-          <div className="cancel-new" onClick={ Common.changeState.bind(this, 'showNewTaskColorPicker', false) }></div>
+          <ColorPicker
+            func={(color) => {
+              this.addTask(color);
+            }}
+          />
+          <div
+            className="cancel-new"
+            onClick={Common.changeState.bind(
+              this,
+              "showNewTaskColorPicker",
+              false
+            )}
+          ></div>
         </div>
       );
     } else {
       return (
-        <div className="add-task" href="" onClick={ Common.changeState.bind(this, 'showNewTaskColorPicker', true) }>Add Task</div>
+        <div
+          className="add-task"
+          href=""
+          onClick={Common.changeState.bind(
+            this,
+            "showNewTaskColorPicker",
+            true
+          )}
+        >
+          Add Task
+        </div>
       );
     }
   }
