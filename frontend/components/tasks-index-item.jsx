@@ -215,25 +215,29 @@ export default class TaskIndexItem extends React.Component {
   }
 
   moveTask(e) {
-    let timeframe = e.target.dataset.timeframe;
-    this.setState({
-      menuOpen: false,
-    });
-    this.props.moveTask({
-      id: this.state.task.id,
-      timeframe,
-    });
+    const timeframe = e.target.dataset.timeframe;
+    if (timeframe) {
+      this.setState({
+        menuOpen: false,
+      });
+      this.props.moveTask({
+        id: this.state.task.id,
+        timeframe,
+      });
+    }
   }
 
   copyTask(e) {
-    let timeframe = e.target.dataset.timeframe;
-    this.setState({
-      menuOpen: false,
-    });
-    this.props.copyTask({
-      duplicateOf: this.state.task.id,
-      timeframe,
-    });
+    const timeframe = e.target.dataset.timeframe;
+    if (timeframe) {
+      this.setState({
+        menuOpen: false,
+      });
+      this.props.copyTask({
+        duplicateOf: this.state.task.id,
+        timeframe,
+      });
+    }
   }
 
   mouseLeave(e) {
