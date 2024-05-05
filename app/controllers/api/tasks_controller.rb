@@ -269,6 +269,32 @@ class Api::TasksController < ActionController::Base
     build_response(timeframe: timeframe)
   end
 
+  def copy_incomplete
+    task = Task.find(params[:task_id])
+    incomplete_subtasks = task.subtasks.select { |task| !task.complete }
+    incomplete_subtasks.each do |task|
+      if existing_copy?(task_to_copy: task)
+        render json: [], status: 422
+        return
+      end
+    end
+
+    timeframe_root_tasks = Task.where(user_id: current_user.id, timeframe: params[:timeframe], parent_id: nil).order(:position)
+    starting_position = timeframe_root_tasks.length
+    incomplete_subtasks.each_with_index do |task, index|
+      task = Task.new(
+        user_id: current_user.id,
+        timeframe: params[:timeframe],
+        text: task.text,
+        position: starting_position + index,
+        color: task.color,
+        duplicate_id: task.id,
+      )
+      task.save!
+    end
+    build_response
+  end
+
   private
 
   def build_rearrange_response(tasks:)
@@ -322,6 +348,7 @@ class Api::TasksController < ActionController::Base
   end
 
   def existing_dup?
+    # check if there is an existing copy of a task OR any of its subtasks
     master_task = Task.find(task_params[:duplicate_of])
     return true if Task.exists?(duplicate_id: master_task.id)
     tasks_queue = master_task.subtasks.to_a
@@ -332,7 +359,23 @@ class Api::TasksController < ActionController::Base
       tasks_queue.shift
     end
     ids.each do |id|
-      return true if Task.exists?(duplicate_id: master_task.id)
+      return true if Task.exists?(duplicate_id: id)
+    end
+    false
+  end
+
+  def existing_copy?(task_to_copy:)
+    # check if there is an existing copy of a task OR existing copies of any of its subtasks
+    return true if Task.exists?(duplicate_id: task_to_copy.id)
+    tasks_queue = task_to_copy.subtasks.to_a
+    ids = []
+    until tasks_queue.empty?
+      ids << tasks_queue.first.id
+      tasks_queue += tasks_queue.first.subtasks.to_a
+      tasks_queue.shift
+    end
+    ids.each do |id|
+      return true if Task.exists?(duplicate_id: id)
     end
     false
   end

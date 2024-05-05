@@ -17,6 +17,7 @@ Rails.application.routes.draw do
     patch '/user' => '/api/user#update'
     get '/congress' => '/api/congress#show'
     resources :tasks, only: [:index, :create, :destroy]
+    post '/tasks/copy_incomplete' => '/api/tasks#copy_incomplete'
     put '/tasks' => '/api/tasks#update'
     patch '/tasks/rearrange' => '/api/tasks#rearrange'
     post '/tasks/:id/convert_to_future' => '/api/tasks#convert_to_future'

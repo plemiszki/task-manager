@@ -240,6 +240,19 @@ export default class TaskIndexItem extends React.Component {
     }
   }
 
+  copyIncompleteSubtasks(e) {
+    const timeframe = e.target.dataset.timeframe;
+    if (timeframe) {
+      this.setState({
+        menuOpen: false,
+      });
+      this.props.copyIncompleteSubtasks({
+        taskId: this.state.task.id,
+        timeframe,
+      });
+    }
+  }
+
   mouseLeave(e) {
     if (this.state.menuOpen) {
       this.setState({
@@ -249,11 +262,12 @@ export default class TaskIndexItem extends React.Component {
   }
 
   render() {
-    let { task, editing, subtasks } = this.state;
-    const { openListsModal, setActiveTaskId, debug } = this.props;
+    const { openListsModal, setActiveTaskId } = this.props;
+    const { task, editing, subtasks, showColorPicker } = this.state;
+    const { timeframe, duplicateId, parentId } = task;
 
     let menuOptions = [];
-    if (!task.duplicateId) {
+    if (!duplicateId) {
       menuOptions.push({
         label: "Move",
         expandTimeframes: true,
@@ -262,20 +276,27 @@ export default class TaskIndexItem extends React.Component {
         },
       });
     }
-    if (["day", "backlog"].indexOf(this.state.task.timeframe) === -1) {
+    if (["day", "backlog"].indexOf(timeframe) === -1) {
       menuOptions.push({
         label: "Copy",
         expandTimeframes: true,
+        shorterTimeframesOnly: true,
         func: (e) => {
           this.copyTask(e);
         },
       });
     }
-    if (
-      !task.duplicateId &&
-      !task.parentId &&
-      this.state.task.timeframe === "day"
-    ) {
+    if (subtasks.length > 0 && ["day", "backlog"].indexOf(timeframe) === -1) {
+      menuOptions.push({
+        label: "Copy Subs",
+        expandTimeframes: true,
+        shorterTimeframesOnly: true,
+        func: (e) => {
+          this.copyIncompleteSubtasks(e);
+        },
+      });
+    }
+    if (!duplicateId && !parentId && timeframe === "day") {
       menuOptions.push({
         label: "Do Tomorrow",
         func: () => {
@@ -283,18 +304,18 @@ export default class TaskIndexItem extends React.Component {
         },
       });
     }
-    if (!task.duplicateId && !task.parentId) {
+    if (!duplicateId && !parentId) {
       menuOptions.push({
         label: "Change Color",
         func: () => {
           this.setState({
-            showColorPicker: !this.state.showColorPicker,
+            showColorPicker: !showColorPicker,
             menuOpen: false,
           });
         },
       });
     }
-    if (!task.duplicateId && !task.parentId) {
+    if (!duplicateId && !parentId) {
       menuOptions.push({
         label: "Add From List",
         func: () => {
@@ -304,9 +325,9 @@ export default class TaskIndexItem extends React.Component {
         },
       });
     }
-    let hideDeleteButton = task.duplicateId && task.parentId;
-    let hideSubtaskButton = task.duplicateId;
-    let hideMenuButton = menuOptions.length === 0;
+    const hideDeleteButton = duplicateId && parentId;
+    const hideSubtaskButton = duplicateId;
+    const hideMenuButton = menuOptions.length === 0;
     return (
       <div className="group">
         <div
@@ -436,16 +457,16 @@ export default class TaskIndexItem extends React.Component {
   }
 
   renderTimeframeMenu(option) {
-    if (option.expandTimeframes) {
+    const { expandTimeframes, shorterTimeframesOnly } = option;
+    const { task } = this.state;
+
+    if (expandTimeframes) {
       let timeframes = ["day", "weekend", "month", "year", "life", "backlog"];
-      if (option.label === "Copy") {
-        let index = timeframes.indexOf(this.state.task.timeframe);
+      if (shorterTimeframesOnly) {
+        const index = timeframes.indexOf(task.timeframe);
         timeframes = timeframes.slice(0, index);
       } else {
-        timeframes = HandyTools.removeFromArray(
-          timeframes,
-          this.state.task.timeframe
-        );
+        timeframes = HandyTools.removeFromArray(timeframes, task.timeframe);
       }
       return (
         <ul className="timeframe-menu hidden">
@@ -521,6 +542,9 @@ export default class TaskIndexItem extends React.Component {
                 createTask={this.props.createTask.bind(this)}
                 updateTask={this.props.updateTask.bind(this)}
                 copyTask={this.props.copyTask.bind(this)}
+                copyIncompleteSubtasks={this.props.copyIncompleteSubtasks.bind(
+                  this
+                )}
                 moveTask={this.props.moveTask.bind(this)}
                 deleteTask={this.props.deleteTask.bind(this)}
                 dropHandler={this.props.dropHandler.bind(this)}

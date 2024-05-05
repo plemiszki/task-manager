@@ -82,6 +82,30 @@ export default class TasksIndex extends React.Component {
     });
   }
 
+  copyIncompleteSubtasks(args) {
+    let { taskId, timeframe } = args;
+    this.setState({
+      spinner: true,
+    });
+    sendRequest("/api/tasks/copy_incomplete", {
+      method: "POST",
+      data: {
+        task_id: taskId,
+        timeframe,
+      },
+    }).then(
+      (response) => {
+        this.updateComponentTasks(response);
+      },
+      () => {
+        alert("A duplicate of one or more of these tasks already exist!");
+        this.setState({
+          spinner: false,
+        });
+      }
+    );
+  }
+
   copyTask(args) {
     let { duplicateOf, timeframe, position } = args;
     this.setState({
@@ -240,6 +264,7 @@ export default class TasksIndex extends React.Component {
               updateTask={this.updateTask.bind(this)}
               convertToFutureTask={this.convertToFutureTask.bind(this)}
               copyTask={this.copyTask.bind(this)}
+              copyIncompleteSubtasks={this.copyIncompleteSubtasks.bind(this)}
               moveTask={this.moveTask.bind(this)}
               deleteTask={this.deleteTask.bind(this)}
               rearrangeTasks={this.rearrangeTasks.bind(this)}
