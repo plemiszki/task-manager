@@ -95,10 +95,10 @@ class Api::TasksController < ActionController::Base
     id = params[:task][:id]
     updating_dups = false
     while id
-      @task = Task.find(id)
-      original_color = @task.color
+      task = Task.find(id)
+      original_color = task.color
       if updating_dups
-        @task.update!(
+        task.update!(
           complete: params[:task][:complete],
           text: params[:task][:text],
           color: params[:task][:color]
@@ -107,16 +107,16 @@ class Api::TasksController < ActionController::Base
         task_text = params[:task][:text]
         numbered_subtasks_regex = /\$-- (?<text>.*)\$(?<n>\d+)/
         numbered_subtasks_match_data = numbered_subtasks_regex.match(task_text)
-        if numbered_subtasks_match_data && @task.parent_id
+        if numbered_subtasks_match_data && task.parent_id
           n = numbered_subtasks_match_data[:n].to_i
           text = numbered_subtasks_match_data[:text]
-          duplicate = @task.duplicates.first
-          @task.update(task_params.merge({ text: "#{text}1" }))
+          duplicate = task.duplicates.first
+          task.update(task_params.merge({ text: "#{text}1" }))
           until duplicate.nil?
             duplicate.update({ text: "#{text}1" })
             duplicate = duplicate.duplicates.first
           end
-          current_length = @task.parent.subtasks.length
+          current_length = task.parent.subtasks.length
           (n - 1).times do |index|
             extra_task = Task.new(
               task_params.merge({
@@ -127,7 +127,7 @@ class Api::TasksController < ActionController::Base
             extra_task.user_id = current_user.id
             extra_task.save!
 
-            duplicate = @task.duplicates.first
+            duplicate = task.duplicates.first
             until duplicate.nil?
               duplicate_extra_task = Task.new(
                 task_params.merge({
@@ -144,17 +144,17 @@ class Api::TasksController < ActionController::Base
             end
           end
         else
-          @task.update(task_params)
-          if @task.joint_id
-            joint_task = Task.find(@task.joint_id)
+          task.update(task_params)
+          if task.joint_id
+            joint_task = Task.find(task.joint_id)
             joint_task.update!(
               complete: params[:task][:complete]
             )
           end
-          if @task.duplicate_id
-            mark_master_complete(@task.duplicate_id, params[:task][:complete])
+          if task.duplicate_id
+            mark_master_complete(task.duplicate_id, params[:task][:complete])
           end
-          update_subtask_colors(@task) if (original_color != @task.color)
+          update_subtask_colors(task) if (original_color != task.color)
         end
       end
       if numbered_subtasks_match_data # <-- if this is a multiple subtask creation, duplicates are dealt with above
@@ -164,10 +164,10 @@ class Api::TasksController < ActionController::Base
         id = @dup_task ? @dup_task.id : nil
         updating_dups = true
       end
-      check_if_all_siblings_complete(@task)
+      check_if_all_siblings_complete(task)
     end
 
-    timeframe = (@task.timeframe == 'day' && !@task.duplicate_id) ? 'day' : nil
+    timeframe = (task.timeframe == 'day' && !task.duplicate_id) ? 'day' : nil
     build_response(timeframe: timeframe)
   end
 
@@ -258,14 +258,14 @@ class Api::TasksController < ActionController::Base
   end
 
   def destroy
-    @task = Task.find(params[:id])
+    task = Task.find(params[:id])
     timeframe = nil
-    if @task.timeframe == 'day'
+    if task.timeframe == 'day'
       timeframe = 'day'
-    elsif !@task.has_dups?
-      timeframe = @task.timeframe
+    elsif !task.has_dups?
+      timeframe = task.timeframe
     end
-    Task.delete_task_and_subs_and_dups(@task)
+    Task.delete_task_and_subs_and_dups(task)
     build_response(timeframe: timeframe)
   end
 
