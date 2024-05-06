@@ -9,14 +9,21 @@ class Task < ActiveRecord::Base
     :duplicates,
     class_name: "Task",
     foreign_key: :duplicate_id,
-    primary_key: :id
+    primary_key: :id,
+  )
+
+  has_one(
+    :duplicate,
+    class_name: "Task",
+    foreign_key: :duplicate_id,
+    primary_key: :id,
   )
 
   belongs_to(
     :master,
     class_name: "Task",
     foreign_key: :duplicate_id,
-    primary_key: :id
+    primary_key: :id,
   )
 
   after_commit :auto_rearrange!, on: :update
