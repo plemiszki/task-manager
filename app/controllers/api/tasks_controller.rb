@@ -110,37 +110,50 @@ class Api::TasksController < ActionController::Base
         if numbered_subtasks_match_data && task.parent_id
           n = numbered_subtasks_match_data[:n].to_i
           text = numbered_subtasks_match_data[:text]
-          duplicate = task.duplicates.first
-          task.update(task_params.merge({ text: "#{text}1" }))
-          until duplicate.nil?
-            duplicate.update({ text: "#{text}1" })
-            duplicate = duplicate.duplicates.first
+
+          # update the text of the "mother" task
+          mother_task = task
+          mother_task.update({ text: "#{text}1" })
+
+          # update text for all duplicates of the mother task
+          duplicate_task = mother_task.duplicate
+          until duplicate_task.nil?
+            duplicate_task.update({ text: "#{text}1" })
+            duplicate_task = duplicate_task.duplicate
           end
-          current_length = task.parent.subtasks.length
+
+          # create additional tasks
+          current_length = mother_task.siblings.length
           (n - 1).times do |index|
-            extra_task = Task.new(
+            additional_task = Task.new(
               task_params.merge({
                 text: "#{text}#{index + 2}",
                 position: current_length + index,
               })
             )
-            extra_task.user_id = current_user.id
-            extra_task.save!
+            additional_task.user_id = current_user.id
+            additional_task.save!
 
-            duplicate = task.duplicates.first
-            until duplicate.nil?
-              duplicate_extra_task = Task.new(
+            # create additional tasks for each duplicate of the mother task
+            duplicate_task = mother_task.duplicate
+            duplicate_task_blueprint = additional_task
+
+            until duplicate_task.nil?
+              duplicate_additional_task = Task.new(
                 task_params.merge({
-                  timeframe: duplicate.timeframe,
-                  duplicate_id: extra_task.id,
-                  parent_id: duplicate.parent_id,
+                  timeframe: duplicate_task.timeframe,
+                  duplicate_id: duplicate_task_blueprint.id,
+                  parent_id: duplicate_task.parent_id,
                   text: "#{text}#{index + 2}",
                   position: current_length + index,
                 })
               )
-              duplicate_extra_task.user_id = current_user.id
-              duplicate_extra_task.save!
-              duplicate = duplicate.duplicates.first
+              duplicate_additional_task.user_id = current_user.id
+              duplicate_additional_task.save!
+
+              # jump to the next duplicate in the chain
+              duplicate_task_blueprint = duplicate_task
+              duplicate_task = duplicate_task.duplicate
             end
           end
         else
