@@ -5,13 +5,6 @@ class Task < ActiveRecord::Base
 
   has_many :subtasks, -> { order(:position) }, class_name: "Task", foreign_key: :parent_id, primary_key: :id, dependent: :destroy
 
-  has_many(
-    :duplicates,
-    class_name: "Task",
-    foreign_key: :duplicate_id,
-    primary_key: :id,
-  )
-
   has_one(
     :duplicate,
     class_name: "Task",
@@ -64,6 +57,16 @@ class Task < ActiveRecord::Base
 
   def uncompleted_siblings
     siblings.where(complete: false)
+  end
+
+  def duplicates
+    result = []
+    duplicate = self.duplicate
+    while duplicate.present?
+      result << duplicate
+      duplicate = duplicate.duplicate
+    end
+    result
   end
 
   def self.rearrange_after_position!(tasks:, position:)

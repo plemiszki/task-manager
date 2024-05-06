@@ -117,6 +117,7 @@ class Api::TasksController < ActionController::Base
 
           # create additional tasks
           current_length = mother_task.siblings.length
+          additional_tasks = []
           (n - 1).times do |index|
             additional_task = Task.new(
               task_params.merge({
@@ -126,28 +127,27 @@ class Api::TasksController < ActionController::Base
             )
             additional_task.user_id = current_user.id
             additional_task.save!
+            additional_tasks << additional_task
+          end
 
-            # create additional tasks for each duplicate of the mother task
-            duplicate_task = mother_task.duplicate
-            duplicate_task_blueprint = additional_task
-
-            until duplicate_task.nil?
+          # create duplicates of additional tasks for every duplicate of the mother task
+          mother_task.duplicates.each do |duplicate_task|
+            new_additional_tasks = []
+            additional_tasks.each do |additional_task|
               duplicate_additional_task = Task.new(
-                task_params.merge({
-                  timeframe: duplicate_task.timeframe,
-                  duplicate_id: duplicate_task_blueprint.id,
-                  parent_id: duplicate_task.parent_id,
-                  text: "#{text}#{index + 2}",
-                  position: current_length + index,
-                })
-              )
+                  task_params.merge({
+                    timeframe: duplicate_task.timeframe,
+                    parent_id: duplicate_task.parent_id,
+                    duplicate_id: additional_task.id,
+                    text: additional_task.text,
+                    position: additional_task.position,
+                  })
+                )
               duplicate_additional_task.user_id = current_user.id
               duplicate_additional_task.save!
-
-              # jump to the next duplicate in the chain
-              duplicate_task_blueprint = duplicate_task
-              duplicate_task = duplicate_task.duplicate
+              new_additional_tasks << duplicate_additional_task
             end
+            additional_tasks = new_additional_tasks
           end
         else
           task.update(task_params)
