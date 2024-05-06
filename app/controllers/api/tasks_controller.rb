@@ -111,16 +111,9 @@ class Api::TasksController < ActionController::Base
           n = numbered_subtasks_match_data[:n].to_i
           text = numbered_subtasks_match_data[:text]
 
-          # update the text of the "mother" task
+          # update the text of the "mother" task and all duplicates
           mother_task = task
-          mother_task.update({ text: "#{text}1" })
-
-          # update text for all duplicates of the mother task
-          duplicate_task = mother_task.duplicate
-          until duplicate_task.nil?
-            duplicate_task.update({ text: "#{text}1" })
-            duplicate_task = duplicate_task.duplicate
-          end
+          mother_task.update_self_and_duplicates!({ text: "#{text}1" })
 
           # create additional tasks
           current_length = mother_task.siblings.length

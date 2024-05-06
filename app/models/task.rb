@@ -40,6 +40,16 @@ class Task < ActiveRecord::Base
     self.serializable_hash(include: { subtasks: { include: { subtasks: { include: { subtasks: { include: :subtasks } } } } } })
   end
 
+  def update_self_and_duplicates!(obj)
+    self.update!(obj)
+    duplicate = self.duplicate
+    until duplicate.nil?
+      duplicate.update!(obj)
+      duplicate = duplicate.duplicate
+    end
+    nil
+  end
+
   def has_dups?
     Task.exists?(duplicate_id: id)
   end
