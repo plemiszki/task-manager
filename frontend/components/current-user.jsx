@@ -29,6 +29,7 @@ export default class CurrentUser extends React.Component {
       user: null,
       resetEarly: false,
       groceryListModalOpen: false,
+      confirmResetModalOpen: false,
     };
   }
 
@@ -46,7 +47,8 @@ export default class CurrentUser extends React.Component {
   }
 
   render() {
-    const { user, groceryListModalOpen, resetEarly } = this.state;
+    const { user, groceryListModalOpen, resetEarly, confirmResetModalOpen } =
+      this.state;
     return (
       <>
         <div className="container widened-container">
@@ -71,7 +73,9 @@ export default class CurrentUser extends React.Component {
                       fontSize: 30,
                       cursor: "pointer",
                     }}
-                    onClick={() => this.clickResetTasksEarly()}
+                    onClick={() =>
+                      this.setState({ confirmResetModalOpen: true })
+                    }
                   />
                 )}
                 <a
@@ -120,6 +124,43 @@ export default class CurrentUser extends React.Component {
             style={modalStyles}
           >
             <GroceryList />
+          </Modal>
+          <Modal
+            isOpen={confirmResetModalOpen}
+            onRequestClose={Common.closeModals.bind(this)}
+            contentLabel="Modal"
+            style={{
+              ...modalStyles,
+              ...{
+                content: { ...modalStyles.content, height: 150, width: 350 },
+              },
+            }}
+          >
+            <p
+              style={{
+                fontSize: 20,
+                fontWeight: 500,
+                fontFamily: "Helvetica Neue",
+                letterSpacing: 1.08,
+                textAlign: "center",
+              }}
+            >
+              Run the nightly reset now?
+            </p>
+            <p style={{ textAlign: "center", marginBottom: 10 }}>
+              This action cannot be undone.
+            </p>
+            <div className="text-center">
+              <a
+                className="btn btn-danger"
+                onClick={() => {
+                  this.clickResetTasksEarly();
+                  this.setState({ confirmResetModalOpen: false });
+                }}
+              >
+                Confirm
+              </a>
+            </div>
           </Modal>
         </div>
         <style jsx>{`
