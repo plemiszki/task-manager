@@ -5,7 +5,7 @@ class Api::ActionsController < ActionController::Base
   REDIS_URL = Rails.env == "development" ? "redis://localhost:6379" : ENV["REDIS_TLS_URL"]
   REDIS_KEY = "daily-reset-early"
 
-  def clear_daily_tasks
+  def reset_tasks_early
     redis = create_redis_instance
     redis.sadd(REDIS_KEY, current_user.id)
     Task.clear_daily_tasks!(date: DateTime.now.in_time_zone('America/New_York') + 1.day)

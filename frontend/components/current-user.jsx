@@ -38,8 +38,8 @@ export default class CurrentUser extends React.Component {
     });
   }
 
-  clickClearDailyTasks() {
-    sendRequest("/api/clear_daily_tasks", {
+  clickResetTasksEarly() {
+    sendRequest("/api/reset_tasks_early", {
       method: "post",
     }).then((response) => {});
   }
@@ -69,7 +69,7 @@ export default class CurrentUser extends React.Component {
                     fontSize: 30,
                     cursor: "pointer",
                   }}
-                  onClick={() => this.clickClearDailyTasks()}
+                  onClick={() => this.clickResetTasksEarly()}
                 />
                 <a
                   className="btn btn-info settings-button"

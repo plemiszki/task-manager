@@ -45,7 +45,7 @@ Rails.application.routes.draw do
     post '/active_list/add_from_recipe/:id' => '/api/active_list#add_from_recipe'
     delete '/active_list/:id' => '/api/active_list#remove'
     delete '/active_list' => '/api/active_list#clear'
-    post '/clear_daily_tasks' => '/api/actions#clear_daily_tasks'
+    post '/reset_tasks_early' => '/api/actions#reset_tasks_early'
   end
 
 end
