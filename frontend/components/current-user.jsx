@@ -2,6 +2,7 @@ import React from "react";
 import Modal from "react-modal";
 import GroceryList from "./grocery-list";
 import { sendRequest, Common } from "handy-components";
+import UpdateIcon from "@mui/icons-material/Update";
 
 const modalStyles = {
   overlay: {
@@ -42,8 +43,7 @@ export default class CurrentUser extends React.Component {
   }
 
   render() {
-    const { congress, user, groceryListModalOpen } = this.state;
-    const { house, senate, next_election } = congress;
+    const { user, groceryListModalOpen } = this.state;
     return (
       <>
         <div className="container widened-container">
@@ -58,6 +58,16 @@ export default class CurrentUser extends React.Component {
                 >
                   Log Out
                 </a>
+                <UpdateIcon
+                  fontSize="large"
+                  style={{
+                    float: "right",
+                    marginTop: 2,
+                    marginRight: 10,
+                    fontSize: 30,
+                    cursor: "pointer",
+                  }}
+                />
                 <a
                   className="btn btn-info settings-button"
                   rel="nofollow"
