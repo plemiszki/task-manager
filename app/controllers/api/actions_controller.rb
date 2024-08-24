@@ -1,9 +1,9 @@
 class Api::ActionsController < ActionController::Base
 
-  include Clearance::Controller
-
   REDIS_URL = Rails.env == "development" ? "redis://localhost:6379" : ENV["REDIS_TLS_URL"]
   REDIS_KEY = "daily-reset-early"
+
+  include Clearance::Controller
 
   def reset_tasks_early
     Task.clear_daily_tasks!(date: DateTime.now.in_time_zone('America/New_York') + 1.day)

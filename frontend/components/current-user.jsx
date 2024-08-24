@@ -27,14 +27,15 @@ export default class CurrentUser extends React.Component {
     super(props);
     this.state = {
       user: null,
+      resetEarly: false,
       groceryListModalOpen: false,
     };
   }
 
   componentDidMount() {
     sendRequest("/api/user").then((response) => {
-      const { user } = response;
-      this.setState({ user });
+      const { user, resetEarly } = response;
+      this.setState({ user, resetEarly });
     });
   }
 
@@ -45,7 +46,7 @@ export default class CurrentUser extends React.Component {
   }
 
   render() {
-    const { user, groceryListModalOpen } = this.state;
+    const { user, groceryListModalOpen, resetEarly } = this.state;
     return (
       <>
         <div className="container widened-container">
@@ -60,17 +61,19 @@ export default class CurrentUser extends React.Component {
                 >
                   Log Out
                 </a>
-                <UpdateIcon
-                  fontSize="large"
-                  style={{
-                    float: "right",
-                    marginTop: 2,
-                    marginRight: 10,
-                    fontSize: 30,
-                    cursor: "pointer",
-                  }}
-                  onClick={() => this.clickResetTasksEarly()}
-                />
+                {resetEarly ? null : (
+                  <UpdateIcon
+                    fontSize="large"
+                    style={{
+                      float: "right",
+                      marginTop: 2,
+                      marginRight: 10,
+                      fontSize: 30,
+                      cursor: "pointer",
+                    }}
+                    onClick={() => this.clickResetTasksEarly()}
+                  />
+                )}
                 <a
                   className="btn btn-info settings-button"
                   rel="nofollow"
