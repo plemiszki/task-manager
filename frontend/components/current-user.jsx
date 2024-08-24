@@ -27,10 +27,6 @@ export default class CurrentUser extends React.Component {
     super(props);
     this.state = {
       user: null,
-      congress: {
-        senate: {},
-        house: {},
-      },
       groceryListModalOpen: false,
     };
   }
