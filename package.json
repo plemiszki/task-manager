@@ -1,7 +1,6 @@
 {
   "name": "task-manager",
   "repository": "https://github.com/plemiszki/task-manager",
-  "license": "MIT",
   "scripts": {
     "heroku-postbuild": "webpack --mode production",
     "dev": "webpack --watch"
@@ -25,6 +24,6 @@
     "webpack-cli": "^5.0.0"
   },
   "engines": {
-    "node": "20.12.2"
+    "node": "20.16.0"
   }
 }
