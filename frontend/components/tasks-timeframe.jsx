@@ -25,6 +25,13 @@ export default class TasksTimeframe extends React.Component {
       out: TasksCommon.dragOutHandler,
       drop: this.dropHandler.bind(this),
     });
+    if (timeframe == "day") {
+      sendRequest("/api/user").then((response) => {
+        this.setState({
+          resetEarly: response.resetEarly,
+        });
+      });
+    }
     if (timeframe == "weekend") {
       sendRequest("/api/user").then((response) => {
         this.setState({
@@ -229,11 +236,13 @@ export default class TasksTimeframe extends React.Component {
   }
 
   renderHeader() {
-    switch (this.props.timeframe) {
+    const { timeframe } = this.props;
+    const { resetEarly, longWeekend } = this.state;
+    switch (timeframe) {
       case "day":
-        return <h1>Today</h1>;
+        return <h1>{resetEarly ? "Tomorrow" : "Today"}</h1>;
       case "weekend":
-        var text = this.state.longWeekend ? "Long Weekend" : "Weekend";
+        var text = longWeekend ? "Long Weekend" : "Weekend";
         return (
           <h1 id="weekend-header" onClick={this.clickWeekend.bind(this)}>
             {text}
