@@ -1,5 +1,7 @@
 class Task < ActiveRecord::Base
 
+  REDIS_URL = Rails.env == "development" ? "redis://localhost:6379" : ENV["REDIS_TLS_URL"]
+
   belongs_to :parent, class_name: "Task"
   belongs_to :user
 
@@ -110,7 +112,11 @@ class Task < ActiveRecord::Base
 
     joint_tasks = []
 
+    redis = Redis.new(url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
+
     User.all.order(:id).each do |user|
+
+      next if redis.smembers("daily-reset-early").include?(user.id.to_s)
 
       # DAILY TASKS
 
