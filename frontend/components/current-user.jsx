@@ -42,6 +42,12 @@ export default class CurrentUser extends React.Component {
     });
   }
 
+  clickClearDailyTasks() {
+    sendRequest("/api/clear_daily_tasks", {
+      method: "post",
+    }).then((response) => {});
+  }
+
   render() {
     const { user, groceryListModalOpen } = this.state;
     return (
@@ -67,6 +73,7 @@ export default class CurrentUser extends React.Component {
                     fontSize: 30,
                     cursor: "pointer",
                   }}
+                  onClick={() => this.clickClearDailyTasks()}
                 />
                 <a
                   className="btn btn-info settings-button"
