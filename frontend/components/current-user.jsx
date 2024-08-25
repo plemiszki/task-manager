@@ -168,7 +168,7 @@ export default class CurrentUser extends React.Component {
                     onClick={() => {
                       this.clickResetTasksEarly();
                       this.setState({ waitForReset: true });
-                      setTimeout(() => location.reload(), 5000);
+                      setTimeout(() => location.reload(), 10_000);
                     }}
                   >
                     Confirm
