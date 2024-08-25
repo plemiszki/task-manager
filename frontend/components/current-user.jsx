@@ -1,7 +1,7 @@
 import React from "react";
 import Modal from "react-modal";
 import GroceryList from "./grocery-list";
-import { sendRequest, Common } from "handy-components";
+import { sendRequest, Common, Spinner } from "handy-components";
 import UpdateIcon from "@mui/icons-material/Update";
 
 const modalStyles = {
@@ -30,6 +30,7 @@ export default class CurrentUser extends React.Component {
       resetEarly: false,
       groceryListModalOpen: false,
       confirmResetModalOpen: false,
+      waitForReset: false,
     };
   }
 
@@ -47,8 +48,13 @@ export default class CurrentUser extends React.Component {
   }
 
   render() {
-    const { user, groceryListModalOpen, resetEarly, confirmResetModalOpen } =
-      this.state;
+    const {
+      user,
+      groceryListModalOpen,
+      resetEarly,
+      confirmResetModalOpen,
+      waitForReset,
+    } = this.state;
     return (
       <>
         <div className="container widened-container">
@@ -127,7 +133,9 @@ export default class CurrentUser extends React.Component {
           </Modal>
           <Modal
             isOpen={confirmResetModalOpen}
-            onRequestClose={Common.closeModals.bind(this)}
+            onRequestClose={
+              waitForReset ? () => null : Common.closeModals.bind(this)
+            }
             contentLabel="Modal"
             style={{
               ...modalStyles,
@@ -136,31 +144,38 @@ export default class CurrentUser extends React.Component {
               },
             }}
           >
-            <p
-              style={{
-                fontSize: 20,
-                fontWeight: 500,
-                fontFamily: "Helvetica Neue",
-                letterSpacing: 1.08,
-                textAlign: "center",
-              }}
-            >
-              Run the nightly reset now?
-            </p>
-            <p style={{ textAlign: "center", marginBottom: 10 }}>
-              This action cannot be undone.
-            </p>
-            <div className="text-center">
-              <a
-                className="btn btn-danger"
-                onClick={() => {
-                  this.clickResetTasksEarly();
-                  this.setState({ confirmResetModalOpen: false });
-                }}
-              >
-                Confirm
-              </a>
-            </div>
+            {waitForReset ? (
+              <Spinner visible={true} />
+            ) : (
+              <>
+                <p
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 500,
+                    fontFamily: "Helvetica Neue",
+                    letterSpacing: 1.08,
+                    textAlign: "center",
+                  }}
+                >
+                  Run the nightly reset now?
+                </p>
+                <p style={{ textAlign: "center", marginBottom: 10 }}>
+                  This action cannot be undone.
+                </p>
+                <div className="text-center">
+                  <a
+                    className="btn btn-danger"
+                    onClick={() => {
+                      this.clickResetTasksEarly();
+                      this.setState({ waitForReset: true });
+                      setTimeout(() => location.reload(), 5000);
+                    }}
+                  >
+                    Confirm
+                  </a>
+                </div>
+              </>
+            )}
           </Modal>
         </div>
         <style jsx>{`
