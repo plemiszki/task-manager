@@ -235,6 +235,7 @@ class Task < ActiveRecord::Base
   end
 
   def self.convert_joint_tasks(joint_tasks, user, timeframe)
+    # input: array of task "blueprints" from all other users' joint recurring tasks, in case any are intended for this user
     created_tasks = []
     joint_tasks.select { |task| task[:user_id] == user.id && task[:timeframe] == timeframe.downcase }.each do |task|
       new_task = Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task[:text], template: task[:template], color: task[:color].gsub(/[rgb\(\)]/, ""), joint_id: task[:joint_id])
