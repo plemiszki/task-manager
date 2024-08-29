@@ -103,12 +103,6 @@ class Task < ActiveRecord::Base
   end
 
   def self.clear_daily_tasks!(date: DateTime.now.in_time_zone('America/New_York').to_date)
-    tasks_to_delete = Task.where(timeframe: "day", parent_id: nil, complete: true) + Task.where(timeframe: "day", parent_id: nil, template: true)
-    tasks_to_delete += Task.where(timeframe: "weekend", parent_id: nil, complete: true) if date.strftime("%A") == (User.first.long_weekend ? "Tuesday" : "Monday")
-    tasks_to_delete += Task.where(timeframe: "month", parent_id: nil, complete: true) if date.strftime("%-d") == "1"
-    tasks_to_delete.each do |task|
-      Task.delete_task_and_subs_and_dups(task)
-    end
 
     joint_tasks = []
 
@@ -117,6 +111,13 @@ class Task < ActiveRecord::Base
     User.all.order(:id).each do |user|
 
       next if redis.smembers("daily-reset-early").include?(user.id.to_s)
+
+      tasks_to_delete = Task.where(timeframe: "day", parent_id: nil, complete: true, user: user) + Task.where(timeframe: "day", parent_id: nil, template: true, user: user)
+      tasks_to_delete += Task.where(timeframe: "weekend", parent_id: nil, complete: true, user: user) if date.strftime("%A") == (user.long_weekend ? "Tuesday" : "Monday")
+      tasks_to_delete += Task.where(timeframe: "month", parent_id: nil, complete: true, user: user) if date.strftime("%-d") == "1"
+      tasks_to_delete.each do |task|
+        Task.delete_task_and_subs_and_dups(task)
+      end
 
       # DAILY TASKS
 
