@@ -6,7 +6,7 @@ class Api::ActionsController < ActionController::Base
   include Clearance::Controller
 
   def reset_tasks_early
-    Task.clear_daily_tasks!(date: DateTime.now.in_time_zone('America/New_York').to_date + 1.day)
+    Task.clear_daily_tasks!(user: current_user, date: DateTime.now.in_time_zone('America/New_York').to_date + 1.day)
     redis = create_redis_instance
     redis.sadd(REDIS_KEY, current_user.id)
     render json: { message: 'ok' }
