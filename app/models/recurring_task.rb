@@ -5,6 +5,10 @@ class RecurringTask < ActiveRecord::Base
   validates :text, :color, presence: true
   validate :joint_id_and_task
 
+  def self.get_joint_tasks_for_user(user:)
+    RecurringTask.where(joint_user_id: user.id)
+  end
+
   def update_start_date_to_today!
     update_start_date!(date: Date.today)
   end
