@@ -104,8 +104,6 @@ class Task < ActiveRecord::Base
 
   def self.clear_daily_tasks!(user:, date: DateTime.now.in_time_zone('America/New_York').to_date)
 
-    puts "Clear Daily Tasks for user #{user.email} for date #{date}"
-
     # delete completed and expiring tasks
     tasks_to_delete = Task.where(timeframe: "day", parent_id: nil, complete: true, user: user) + Task.where(timeframe: "day", parent_id: nil, template: true, user: user)
     tasks_to_delete += Task.where(timeframe: "weekend", parent_id: nil, complete: true, user: user) if date.strftime("%A") == (user.long_weekend ? "Tuesday" : "Monday")
