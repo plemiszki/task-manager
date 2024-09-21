@@ -244,7 +244,6 @@ class Task < ActiveRecord::Base
 
   def self.convert_recurring_tasks!(tasks:, user:, timeframe:, position:, date:)
     recurring_tasks = RecurringTask.where(active: true, user_id: user.id, timeframe: timeframe, add_to_end: position == "end").order(:position)
-    joint_tasks = []
     recurring_tasks.each do |recurring_task|
       recurrence = recurring_task.montrose_object
       i = 1
@@ -258,16 +257,11 @@ class Task < ActiveRecord::Base
             color: recurring_task.color.gsub(/[rgb\(\)]/, "")
           )
           tasks << new_task
-          if recurring_task.joint_user_id
-            joint_tasks << {
-              user_id: recurring_task.joint_user_id,
-              timeframe: timeframe.downcase,
-              text: recurring_task.joint_text,
-              template: recurring_task.expires,
-              color: recurring_task.color.gsub(/[rgb\(\)]/, ""),
-              joint_id: new_task.id
-            }
-          end
+          # if tasks exists that...
+          #   belongs to user with joint_user_id
+          #   for this recurring task
+          #   for this date
+          # then set that task's joint_id to the new task
           recurring_task.update_start_date_to_next_occurrence!
           break
         else
@@ -275,7 +269,6 @@ class Task < ActiveRecord::Base
         end
       end
     end
-    joint_tasks
   end
 
   def self.convert_joint_tasks(joint_tasks, user, timeframe)
