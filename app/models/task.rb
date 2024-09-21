@@ -230,9 +230,10 @@ class Task < ActiveRecord::Base
             user_id: user.id,
             timeframe: timeframe.downcase,
             text: recurring_task.joint_text,
-            template: recurring_task.expires,
-            template_date: date,
             color: recurring_task.color.gsub(/[rgb\(\)]/, ""),
+            template: recurring_task.expires,
+            recurring_task_id: recurring_task.id,
+            template_date: date,
           )
           break
         else
@@ -253,15 +254,18 @@ class Task < ActiveRecord::Base
             user_id: user.id,
             timeframe: timeframe.downcase,
             text: recurring_task.text,
+            color: recurring_task.color.gsub(/[rgb\(\)]/, ""),
             template: recurring_task.expires,
-            color: recurring_task.color.gsub(/[rgb\(\)]/, "")
+            recurring_task_id: recurring_task.id,
+            template_date: date,
           )
           tasks << new_task
-          # if tasks exists that...
-          #   belongs to user with joint_user_id
-          #   for this recurring task
-          #   for this date
-          # then set that task's joint_id to the new task
+
+          joint_task = Task.find_by(user_id: recurring_task.joint_user_id, recurring_task_id: recurring_task.id, template_date: date)
+          if joint_task
+            joint_task.update!(joint_id: new_task.id)
+          end
+
           recurring_task.update_start_date_to_next_occurrence!
           break
         else
@@ -269,17 +273,6 @@ class Task < ActiveRecord::Base
         end
       end
     end
-  end
-
-  def self.convert_joint_tasks(joint_tasks, user, timeframe)
-    # input: array of task "blueprints" from all other users' joint recurring tasks, in case any are intended for this user
-    created_tasks = []
-    joint_tasks.select { |task| task[:user_id] == user.id && task[:timeframe] == timeframe.downcase }.each do |task|
-      new_task = Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task[:text], template: task[:template], color: task[:color].gsub(/[rgb\(\)]/, ""), joint_id: task[:joint_id])
-      Task.find_by_id(task[:joint_id]).update({ joint_id: new_task.id })
-      created_tasks << new_task
-    end
-    created_tasks
   end
 
 end
