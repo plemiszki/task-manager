@@ -211,7 +211,7 @@ class Task < ActiveRecord::Base
     future_tasks.destroy_all
   end
 
-  def self.create_joint_tasks_from_other_users(tasks_array:, user:, timeframe:, position:, date:)
+  def self.create_joint_tasks_from_other_users(tasks:, user:, timeframe:, position:, date:)
     other_users = User.where.not(id: user.id)
     recurring_tasks = RecurringTask
       .where(
@@ -226,7 +226,7 @@ class Task < ActiveRecord::Base
       i = 1
       while recurrence.events.take(i).last.to_date <= date
         if recurrence.events.take(i).last.to_date == date
-          tasks_array << Task.create(
+          tasks << Task.create(
             user_id: user.id,
             timeframe: timeframe.downcase,
             text: recurring_task.joint_text,
