@@ -226,7 +226,7 @@ class Task < ActiveRecord::Base
       i = 1
       while recurrence.events.take(i).last.to_date <= date
         if recurrence.events.take(i).last.to_date == date
-          tasks << Task.create(
+          new_task = Task.create(
             user_id: user.id,
             timeframe: timeframe.downcase,
             text: recurring_task.joint_text,
@@ -235,6 +235,14 @@ class Task < ActiveRecord::Base
             recurring_task_id: recurring_task.id,
             template_date: date,
           )
+          tasks << new_task
+
+          joint_task = Task.find_by(user_id: recurring_task.user_id, recurring_task_id: recurring_task.id, template_date: date)
+          if joint_task
+            joint_task.update!(joint_id: new_task.id)
+            new_task.update!(joint_id: joint_task.id)
+          end
+
           break
         else
           i += 1
@@ -264,6 +272,7 @@ class Task < ActiveRecord::Base
           joint_task = Task.find_by(user_id: recurring_task.joint_user_id, recurring_task_id: recurring_task.id, template_date: date)
           if joint_task
             joint_task.update!(joint_id: new_task.id)
+            new_task.update!(joint_id: joint_task.id)
           end
 
           recurring_task.update_start_date_to_next_occurrence!
