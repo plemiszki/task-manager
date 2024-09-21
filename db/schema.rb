@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_26_192835) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_21_201832) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
   create_table "future_tasks", id: :serial, force: :cascade do |t|
@@ -130,6 +131,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_26_192835) do
     t.boolean "expanded", default: false
     t.integer "user_id", null: false
     t.integer "joint_id"
+    t.date "template_date"
     t.index ["duplicate_id"], name: "index_tasks_on_duplicate_id"
     t.index ["parent_id"], name: "index_tasks_on_parent_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
