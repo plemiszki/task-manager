@@ -1,6 +1,6 @@
 class Task < ActiveRecord::Base
 
-  REDIS_URL = Rails.env == "development" ? "redis://localhost:6379" : ENV["REDIS_TLS_URL"]
+  REDIS_URL = Rails.env == "development" ? "redis://localhost:6379" : ENV["REDIS_URL"]
 
   belongs_to :parent, class_name: "Task"
   belongs_to :user

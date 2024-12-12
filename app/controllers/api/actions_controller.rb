@@ -1,6 +1,6 @@
 class Api::ActionsController < ActionController::Base
 
-  REDIS_URL = Rails.env == "development" ? "redis://localhost:6379" : ENV["REDIS_TLS_URL"]
+  REDIS_URL = Rails.env == "development" ? "redis://localhost:6379" : ENV["REDIS_URL"]
   REDIS_KEY = "daily-reset-early"
 
   include Clearance::Controller
