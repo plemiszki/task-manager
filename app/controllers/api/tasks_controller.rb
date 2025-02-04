@@ -282,26 +282,29 @@ class Api::TasksController < ActionController::Base
   def copy_incomplete
     task = Task.find(params[:task_id])
     incomplete_subtasks = task.subtasks.select { |task| !task.complete }
-    incomplete_subtasks.each do |task|
-      if existing_copy?(task_to_copy: task)
-        render json: [], status: 422
-        return
-      end
-    end
+    # TODO abort if a copy of an incomplete subtask exists in a LOWER timeframe than the target
+    # (for example, if the user wants to copy a monthly task's subtasks to the weekend, but a copy of one or more substasks already exist for the day)
 
     timeframe_root_tasks = Task.where(user_id: current_user.id, timeframe: params[:timeframe],
                                       parent_id: nil).order(:position)
     starting_position = timeframe_root_tasks.length
     incomplete_subtasks.each_with_index do |task, index|
-      task = Task.new(
+      existing_copies = Task.where(
         user_id: current_user.id,
         timeframe: params[:timeframe],
-        text: task.text,
-        position: starting_position + index,
-        color: task.color,
-        duplicate_id: task.id
+        duplicate_id: task.id,
       )
-      task.save!
+      unless existing_copies.length > 0
+        task = Task.new(
+          user_id: current_user.id,
+          timeframe: params[:timeframe],
+          text: task.text,
+          position: starting_position + index,
+          color: task.color,
+          duplicate_id: task.id
+        )
+        task.save!
+      end
     end
     build_response
   end
