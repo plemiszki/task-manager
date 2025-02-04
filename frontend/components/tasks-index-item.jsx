@@ -3,6 +3,7 @@ import ColorPicker from "./color-picker";
 import HandyTools from "handy-tools";
 import { Common as HandyComponentsCommon } from "handy-components";
 import { titleCase } from "title-case";
+import { DateTime } from "luxon";
 
 export default class TaskIndexItem extends React.Component {
   constructor(props) {
@@ -143,12 +144,13 @@ export default class TaskIndexItem extends React.Component {
     );
   }
 
-  convertToFutureTask() {
+  convertToFutureTask({ monday } = {}) {
     this.setState({
       menuOpen: false,
     });
     this.props.convertToFutureTask({
       id: this.state.task.id,
+      monday,
     });
   }
 
@@ -301,6 +303,19 @@ export default class TaskIndexItem extends React.Component {
         label: "Do Tomorrow",
         func: () => {
           this.convertToFutureTask();
+        },
+      });
+    }
+    if (
+      !duplicateId &&
+      !parentId &&
+      timeframe === "day" &&
+      DateTime.now().weekday === 5
+    ) {
+      menuOptions.push({
+        label: "Do Monday",
+        func: () => {
+          this.convertToFutureTask({ monday: true });
         },
       });
     }

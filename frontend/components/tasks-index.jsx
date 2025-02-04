@@ -165,11 +165,15 @@ export default class TasksIndex extends React.Component {
   }
 
   convertToFutureTask(args) {
+    const { id, monday } = args;
     this.setState({
       spinner: true,
     });
-    sendRequest(`/api/tasks/${args.id}/convert_to_future`, {
+    sendRequest(`/api/tasks/${id}/convert_to_future`, {
       method: "post",
+      data: {
+        monday,
+      },
     }).then((response) => {
       this.setState({
         spinner: false,
