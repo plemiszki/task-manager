@@ -73,6 +73,13 @@ class Task < ActiveRecord::Base
     result
   end
 
+  def delete_duplicates!
+    duplicate_tasks = duplicates
+    duplicate_tasks.each do |duplicate_task|
+      duplicate_task.destroy!
+    end
+  end
+
   def self.rearrange_after_position!(tasks:, position:)
     # when a new task is being created in the middle of a list, we need to increment each of the following tasks' positions by one
     tasks.order(:position).each_with_index do |task, index|

@@ -235,6 +235,8 @@ class Api::TasksController < ActionController::Base
       task.update(position: index)
     end
 
+    task.delete_duplicates!
+
     build_response
   end
 
