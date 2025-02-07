@@ -17,6 +17,7 @@ gem 'puma'
 gem 'redis'
 gem 'sassc-rails'
 gem 'sentry-ruby'
+gem 'sidekiq'
 gem 'timeliness'
 gem 'uglifier'
 
