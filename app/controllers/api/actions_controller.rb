@@ -7,7 +7,7 @@ class Api::ActionsController < ActionController::Base
 
   def reset_tasks_early
     time_started = Time.now.to_s
-    job = Job.create!(job_id: time_started, name: "daily reset", first_line: "Resetting Tasks", second_line: true, current_value: 1, total_value: 20, metadata: {})
+    job = Job.create!(job_id: time_started, name: "daily reset", first_line: "Deleting Completed/Expired Tasks", second_line: false, current_value: 0, total_value: 0, metadata: {})
     ResetTasks.perform_async(time_started, current_user.id, true)
     redis = create_redis_instance
     redis.sadd(REDIS_KEY, current_user.id)

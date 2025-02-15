@@ -12,6 +12,7 @@ class ResetTasks
     date = do_for_tomorrow ? tomorrow : today
 
     # delete completed and expiring tasks
+    job.update!({first_line: "Deleting Completed/Expired Tasks"})
     tasks_to_delete = Task.where(timeframe: 'day', parent_id: nil, complete: true,
                                  user: user) + Task.where(timeframe: 'day',
                                                           parent_id: nil, template: true, user: user)
@@ -28,6 +29,7 @@ class ResetTasks
     end
 
     # DAY
+    job.update!({first_line: "Creating Daily Tasks"})
     day_tasks = []
     existing_day_tasks = Task.where(user_id: user.id, timeframe: 'day', parent_id: nil).order(:position).to_a
 
@@ -51,6 +53,7 @@ class ResetTasks
     end
 
     # WEEKEND
+    job.update!({first_line: "Creating Weekend Tasks"})
     weekend_tasks = []
     existing_weekend_tasks = Task.where(user_id: 1, timeframe: 'weekend', parent_id: nil).order(:position)
 
@@ -77,6 +80,7 @@ class ResetTasks
     end
 
     # MONTH
+    job.update!({first_line: "Creating Monthly Tasks"})
     month_tasks = []
     existing_month_tasks = Task.where(user_id: 1, timeframe: 'month', parent_id: nil).order(:position)
 
