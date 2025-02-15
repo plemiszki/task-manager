@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     resources :users, only: [:index]
     get '/user' => '/api/user#show'
     patch '/user' => '/api/user#update'
+    resources :jobs, only: [:show]
     get '/congress' => '/api/congress#show'
     resources :tasks, only: [:index, :create, :destroy]
     post '/tasks/copy_incomplete' => '/api/tasks#copy_incomplete'

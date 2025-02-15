@@ -44,12 +44,19 @@ export default class CurrentUser extends React.Component {
     });
   }
 
+  componentDidUpdate() {
+    Common.updateJobModal.call(this, {
+      successCallback: () => {
+        window.location.reload();
+      },
+    });
+  }
+
   clickResetTasksEarly() {
     sendRequest("/api/reset_tasks_early", {
       method: "post",
     }).then((response) => {
       const { job } = response;
-      console.log("job", job);
       this.setState({
         jobModalOpen: true,
         job,
@@ -148,7 +155,7 @@ export default class CurrentUser extends React.Component {
             style={{
               ...modalStyles,
               ...{
-                content: { ...modalStyles.content, height: 150, width: 350 },
+                content: { ...modalStyles.content, height: 120, width: 350 },
               },
             }}
           >
@@ -159,12 +166,10 @@ export default class CurrentUser extends React.Component {
                 fontFamily: "Helvetica Neue",
                 letterSpacing: 1.08,
                 textAlign: "center",
+                marginBottom: 15,
               }}
             >
               Run the nightly reset now?
-            </p>
-            <p style={{ textAlign: "center", marginBottom: 10 }}>
-              This action cannot be undone.
             </p>
             <div className="text-center">
               <a
@@ -174,7 +179,7 @@ export default class CurrentUser extends React.Component {
                   this.setState({ confirmResetModalOpen: false });
                 }}
               >
-                Confirm
+                DO IT
               </a>
             </div>
           </Modal>
