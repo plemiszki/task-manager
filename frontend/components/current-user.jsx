@@ -1,7 +1,7 @@
 import React from "react";
 import Modal from "react-modal";
 import GroceryList from "./grocery-list";
-import { sendRequest, Common, Spinner } from "handy-components";
+import { sendRequest, Common } from "handy-components";
 import UpdateIcon from "@mui/icons-material/Update";
 
 const modalStyles = {
@@ -30,6 +30,10 @@ export default class CurrentUser extends React.Component {
       resetEarly: false,
       groceryListModalOpen: false,
       confirmResetModalOpen: false,
+      job: {
+        firstLine: "",
+      },
+      jobModalOpen: false,
     };
   }
 
@@ -43,12 +47,24 @@ export default class CurrentUser extends React.Component {
   clickResetTasksEarly() {
     sendRequest("/api/reset_tasks_early", {
       method: "post",
-    }).then((response) => {});
+    }).then((response) => {
+      const { job } = response;
+      console.log("job", job);
+      this.setState({
+        jobModalOpen: true,
+        job,
+      });
+    });
   }
 
   render() {
-    const { user, groceryListModalOpen, resetEarly, confirmResetModalOpen } =
-      this.state;
+    const {
+      user,
+      groceryListModalOpen,
+      resetEarly,
+      confirmResetModalOpen,
+      job,
+    } = this.state;
     return (
       <>
         <div className="container widened-container">
@@ -162,6 +178,7 @@ export default class CurrentUser extends React.Component {
               </a>
             </div>
           </Modal>
+          {Common.renderJobModal.call(this, job)}
         </div>
         <style jsx>{`
           .widget.grocery-list {
