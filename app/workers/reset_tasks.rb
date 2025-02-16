@@ -4,7 +4,7 @@ class ResetTasks
   sidekiq_options retry: false
 
   def perform(job_id, user_id, do_for_tomorrow)
-    job = Job.find_by_job_id(job_id)
+    job = Job.find_by_job_id(job_id) if job_id
     user = User.find(user_id)
 
     today = DateTime.now.in_time_zone('America/New_York').to_date
@@ -12,7 +12,7 @@ class ResetTasks
     date = do_for_tomorrow ? tomorrow : today
 
     # delete completed and expiring tasks
-    job.update!({first_line: "Deleting Completed/Expired Tasks"})
+    job.update!({first_line: "Deleting Completed/Expired Tasks"}) if job_id
     tasks_to_delete = Task.where(timeframe: 'day', parent_id: nil, complete: true,
                                  user: user) + Task.where(timeframe: 'day',
                                                           parent_id: nil, template: true, user: user)
@@ -29,7 +29,7 @@ class ResetTasks
     end
 
     # DAY
-    job.update!({first_line: "Creating Daily Tasks"})
+    job.update!({first_line: "Creating Daily Tasks"}) if job_id
     day_tasks = []
     existing_day_tasks = Task.where(user_id: user.id, timeframe: 'day', parent_id: nil).order(:position).to_a
 
@@ -53,7 +53,7 @@ class ResetTasks
     end
 
     # WEEKEND
-    job.update!({first_line: "Creating Weekend Tasks"})
+    job.update!({first_line: "Creating Weekend Tasks"}) if job_id
     weekend_tasks = []
     existing_weekend_tasks = Task.where(user_id: 1, timeframe: 'weekend', parent_id: nil).order(:position)
 
@@ -80,7 +80,7 @@ class ResetTasks
     end
 
     # MONTH
-    job.update!({first_line: "Creating Monthly Tasks"})
+    job.update!({first_line: "Creating Monthly Tasks"}) if job_id
     month_tasks = []
     existing_month_tasks = Task.where(user_id: 1, timeframe: 'month', parent_id: nil).order(:position)
 
@@ -105,9 +105,7 @@ class ResetTasks
       task.update(position: index)
     end
 
-    job.update!({
-      status: :success,
-    })
+    job.update!({ status: :success }) if job_id
   end
 
 end

@@ -5,7 +5,7 @@ task :clear_daily_tasks => :environment do
   user_ids_early_reset = redis.smembers("daily-reset-early").map(&:to_i)
   User.all.each do |user|
     next if user_ids_early_reset.include?(user.id)
-    Task.clear_daily_tasks!(user: user)
+    ResetTasks.perform_async(nil, user.id, false)
   end
   redis.del('daily-reset-early')
 end
