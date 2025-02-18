@@ -3,7 +3,7 @@ class GroceryList < ActiveRecord::Base
   validates :name, presence: true, uniqueness: true
 
   has_many :grocery_list_items, dependent: :destroy
-  alias_attribute :items, :grocery_list_items
+  alias_method :items, :grocery_list_items
 
   has_many :grocery_items, through: :grocery_list_items
 
