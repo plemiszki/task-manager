@@ -1,5 +1,5 @@
-import React from 'react'
-import Modal from 'react-modal'
+import React from "react";
+import Modal from "react-modal";
 import {
   Common,
   createEntity,
@@ -15,13 +15,12 @@ import {
   sendRequest,
   Spinner,
   updateEntity,
-} from 'handy-components'
-import NewEntity from './new-entity'
+} from "handy-components";
+import NewEntity from "./new-entity";
 
 export default class ListDetails extends React.Component {
-
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       spinner: true,
       list: {},
@@ -55,22 +54,22 @@ export default class ListDetails extends React.Component {
   changeFieldArgs() {
     return {
       changesFunction: this.checkForChanges.bind(this),
-    }
+    };
   }
 
   dragOverHandler(e) {
-    e.target.classList.add('highlight');
+    e.target.classList.add("highlight");
   }
 
   dragOutHandler(e) {
-    e.target.classList.remove('highlight');
+    e.target.classList.remove("highlight");
   }
 
   dragEndHandler() {
-    $('*').removeClass('grabbing');
-    $('body').removeAttr('style');
-    $('.grabbed-element').removeClass('grabbed-element');
-    $('.highlight').removeClass('highlight');
+    $("*").removeClass("grabbing");
+    $("body").removeAttr("style");
+    $(".grabbed-element").removeClass("grabbed-element");
+    $(".highlight").removeClass("highlight");
   }
 
   dropHandler(e, ui) {
@@ -81,12 +80,16 @@ export default class ListDetails extends React.Component {
     listItems.forEach((listItem) => {
       currentOrder[listItem.position] = listItem.id;
     });
-    let newOrder = rearrangeFields({ currentOrder, draggedIndex, dropZoneIndex });
+    let newOrder = rearrangeFields({
+      currentOrder,
+      draggedIndex,
+      dropZoneIndex,
+    });
     this.setState({
       spinner: true,
     });
-    sendRequest('/api/list_items/rearrange', {
-      method: 'PATCH',
+    sendRequest("/api/list_items/rearrange", {
+      method: "PATCH",
       data: {
         new_order: newOrder,
         list_id: list.id,
@@ -126,7 +129,7 @@ export default class ListDetails extends React.Component {
       spinner: true,
     });
     deleteEntity({
-      directory: 'list_items',
+      directory: "list_items",
       id,
     }).then((response) => {
       const { listItems } = response;
@@ -144,11 +147,11 @@ export default class ListDetails extends React.Component {
       spinner: true,
     });
     createEntity({
-      directory: 'list_items',
-      entityName: 'list_item',
+      directory: "list_items",
+      entityName: "list_item",
       entity: {
         listId: list.id,
-      }
+      },
     }).then((response) => {
       const { listItems } = response;
       this.setState({
@@ -159,71 +162,104 @@ export default class ListDetails extends React.Component {
   }
 
   clickSave() {
-    this.setState({
-      spinner: true,
-      justSaved: true,
-    }, () => {
-      const { list } = this.state;
-      updateEntity({
-        entityName: 'list',
-        entity: list,
-      }).then((response) => {
-        const { list } = response;
-        this.setState({
-          spinner: false,
-          list,
-          listSaved: deepCopy(list),
-          changesToSave: false,
-        });
-      }, (response) => {
-        const { errors } = response;
-        this.setState({
-          spinner: false,
-          errors,
-        });
-      });
-    });
+    this.setState(
+      {
+        spinner: true,
+        justSaved: true,
+      },
+      () => {
+        const { list } = this.state;
+        updateEntity({
+          entityName: "list",
+          entity: list,
+        }).then(
+          (response) => {
+            const { list } = response;
+            this.setState({
+              spinner: false,
+              list,
+              listSaved: deepCopy(list),
+              changesToSave: false,
+            });
+          },
+          (response) => {
+            const { errors } = response;
+            this.setState({
+              spinner: false,
+              errors,
+            });
+          }
+        );
+      }
+    );
   }
 
   render() {
-    const { justSaved, changesToSave, spinner, listItems, newItemModalOpen, list } = this.state;
+    const {
+      justSaved,
+      changesToSave,
+      spinner,
+      listItems,
+      newItemModalOpen,
+      list,
+    } = this.state;
     return (
       <>
         <div className="handy-component">
           <h1>Edit List</h1>
           <div className="white-box">
             <div className="row">
-              { Details.renderField.bind(this)({ columnWidth: 6, entity: 'list', property: 'name' }) }
+              {Details.renderField.bind(this)({
+                columnWidth: 6,
+                entity: "list",
+                property: "name",
+              })}
             </div>
             <div className="row">
               <div className="col-xs-12">
                 <p className="section-header">Items</p>
                 <ListBoxReorderable
+                  highlight
                   entityName="listItem"
-                  entities={ listItems }
-                  clickAdd={ () => { this.setState({ newItemModalOpen: true }) } }
-                  clickDelete={ listItemId => this.clickDeleteItem(listItemId) }
+                  entities={listItems}
+                  clickAdd={() => {
+                    this.setState({ newItemModalOpen: true });
+                  }}
+                  clickDelete={(listItemId) => this.clickDeleteItem(listItemId)}
                   displayProperty="text"
-                  style={ { marginBottom: 15 } }
+                  style={{ marginBottom: 15 }}
                 />
               </div>
             </div>
             <hr />
             <SaveButton
-              justSaved={ justSaved }
-              changesToSave={ changesToSave }
-              disabled={ spinner }
-              onClick={ () => { this.clickSave() } }
+              justSaved={justSaved}
+              changesToSave={changesToSave}
+              disabled={spinner}
+              onClick={() => {
+                this.clickSave();
+              }}
             />
-            <GrayedOut visible={ spinner } />
-            <Spinner visible={ spinner } />
+            <GrayedOut visible={spinner} />
+            <Spinner visible={spinner} />
           </div>
         </div>
-        <Modal isOpen={ newItemModalOpen } onRequestClose={ Common.closeModals.bind(this) } contentLabel="Modal" style={ Common.newEntityModalStyles({ width: 500 }, 1) }>
+        <Modal
+          isOpen={newItemModalOpen}
+          onRequestClose={Common.closeModals.bind(this)}
+          contentLabel="Modal"
+          style={Common.newEntityModalStyles({ width: 500 }, 1)}
+        >
           <NewEntity
             entityName="listItem"
-            initialEntity={ { text: '', listId: list.id } }
-            callback={ listItems => this.setState({ listItems, newItemModalOpen: false, spinner: false }) }
+            initialEntity={{ text: "", listId: list.id }}
+            callback={(listItems) =>
+              this.setState({
+                listItems,
+                newItemModalOpen: false,
+                spinner: false,
+              })
+            }
             responseKey="listItems"
             buttonText="Add Item"
           />
@@ -234,17 +270,17 @@ export default class ListDetails extends React.Component {
 
   componentDidUpdate() {
     $("li:not('drop-zone'), div.quote").draggable({
-      cursor: '-webkit-grabbing',
-      handle: '.handle',
-      helper: () => '<div></div>',
-      stop: this.dragEndHandler
+      cursor: "-webkit-grabbing",
+      handle: ".handle",
+      helper: () => "<div></div>",
+      stop: this.dragEndHandler,
     });
-    $('li.drop-zone, .quote-drop-zone').droppable({
+    $("li.drop-zone, .quote-drop-zone").droppable({
       accept: this.canIDrop,
-      tolerance: 'pointer',
+      tolerance: "pointer",
       over: this.dragOverHandler,
       out: this.dragOutHandler,
-      drop: this.dropHandler.bind(this)
+      drop: this.dropHandler.bind(this),
     });
   }
-};
+}
