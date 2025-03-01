@@ -6,6 +6,6 @@ class RecipeItem < ActiveRecord::Base
   belongs_to :recipe
 
   belongs_to :grocery_item
-  alias_attribute :item, :grocery_item
+  alias_method :item, :grocery_item
 
 end
