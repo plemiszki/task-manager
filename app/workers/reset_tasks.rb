@@ -12,19 +12,19 @@ class ResetTasks
     date = do_for_tomorrow ? tomorrow : today
 
     # delete completed and expiring tasks
-    job.update!({first_line: "Deleting Completed/Expired Tasks"}) if job_id
     tasks_to_delete = Task.where(timeframe: 'day', parent_id: nil, complete: true,
-                                 user: user) + Task.where(timeframe: 'day',
-                                                          parent_id: nil, template: true, user: user)
+    user: user) + Task.where(timeframe: 'day',
+    parent_id: nil, template: true, user: user)
     if date.strftime('%A') == (user.long_weekend ? 'Tuesday' : 'Monday')
       tasks_to_delete += Task.where(timeframe: 'weekend', parent_id: nil, complete: true,
-                                    user: user)
+      user: user)
     end
     if date.strftime('%-d') == '1'
       tasks_to_delete += Task.where(timeframe: 'month', parent_id: nil, complete: true,
-                                    user: user)
+      user: user)
     end
-    tasks_to_delete.each do |task|
+    tasks_to_delete.each_with_index do |task, index|
+      job.update!({first_line: "Deleting Completed/Expired Tasks", current_value: index + 1, total_value: tasks_to_delete.length }) if job_id
       Task.delete_task_and_subs_and_dups(task)
     end
 
