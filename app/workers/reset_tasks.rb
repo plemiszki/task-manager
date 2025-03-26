@@ -24,7 +24,7 @@ class ResetTasks
       user: user)
     end
     tasks_to_delete.each_with_index do |task, index|
-      job.update!({first_line: "Deleting Completed/Expired Tasks", current_value: index + 1, total_value: tasks_to_delete.length }) if job_id
+      job.update!({first_line: "Deleting Completed/Expired Tasks", second_line: true, current_value: index + 1, total_value: tasks_to_delete.length }) if job_id
       Task.delete_task_and_subs_and_dups(task)
     end
 
