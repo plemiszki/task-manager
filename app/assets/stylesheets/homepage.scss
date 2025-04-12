@@ -1,18 +1,18 @@
 .tasks-timeframe {
-  background: #FFFFFF;
+  background: #ffffff;
   position: relative;
   padding: 10px 15px 0 15px;
   border-radius: 6px;
-  box-shadow: 1px 2px 3px 0px #E6E9EC;
+  box-shadow: 1px 2px 3px 0px #e6e9ec;
   color: black;
   text-align: center;
   margin-bottom: 20px;
 
   h1 {
-    font-family: 'Helvetica Neue';
+    font-family: "Helvetica Neue";
     font-weight: 500;
     font-size: 20px;
-    color: #2C2F33;
+    color: #2c2f33;
     letter-spacing: 1.08px;
     margin-bottom: 10px;
   }
@@ -28,11 +28,11 @@
 
   .add-task {
     display: inline-block;
-    font-family: 'TeachableSans-SemiBold';
+    font-family: "TeachableSans-SemiBold";
     font-size: 12px;
     padding: 6px 20px;
-    border: solid 1px #5F5F5F;
-    color: #5F5F5F;
+    border: solid 1px #5f5f5f;
+    color: #5f5f5f;
     border-radius: 100px;
     text-align: center;
     text-decoration: none;
@@ -97,8 +97,12 @@
     position: relative;
     padding: 5px;
     border-radius: 6px;
-    box-shadow: 1px 2px 3px 0px #E6E9EC;
+    box-shadow: 1px 2px 3px 0px #e6e9ec;
     cursor: pointer;
+
+    &.selected {
+      border: solid 2px black;
+    }
 
     input.disabled {
       background-color: rgba(0, 0, 0, 0);
@@ -108,7 +112,9 @@
       user-select: none;
     }
 
-    .plus, .minus, .check {
+    .plus,
+    .minus,
+    .check {
       height: 100%;
       top: 0;
       position: absolute;
@@ -161,7 +167,7 @@
         }
 
         &:hover {
-          background-color: #EAEDED;
+          background-color: #eaeded;
         }
 
         &.arrow {
@@ -172,7 +178,7 @@
           background-repeat: no-repeat;
 
           &:hover {
-            background-color: #EAEDED;
+            background-color: #eaeded;
 
             ul.timeframe-menu {
               display: block !important;
@@ -195,11 +201,17 @@
     &.joint {
       background-color: black !important;
 
-      .check {
-        background: asset-data-url("checkmark-white.svg") center center no-repeat;
+      &.selected {
+        border: solid 2px darkgray;
       }
 
-      a.color-button, a.add-subtask-button {
+      .check {
+        background: asset-data-url("checkmark-white.svg") center center
+          no-repeat;
+      }
+
+      a.color-button,
+      a.add-subtask-button {
         display: none;
       }
 
@@ -214,7 +226,7 @@
       }
 
       input.disabled {
-        -webkit-text-fill-color: #FFFFFF;
+        -webkit-text-fill-color: #ffffff;
       }
     }
 

@@ -14,6 +14,7 @@ export default class TasksTimeframe extends React.Component {
       showNewTaskColorPicker: false,
       showTopColorPicker: false,
       shiftPressed: false,
+      selectedTasks: [158255],
     };
   }
 
@@ -201,9 +202,25 @@ export default class TasksTimeframe extends React.Component {
     this.addTask(color, "0");
   }
 
+  selectTask(id) {
+    this.setState({
+      selectedTasks: [...this.state.selectedTasks, id],
+    });
+  }
+
+  unselectTask(id) {
+    const index = this.state.selectedTasks.indexOf(id);
+    const newSelectedTasks = [...this.state.selectedTasks];
+    newSelectedTasks.splice(index, 1);
+    this.setState({
+      selectedTasks: newSelectedTasks,
+    });
+  }
+
   render() {
     const { debug } = this.props;
-    const { showTopColorPicker, spinner, shiftPressed } = this.state;
+    const { showTopColorPicker, spinner, shiftPressed, selectedTasks } =
+      this.state;
     const {
       timeframe,
       timeframeTasks,
@@ -246,6 +263,10 @@ export default class TasksTimeframe extends React.Component {
               openListsModal={openListsModal}
               setActiveTaskId={setActiveTaskId}
               debug={debug}
+              selected={selectedTasks.includes(task.id)}
+              shiftPressed={shiftPressed}
+              selectTask={this.selectTask.bind(this)}
+              unselectTask={this.unselectTask.bind(this)}
             />
           );
         })}

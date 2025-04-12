@@ -62,13 +62,21 @@ export default class TaskIndexItem extends React.Component {
 
   clickText(e) {
     e.preventDefault();
-    if (
-      $(e.target.parentElement.parentElement).hasClass("duplicate") === false
-    ) {
-      e.target.classList.remove("handle");
-      this.setState({
-        editing: true,
-      });
+    if (this.props.shiftPressed) {
+      if (this.props.selected) {
+        this.props.unselectTask(this.props.task.id);
+      } else {
+        this.props.selectTask(this.props.task.id);
+      }
+    } else {
+      if (
+        $(e.target.parentElement.parentElement).hasClass("duplicate") === false
+      ) {
+        e.target.classList.remove("handle");
+        this.setState({
+          editing: true,
+        });
+      }
     }
   }
 
@@ -351,7 +359,8 @@ export default class TaskIndexItem extends React.Component {
             "task" +
             (task.expanded ? " expanded" : "") +
             (task.duplicateId ? " duplicate" : "") +
-            (task.jointId ? " joint" : "")
+            (task.jointId ? " joint" : "") +
+            (this.props.selected ? " selected" : "")
           }
           style={this.taskStyle()}
           data-taskid={this.props.task.id}
