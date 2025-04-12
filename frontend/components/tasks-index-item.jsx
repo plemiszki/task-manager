@@ -8,6 +8,7 @@ import { DateTime } from "luxon";
 export default class TaskIndexItem extends React.Component {
   constructor(props) {
     super(props);
+    this.inputRef = React.createRef();
     this.state = {
       editing: false,
       task: this.props.task,
@@ -72,10 +73,14 @@ export default class TaskIndexItem extends React.Component {
       if (
         $(e.target.parentElement.parentElement).hasClass("duplicate") === false
       ) {
-        e.target.classList.remove("handle");
-        this.setState({
-          editing: true,
-        });
+        this.setState(
+          {
+            editing: true,
+          },
+          () => {
+            this.inputRef.current.focus();
+          }
+        );
       }
     }
   }
@@ -420,6 +425,7 @@ export default class TaskIndexItem extends React.Component {
               value={this.formatTaskText.call(this)}
               onChange={this.changeText.bind(this)}
               onKeyPress={this.clickEnter.bind(this)}
+              ref={this.inputRef}
             />
           </div>
         </div>
