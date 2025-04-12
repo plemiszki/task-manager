@@ -228,6 +228,21 @@ class Task < ActiveRecord::Base
     end
   end
 
+  def move!(new_timeframe:)
+    siblings = Task.where(user: user, timeframe: new_timeframe, parent_id: parent_id).order(:position)
+    update!(
+      timeframe: new_timeframe,
+      position: Task.where(user: user, timeframe: new_timeframe, parent_id: nil).length,
+      parent_id: nil
+    )
+    subtasks.update_all(timeframe: new_timeframe)
+    siblings.each_with_index do |task, index|
+      task.update(position: index)
+    end
+
+    delete_duplicates!
+  end
+
   private
 
   def self.convert_future_tasks(tasks_array:, user:, timeframe:, position:, date:)

@@ -133,21 +133,36 @@ export default class TasksIndex extends React.Component {
   }
 
   moveTask(args) {
-    let { timeframe, id } = args;
+    let { timeframe, id, selectedTasks } = args;
     this.setState({
       spinner: true,
     });
-    sendRequest(`/api/tasks/${id}/move`, {
-      method: "PATCH",
-      data: {
-        timeframe,
-      },
-    }).then((response) => {
-      this.setState({
-        spinner: false,
-        tasks: response.tasks,
+    if (selectedTasks.length > 0) {
+      sendRequest("/api/tasks/move", {
+        method: "PATCH",
+        data: {
+          timeframe,
+          tasks: selectedTasks,
+        },
+      }).then((response) => {
+        this.setState({
+          spinner: false,
+          tasks: response.tasks,
+        });
       });
-    });
+    } else {
+      sendRequest(`/api/tasks/${id}/move`, {
+        method: "PATCH",
+        data: {
+          timeframe,
+        },
+      }).then((response) => {
+        this.setState({
+          spinner: false,
+          tasks: response.tasks,
+        });
+      });
+    }
   }
 
   rearrangeTasks(args) {

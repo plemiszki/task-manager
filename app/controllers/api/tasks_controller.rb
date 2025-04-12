@@ -224,18 +224,16 @@ class Api::TasksController < ActionController::Base
 
   def move
     task = Task.find(params[:id])
-    siblings = Task.where(user: current_user, timeframe: task.timeframe, parent_id: task.parent_id).order(:position)
-    task.update!(
-      timeframe: params[:timeframe],
-      position: Task.where(user: current_user, timeframe: params[:timeframe], parent_id: nil).length,
-      parent_id: nil
-    )
-    task.subtasks.update_all(timeframe: params[:timeframe])
-    siblings.each_with_index do |task, index|
-      task.update(position: index)
-    end
+    task.move!(new_timeframe: params[:timeframe])
 
-    task.delete_duplicates!
+    build_response
+  end
+
+  def move_all
+    tasks = Task.find(params[:tasks])
+    tasks.each do |task|
+      task.move!(new_timeframe: params[:timeframe])
+    end
 
     build_response
   end

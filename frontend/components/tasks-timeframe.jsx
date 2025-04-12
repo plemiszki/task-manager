@@ -256,7 +256,10 @@ export default class TasksTimeframe extends React.Component {
               copyIncompleteSubtasks={this.props.copyIncompleteSubtasks.bind(
                 this
               )}
-              moveTask={this.props.moveTask.bind(this)}
+              moveTask={(args) => {
+                this.props.moveTask.call(this, { ...args, selectedTasks });
+                this.setState({ selectedTasks: [] });
+              }}
               deleteTask={this.props.deleteTask.bind(this)}
               convertToFutureTask={this.props.convertToFutureTask.bind(this)}
               dropHandler={this.dropHandler.bind(this)}
