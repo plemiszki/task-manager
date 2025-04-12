@@ -14,7 +14,7 @@ export default class TasksTimeframe extends React.Component {
       showNewTaskColorPicker: false,
       showTopColorPicker: false,
       shiftPressed: false,
-      selectedTasks: [158255],
+      selectedTasks: [],
     };
   }
 
