@@ -13,10 +13,25 @@ export default class TasksTimeframe extends React.Component {
       longWeekend: false,
       showNewTaskColorPicker: false,
       showTopColorPicker: false,
+      shiftPressed: false,
     };
   }
 
+  handleKeyDown = (event) => {
+    if (event.key === "Shift") {
+      this.setState({ shiftPressed: true });
+    }
+  };
+
+  handleKeyUp = (event) => {
+    if (event.key === "Shift") {
+      this.setState({ shiftPressed: false });
+    }
+  };
+
   componentDidMount() {
+    window.addEventListener("keydown", this.handleKeyDown);
+    window.addEventListener("keyup", this.handleKeyUp);
     const { timeframe } = this.props;
     $("#" + timeframe + "-top-drop").droppable({
       accept: TasksCommon.canIDrop,
@@ -39,6 +54,11 @@ export default class TasksTimeframe extends React.Component {
         });
       });
     }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.handleKeyDown);
+    window.removeEventListener("keyup", this.handleKeyUp);
   }
 
   addTask(color, position) {
@@ -183,7 +203,7 @@ export default class TasksTimeframe extends React.Component {
 
   render() {
     const { debug } = this.props;
-    const { showTopColorPicker, spinner } = this.state;
+    const { showTopColorPicker, spinner, shiftPressed } = this.state;
     const {
       timeframe,
       timeframeTasks,
