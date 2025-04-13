@@ -212,19 +212,25 @@ export default class TaskIndexItem extends React.Component {
   }
 
   formatTaskText() {
-    const { debug } = this.props;
+    const { debug, debugPositions } = this.props;
     const { task, subtasks, editing } = this.state;
-    const { id, text, duplicateId } = task;
+    const { id, text, duplicateId, position } = task;
     if (editing) {
       return text;
     }
-    let alteredText = debug ? `${id} - ${text} - ${duplicateId}` : text;
-    if (text.indexOf("$cc") > -1 || text.indexOf("$tc") > -1) {
-      let completedChildren = subtasks.reduce((accum, current) => {
-        return accum + (current.complete ? 1 : 0);
-      }, 0);
-      alteredText = alteredText.split("$cc").join(completedChildren);
-      alteredText = alteredText.split("$tc").join(subtasks.length);
+    let alteredText = text;
+    if (debug) {
+      alteredText = `${id} - ${text} - ${duplicateId}`;
+      if (text.indexOf("$cc") > -1 || text.indexOf("$tc") > -1) {
+        let completedChildren = subtasks.reduce((accum, current) => {
+          return accum + (current.complete ? 1 : 0);
+        }, 0);
+        alteredText = alteredText.split("$cc").join(completedChildren);
+        alteredText = alteredText.split("$tc").join(subtasks.length);
+      }
+    }
+    if (debugPositions) {
+      alteredText = `${text} - ${position}`;
     }
     return alteredText;
   }

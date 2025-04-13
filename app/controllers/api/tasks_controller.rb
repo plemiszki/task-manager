@@ -241,20 +241,22 @@ class Api::TasksController < ActionController::Base
 
   def copy_all
     tasks_to_copy = Task.find(params[:tasks])
-    tasks_to_copy.each_with_index do |task_to_copy, index|
+    copied_tasks = 0
+    tasks_to_copy.each do |task_to_copy|
       next if task_to_copy.existing_copy?
       task = task_to_copy.dup
       task.parent_id = nil
       task.duplicate_id = task_to_copy.id
       task.timeframe = params[:timeframe]
       if task_params[:position]
-        adjusted_position = task_params[:position] + index
+        adjusted_position = task_params[:position] + copied_tasks
         update_existing_positions(timeframe: task_params[:timeframe], position: adjusted_position)
         task.position = adjusted_position
       else
-        task.position = Task.where(user: current_user, timeframe: task_params[:timeframe], parent_id: nil).length + index
+        task.position = Task.where(user: current_user, timeframe: task_params[:timeframe], parent_id: nil).length
       end
       task.save!
+      copied_tasks += 1
       create_duplicate_subtasks(task)
     end
 

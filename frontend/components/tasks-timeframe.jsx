@@ -219,7 +219,7 @@ export default class TasksTimeframe extends React.Component {
   }
 
   render() {
-    const { debug } = this.props;
+    const { debug, debugPositions } = this.props;
     const { showTopColorPicker, spinner, shiftPressed, selectedTasks } =
       this.state;
     const {
@@ -270,6 +270,7 @@ export default class TasksTimeframe extends React.Component {
               openListsModal={openListsModal}
               setActiveTaskId={setActiveTaskId}
               debug={debug}
+              debugPositions={debugPositions}
               selected={selectedTasks.includes(task.id)}
               shiftPressed={shiftPressed}
               selectTask={this.selectTask.bind(this)}

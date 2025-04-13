@@ -26,6 +26,7 @@ export default class TasksIndex extends React.Component {
       lists: [],
       listModalOpen: false,
       debug: false,
+      debugPositions: false,
     };
   }
 
@@ -46,6 +47,13 @@ export default class TasksIndex extends React.Component {
       const { debug } = this.state;
       this.setState({
         debug: !debug,
+      });
+    }
+    if (e.metaKey && e.key === "p") {
+      e.preventDefault();
+      const { debugPositions } = this.state;
+      this.setState({
+        debugPositions: !debugPositions,
       });
     }
   }
@@ -279,7 +287,7 @@ export default class TasksIndex extends React.Component {
   }
 
   renderTimeframes() {
-    const { debug } = this.state;
+    const { debug, debugPositions } = this.state;
     return ["day", "weekend", "month", "year", "life", "backlog"].map(
       (timeframe) => {
         return (
@@ -303,6 +311,7 @@ export default class TasksIndex extends React.Component {
               openListsModal={(task) => this.setState({ listModalOpen: true })}
               setActiveTaskId={(id) => this.setState({ activeTaskId: id })}
               debug={debug}
+              debugPositions={debugPositions}
             />
           </div>
         );
