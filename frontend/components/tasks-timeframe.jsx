@@ -137,6 +137,7 @@ export default class TasksTimeframe extends React.Component {
         timeframe: dropZoneTimeFrame,
         position: newTaskPosition,
         duplicateOf: taskId,
+        selectedTasks: this.state.selectedTasks,
       });
     }
   }
@@ -252,7 +253,10 @@ export default class TasksTimeframe extends React.Component {
               level="0"
               createTask={this.props.createTask.bind(this)}
               updateTask={this.props.updateTask.bind(this)}
-              copyTask={this.props.copyTask.bind(this)}
+              copyTask={(args) => {
+                this.props.copyTask.call(this, { ...args, selectedTasks });
+                this.setState({ selectedTasks: [] });
+              }}
               copyIncompleteSubtasks={this.props.copyIncompleteSubtasks.bind(
                 this
               )}

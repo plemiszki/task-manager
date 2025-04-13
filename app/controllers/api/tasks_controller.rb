@@ -7,10 +7,11 @@ class Api::TasksController < ActionController::Base
 
   def create
     if task_params[:duplicate_of]
-      if existing_dup?
+      task_to_copy = Task.find(task_params[:duplicate_of])
+      if task_to_copy.existing_copy?
         render_error = true
       else
-        task = Task.find(task_params[:duplicate_of]).dup
+        task = task_to_copy.dup
         task.parent_id = nil
         task.duplicate_id = task_params[:duplicate_of]
         task.timeframe = task_params[:timeframe]
@@ -238,6 +239,28 @@ class Api::TasksController < ActionController::Base
     build_response
   end
 
+  def copy_all
+    tasks_to_copy = Task.find(params[:tasks])
+    tasks_to_copy.each_with_index do |task_to_copy, index|
+      next if task_to_copy.existing_copy?
+      task = task_to_copy.dup
+      task.parent_id = nil
+      task.duplicate_id = task_to_copy.id
+      task.timeframe = params[:timeframe]
+      if task_params[:position]
+        adjusted_position = task_params[:position] + index
+        update_existing_positions(timeframe: task_params[:timeframe], position: adjusted_position)
+        task.position = adjusted_position
+      else
+        task.position = Task.where(user: current_user, timeframe: task_params[:timeframe], parent_id: nil).length + index
+      end
+      task.save!
+      create_duplicate_subtasks(task)
+    end
+
+    build_response
+  end
+
   def rearrange(tasks = params[:tasks])
     tasks.each do |index, id|
       task = Task.find(id)
@@ -361,41 +384,6 @@ class Api::TasksController < ActionController::Base
     parent_task = Task.find(task.parent_id)
     parent_task.update(complete: true, expanded: false)
     check_if_all_siblings_complete(parent_task)
-  end
-
-  def existing_dup?
-    # check if there is an existing copy of a task OR any of its subtasks
-    master_task = Task.find(task_params[:duplicate_of])
-    return true if Task.exists?(duplicate_id: master_task.id)
-
-    tasks_queue = master_task.subtasks.to_a
-    ids = []
-    until tasks_queue.empty?
-      ids << tasks_queue.first.id
-      tasks_queue += tasks_queue.first.subtasks.to_a
-      tasks_queue.shift
-    end
-    ids.each do |id|
-      return true if Task.exists?(duplicate_id: id)
-    end
-    false
-  end
-
-  def existing_copy?(task_to_copy:)
-    # check if there is an existing copy of a task OR existing copies of any of its subtasks
-    return true if Task.exists?(duplicate_id: task_to_copy.id)
-
-    tasks_queue = task_to_copy.subtasks.to_a
-    ids = []
-    until tasks_queue.empty?
-      ids << tasks_queue.first.id
-      tasks_queue += tasks_queue.first.subtasks.to_a
-      tasks_queue.shift
-    end
-    ids.each do |id|
-      return true if Task.exists?(duplicate_id: id)
-    end
-    false
   end
 
   def create_duplicate_subtasks(task)

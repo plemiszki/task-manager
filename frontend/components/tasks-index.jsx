@@ -107,29 +107,42 @@ export default class TasksIndex extends React.Component {
   }
 
   copyTask(args) {
-    let { duplicateOf, timeframe, position } = args;
+    let { duplicateOf, timeframe, position, selectedTasks } = args;
     this.setState({
       spinner: true,
     });
-    createEntity({
-      directory: "tasks",
-      entityName: "task",
-      entity: {
-        duplicateOf,
-        timeframe,
-        position,
-      },
-    }).then(
-      (response) => {
+    if (selectedTasks.length > 0) {
+      sendRequest("/api/tasks/copy", {
+        method: "POST",
+        data: {
+          timeframe,
+          position,
+          tasks: selectedTasks,
+        },
+      }).then((response) => {
         this.updateComponentTasks(response);
-      },
-      () => {
-        alert("A duplicate of this task already exists!");
-        this.setState({
-          spinner: false,
-        });
-      }
-    );
+      });
+    } else {
+      createEntity({
+        directory: "tasks",
+        entityName: "task",
+        entity: {
+          duplicateOf,
+          timeframe,
+          position,
+        },
+      }).then(
+        (response) => {
+          this.updateComponentTasks(response);
+        },
+        () => {
+          alert("A duplicate of this task already exists!");
+          this.setState({
+            spinner: false,
+          });
+        }
+      );
+    }
   }
 
   moveTask(args) {

@@ -243,6 +243,23 @@ class Task < ActiveRecord::Base
     delete_duplicates!
   end
 
+  def existing_copy?
+    # check if there is an existing copy of a task OR existing copies of any of its (nested) subtasks
+    return true if Task.exists?(duplicate_id: self.id)
+
+    tasks_queue = self.subtasks.to_a
+    subtask_ids = []
+    until tasks_queue.empty?
+      subtask_ids << tasks_queue.first.id
+      tasks_queue += tasks_queue.first.subtasks.to_a
+      tasks_queue.shift
+    end
+    subtask_ids.each do |subtask_id|
+      return true if Task.exists?(duplicate_id: subtask_id)
+    end
+    false
+  end
+
   private
 
   def self.convert_future_tasks(tasks_array:, user:, timeframe:, position:, date:)
