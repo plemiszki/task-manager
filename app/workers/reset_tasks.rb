@@ -29,7 +29,7 @@ class ResetTasks
     end
 
     # DAY
-    job.update!({first_line: "Creating Daily Tasks"}) if job_id
+    job.update!({first_line: "Creating Daily Tasks", second_line: false}) if job_id
     day_tasks = []
     existing_day_tasks = Task.where(user_id: user.id, timeframe: 'day', parent_id: nil).order(:position).to_a
 
