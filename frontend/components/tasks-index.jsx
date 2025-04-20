@@ -27,6 +27,8 @@ export default class TasksIndex extends React.Component {
       listModalOpen: false,
       debug: false,
       debugPositions: false,
+      selectedTasks: [],
+      selectedTasksParentId: null,
     };
   }
 
@@ -114,6 +116,22 @@ export default class TasksIndex extends React.Component {
     );
   }
 
+  selectTask(args) {
+    const { id } = args;
+    this.setState({
+      selectedTasks: [...this.state.selectedTasks, id],
+    });
+  }
+
+  unselectTask(id) {
+    const index = this.state.selectedTasks.indexOf(id);
+    const newSelectedTasks = [...this.state.selectedTasks];
+    newSelectedTasks.splice(index, 1);
+    this.setState({
+      selectedTasks: newSelectedTasks,
+    });
+  }
+
   copyTask(args) {
     let { duplicateOf, timeframe, position, selectedTasks } = args;
     this.setState({
@@ -129,6 +147,7 @@ export default class TasksIndex extends React.Component {
         },
       }).then((response) => {
         this.updateComponentTasks(response);
+        this.setState({ selectedTasks: [] });
       });
     } else {
       createEntity({
@@ -169,6 +188,7 @@ export default class TasksIndex extends React.Component {
         this.setState({
           spinner: false,
           tasks: response.tasks,
+          selectedTasks: [],
         });
       });
     } else {
@@ -287,7 +307,7 @@ export default class TasksIndex extends React.Component {
   }
 
   renderTimeframes() {
-    const { debug, debugPositions } = this.state;
+    const { debug, debugPositions, selectedTasks } = this.state;
     return ["day", "weekend", "month", "year", "life", "backlog"].map(
       (timeframe) => {
         return (
@@ -312,6 +332,9 @@ export default class TasksIndex extends React.Component {
               setActiveTaskId={(id) => this.setState({ activeTaskId: id })}
               debug={debug}
               debugPositions={debugPositions}
+              selectedTasks={selectedTasks}
+              selectTask={this.selectTask.bind(this)}
+              unselectTask={this.unselectTask.bind(this)}
             />
           </div>
         );

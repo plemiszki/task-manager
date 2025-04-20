@@ -14,7 +14,6 @@ export default class TasksTimeframe extends React.Component {
       showNewTaskColorPicker: false,
       showTopColorPicker: false,
       shiftPressed: false,
-      selectedTasks: [],
     };
   }
 
@@ -203,25 +202,10 @@ export default class TasksTimeframe extends React.Component {
     this.addTask(color, "0");
   }
 
-  selectTask(id) {
-    this.setState({
-      selectedTasks: [...this.state.selectedTasks, id],
-    });
-  }
-
-  unselectTask(id) {
-    const index = this.state.selectedTasks.indexOf(id);
-    const newSelectedTasks = [...this.state.selectedTasks];
-    newSelectedTasks.splice(index, 1);
-    this.setState({
-      selectedTasks: newSelectedTasks,
-    });
-  }
-
   render() {
-    const { debug, debugPositions } = this.props;
-    const { showTopColorPicker, spinner, shiftPressed, selectedTasks } =
-      this.state;
+    const { debug, debugPositions, selectedTasks, selectTask, unselectTask } =
+      this.props;
+    const { showTopColorPicker, spinner, shiftPressed } = this.state;
     const {
       timeframe,
       timeframeTasks,
@@ -255,14 +239,12 @@ export default class TasksTimeframe extends React.Component {
               updateTask={this.props.updateTask.bind(this)}
               copyTask={(args) => {
                 this.props.copyTask.call(this, { ...args, selectedTasks });
-                this.setState({ selectedTasks: [] });
               }}
               copyIncompleteSubtasks={this.props.copyIncompleteSubtasks.bind(
                 this
               )}
               moveTask={(args) => {
                 this.props.moveTask.call(this, { ...args, selectedTasks });
-                this.setState({ selectedTasks: [] });
               }}
               deleteTask={this.props.deleteTask.bind(this)}
               convertToFutureTask={this.props.convertToFutureTask.bind(this)}
@@ -273,8 +255,8 @@ export default class TasksTimeframe extends React.Component {
               debugPositions={debugPositions}
               selected={selectedTasks.includes(task.id)}
               shiftPressed={shiftPressed}
-              selectTask={this.selectTask.bind(this)}
-              unselectTask={this.unselectTask.bind(this)}
+              selectTask={selectTask}
+              unselectTask={unselectTask}
             />
           );
         })}

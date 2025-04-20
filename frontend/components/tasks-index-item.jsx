@@ -62,12 +62,13 @@ export default class TaskIndexItem extends React.Component {
   }
 
   clickText(e) {
+    const { task, shiftPressed, selected } = this.props;
     e.preventDefault();
-    if (this.props.shiftPressed) {
-      if (this.props.selected) {
-        this.props.unselectTask(this.props.task.id);
+    if (shiftPressed) {
+      if (selected) {
+        this.props.unselectTask(task.id);
       } else {
-        this.props.selectTask(this.props.task.id);
+        this.props.selectTask({ id: task.id, parentId: task.parentId });
       }
     } else {
       if (
