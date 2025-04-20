@@ -564,7 +564,14 @@ export default class TaskIndexItem extends React.Component {
   }
 
   renderSubTasks() {
-    const { debug } = this.props;
+    const {
+      debug,
+      debugPositions,
+      selectTask,
+      unselectTask,
+      selectedTasks,
+      shiftPressed,
+    } = this.props;
     if (this.state.task.expanded) {
       return (
         <div id={"subtasks-" + this.createTaskId()} className="subtasks">
@@ -590,6 +597,12 @@ export default class TaskIndexItem extends React.Component {
                 deleteTask={this.props.deleteTask.bind(this)}
                 dropHandler={this.props.dropHandler.bind(this)}
                 debug={debug}
+                debugPositions={debugPositions}
+                selected={selectedTasks.includes(task.id)}
+                shiftPressed={shiftPressed}
+                selectTask={selectTask}
+                unselectTask={unselectTask}
+                selectedTasks={selectedTasks}
               />
             );
           })}

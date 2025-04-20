@@ -257,6 +257,7 @@ export default class TasksTimeframe extends React.Component {
               shiftPressed={shiftPressed}
               selectTask={selectTask}
               unselectTask={unselectTask}
+              selectedTasks={selectedTasks}
             />
           );
         })}

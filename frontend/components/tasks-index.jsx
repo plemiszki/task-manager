@@ -119,9 +119,13 @@ export default class TasksIndex extends React.Component {
 
   selectTask(args) {
     const { id, parentId, timeframe } = args;
-    const { selectedTasks, selectedTasksTimeframe } = this.state;
+    const { selectedTasks, selectedTasksTimeframe, selectedTasksParentId } =
+      this.state;
     let newSelectedTasks = [];
-    if (selectedTasksTimeframe && selectedTasksTimeframe !== timeframe) {
+    if (
+      (selectedTasksTimeframe && selectedTasksTimeframe !== timeframe) ||
+      parentId !== selectedTasksParentId
+    ) {
       newSelectedTasks = [id];
     } else {
       newSelectedTasks = [...selectedTasks, id];
@@ -300,9 +304,6 @@ export default class TasksIndex extends React.Component {
   }
 
   render() {
-    console.log(this.state.selectedTasks);
-    console.log(this.state.selectedTasksParentId);
-    console.log(this.state.selectedTasksTimeframe);
     const { lists, listModalOpen } = this.state;
     return (
       <div className="container widened-container">
