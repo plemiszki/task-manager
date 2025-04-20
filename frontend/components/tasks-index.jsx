@@ -29,6 +29,7 @@ export default class TasksIndex extends React.Component {
       debugPositions: false,
       selectedTasks: [],
       selectedTasksParentId: null,
+      selectedTasksTimeframe: null,
     };
   }
 
@@ -117,9 +118,18 @@ export default class TasksIndex extends React.Component {
   }
 
   selectTask(args) {
-    const { id } = args;
+    const { id, parentId, timeframe } = args;
+    const { selectedTasks, selectedTasksTimeframe } = this.state;
+    let newSelectedTasks = [];
+    if (selectedTasksTimeframe && selectedTasksTimeframe !== timeframe) {
+      newSelectedTasks = [id];
+    } else {
+      newSelectedTasks = [...selectedTasks, id];
+    }
     this.setState({
-      selectedTasks: [...this.state.selectedTasks, id],
+      selectedTasks: newSelectedTasks,
+      selectedTasksParentId: parentId,
+      selectedTasksTimeframe: timeframe,
     });
   }
 
@@ -290,6 +300,9 @@ export default class TasksIndex extends React.Component {
   }
 
   render() {
+    console.log(this.state.selectedTasks);
+    console.log(this.state.selectedTasksParentId);
+    console.log(this.state.selectedTasksTimeframe);
     const { lists, listModalOpen } = this.state;
     return (
       <div className="container widened-container">

@@ -68,7 +68,11 @@ export default class TaskIndexItem extends React.Component {
       if (selected) {
         this.props.unselectTask(task.id);
       } else {
-        this.props.selectTask({ id: task.id, parentId: task.parentId });
+        this.props.selectTask({
+          id: task.id,
+          parentId: task.parentId,
+          timeframe: task.timeframe,
+        });
       }
     } else {
       if (
