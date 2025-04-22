@@ -153,6 +153,7 @@
       li {
         padding: 8px 12px;
         text-align: left;
+        user-select: none;
 
         &:first-of-type {
           padding-top: 10px;
@@ -227,6 +228,10 @@
 
       input.disabled {
         -webkit-text-fill-color: #ffffff;
+      }
+
+      p {
+        color: #ffffff;
       }
     }
 

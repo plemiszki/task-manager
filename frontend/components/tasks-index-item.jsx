@@ -428,17 +428,19 @@ export default class TaskIndexItem extends React.Component {
             onClick={this.clickExpand.bind(this)}
           ></div>
           {this.renderMenu(menuOptions)}
-          <div className="click-area" onClick={this.clickText.bind(this)}>
-            <div className="handle"></div>
+          {editing ? (
             <input
-              className={editing ? "" : "disabled"}
-              disabled={!editing}
               value={this.formatTaskText.call(this)}
               onChange={this.changeText.bind(this)}
               onKeyPress={this.clickEnter.bind(this)}
               ref={this.inputRef}
             />
-          </div>
+          ) : (
+            <div className="click-area" onClick={this.clickText.bind(this)}>
+              <div className="handle"></div>
+              <p>{this.formatTaskText.call(this)}</p>
+            </div>
+          )}
         </div>
         {this.renderDropZoneColorPicker()}
         {this.renderBottomDropArea()}
