@@ -20,6 +20,7 @@ Rails.application.routes.draw do
     resources :tasks, only: [:index, :create, :destroy]
     post '/tasks/copy_incomplete' => '/api/tasks#copy_incomplete'
     put '/tasks' => '/api/tasks#update'
+    delete '/tasks' => '/api/tasks#destroy'
     patch '/tasks/rearrange' => '/api/tasks#rearrange'
     patch '/tasks/move' => '/api/tasks#move_all'
     post '/tasks/copy' => '/api/tasks#copy_all'

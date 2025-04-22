@@ -291,15 +291,22 @@ class Api::TasksController < ActionController::Base
   end
 
   def destroy
-    task = Task.find(params[:id])
-    timeframe = nil
-    if task.timeframe == 'day'
-      timeframe = 'day'
-    elsif !task.has_dups?
-      timeframe = task.timeframe
+    if params[:id]
+      task = Task.find(params[:id])
+      timeframe = nil
+      if task.timeframe == 'day'
+        timeframe = 'day'
+      elsif !task.has_dups?
+        timeframe = task.timeframe
+      end
+      Task.delete_task_and_subs_and_dups(task)
+      build_response(timeframe: timeframe)
+    elsif params[:task_ids]
+      Task.find(params[:task_ids]).each do |task|
+        Task.delete_task_and_subs_and_dups(task)
+      end
+      build_response
     end
-    Task.delete_task_and_subs_and_dups(task)
-    build_response(timeframe: timeframe)
   end
 
   def copy_incomplete

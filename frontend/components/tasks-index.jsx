@@ -253,16 +253,32 @@ export default class TasksIndex extends React.Component {
   }
 
   deleteTask(id) {
+    const { selectedTasks } = this.state;
     this.setState({
       spinner: true,
     });
-    deleteEntity({
-      id,
-      directory: "tasks",
-      entityName: "task",
-    }).then((response) => {
-      this.updateComponentTasks(response);
-    });
+    if (selectedTasks.length > 0) {
+      sendRequest("/api/tasks", {
+        method: "DELETE",
+        data: {
+          taskIds: selectedTasks,
+        },
+      }).then((response) => {
+        this.setState({
+          spinner: false,
+          tasks: response.tasks,
+          selectedTasks: [],
+        });
+      });
+    } else {
+      deleteEntity({
+        id,
+        directory: "tasks",
+        entityName: "task",
+      }).then((response) => {
+        this.updateComponentTasks(response);
+      });
+    }
   }
 
   addSubtasksFromList(list) {
