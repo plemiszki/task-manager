@@ -231,6 +231,9 @@ export default class TasksIndex extends React.Component {
       },
     }).then((response) => {
       this.updateComponentTasks(response);
+      this.setState({
+        selectedTasks: [],
+      });
     });
   }
 

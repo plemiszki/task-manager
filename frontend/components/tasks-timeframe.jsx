@@ -73,6 +73,7 @@ export default class TasksTimeframe extends React.Component {
   }
 
   dropHandler(e, ui) {
+    const { selectedTasks } = this.props;
     let draggedTimeFrame = ui.draggable.attr("id").split("-")[0];
     let droppedTimeFrame = e.target.getAttribute("id").split("-")[0];
     let draggedIndex = this.getIndexFromId(ui.draggable.attr("id"));
@@ -125,7 +126,16 @@ export default class TasksTimeframe extends React.Component {
 
     let newHash;
     if (draggedTimeFrame === droppedTimeFrame) {
-      newHash = this.rearrangeFields(hash, draggedIndex, dropZoneIndex);
+      if (selectedTasks.length > 0) {
+        newHash = this.rearrangeMultipleFields(
+          hash,
+          draggedIndex,
+          dropZoneIndex,
+          selectedTasks
+        );
+      } else {
+        newHash = this.rearrangeFields(hash, draggedIndex, dropZoneIndex);
+      }
       this.props.rearrangeTasks({
         newPositions: newHash,
       });
@@ -154,6 +164,31 @@ export default class TasksTimeframe extends React.Component {
       }
       if (i == dropZoneIndex) {
         result[Object.keys(result).length] = hash[draggedIndex];
+      }
+    }
+    return result;
+  }
+
+  rearrangeMultipleFields(hash, draggedIndex, dropZoneIndex, selectedTasks) {
+    let result = {};
+    if (dropZoneIndex == -1) {
+      selectedTasks.forEach((selectedTaskId, index) => {
+        result[index] = selectedTaskId;
+      });
+    }
+    for (let index = 0; index < Object.keys(hash).length; index++) {
+      const currentLength = Object.keys(result).length;
+      const hashTaskId = hash[index];
+      if (!selectedTasks.includes(hashTaskId)) {
+        // for all tasks not included in the selection - new position is the current length of result
+        result[currentLength] = hash[index];
+      }
+      if (index == dropZoneIndex) {
+        // once we get to the drop zone index, insert all of the selected tasks
+        result[Object.keys(result).length] = hash[draggedIndex];
+        selectedTasks.forEach((selectedTaskId, selectedTaskIndex) => {
+          result[currentLength + selectedTaskIndex] = selectedTaskId;
+        });
       }
     }
     return result;
