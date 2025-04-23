@@ -3,6 +3,7 @@ import { Common, sendRequest, Spinner, GrayedOut } from "handy-components";
 import ColorPicker from "./color-picker";
 import TasksCommon from "../../app/assets/javascripts/common.jsx";
 import TasksIndexItem from "./tasks-index-item.jsx";
+import { orderBy } from "lodash";
 
 export default class TasksTimeframe extends React.Component {
   constructor(props) {
@@ -129,7 +130,6 @@ export default class TasksTimeframe extends React.Component {
       if (selectedTasks.length > 0) {
         newHash = this.rearrangeMultipleFields(
           hash,
-          draggedIndex,
           dropZoneIndex,
           selectedTasks
         );
@@ -169,25 +169,29 @@ export default class TasksTimeframe extends React.Component {
     return result;
   }
 
-  rearrangeMultipleFields(hash, draggedIndex, dropZoneIndex, selectedTasks) {
+  rearrangeMultipleFields(hash, dropZoneIndex, selectedTasks) {
     let result = {};
+    const orderedSelectedTasks = orderBy(
+      this.props.timeframeTasks.filter((task) =>
+        selectedTasks.includes(task.id)
+      ),
+      "position"
+    );
     if (dropZoneIndex == -1) {
       selectedTasks.forEach((selectedTaskId, index) => {
         result[index] = selectedTaskId;
       });
     }
     for (let index = 0; index < Object.keys(hash).length; index++) {
-      const currentLength = Object.keys(result).length;
       const hashTaskId = hash[index];
       if (!selectedTasks.includes(hashTaskId)) {
         // for all tasks not included in the selection - new position is the current length of result
-        result[currentLength] = hash[index];
+        result[Object.keys(result).length] = hash[index];
       }
       if (index == dropZoneIndex) {
         // once we get to the drop zone index, insert all of the selected tasks
-        result[Object.keys(result).length] = hash[draggedIndex];
-        selectedTasks.forEach((selectedTaskId, selectedTaskIndex) => {
-          result[currentLength + selectedTaskIndex] = selectedTaskId;
+        orderedSelectedTasks.forEach((task) => {
+          result[Object.keys(result).length] = task.id;
         });
       }
     }
