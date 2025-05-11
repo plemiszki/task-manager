@@ -235,12 +235,25 @@ class Task < ActiveRecord::Base
       position: Task.where(user: user, timeframe: new_timeframe, parent_id: nil).length,
       parent_id: nil
     )
-    subtasks.update_all(timeframe: new_timeframe)
+    nested_subtasks.update_all(timeframe: new_timeframe)
     siblings.each_with_index do |task, index|
       task.update(position: index)
     end
 
     delete_duplicates!
+  end
+
+  def nested_subtasks
+    result = []
+    queue = subtasks
+    until queue.empty?
+      subtask = queue.first
+      result << subtask
+      queue += subtask.subtasks
+      queue.shift
+    end
+
+    result
   end
 
   def existing_copy?
