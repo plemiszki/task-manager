@@ -1,5 +1,3 @@
-NUMBERED_SUBTASKS_REGEX = /\$-- (?<text>.*)\$(?<n>\d+)/
-
 class Api::TasksController < ActionController::Base
   include Clearance::Controller
 
@@ -94,11 +92,28 @@ class Api::TasksController < ActionController::Base
   end
 
   def update
-    if params[:task]
+    if params[:task_ids] # used for completing multiple tasks at once
+      tasks = Task.find(params[:task_ids])
+      tasks.each do |task|
+        original_color = task.color
+        task.update_self_and_duplicates!(task_params)
+        if task.joint_id
+          joint_task = Task.find(task.joint_id)
+          joint_task.update!(
+            complete: params[:task][:complete]
+          )
+        end
+        mark_master_complete(task.duplicate_id, params[:task][:complete]) if task.duplicate_id
+        update_subtask_colors(task) if original_color != task.color
+        check_if_all_siblings_complete(task)
+      end
+      build_response(timeframe: tasks.all? { |task| task.original_day_task? } ? 'day' : nil)
+    elsif params[:task]
       task = Task.find(params[:task][:id])
       original_color = task.color
       task_text = params[:task][:text]
-      numbered_subtasks_match_data = NUMBERED_SUBTASKS_REGEX.match(task_text)
+      numbered_subtasks_regex = /\$-- (?<text>.*)\$(?<n>\d+)/
+      numbered_subtasks_match_data = numbered_subtasks_regex.match(task_text)
       if numbered_subtasks_match_data && task.parent_id
         n = numbered_subtasks_match_data[:n].to_i
         text = numbered_subtasks_match_data[:text]

@@ -104,7 +104,7 @@ export default class TaskIndexItem extends React.Component {
       this.setState({
         editing: false,
       });
-      this.props.updateTask(this.state.task);
+      this.props.updateTask(this.state.task, true);
     }
   }
 
@@ -116,7 +116,7 @@ export default class TaskIndexItem extends React.Component {
         task,
       },
       () => {
-        this.props.updateTask(this.state.task);
+        this.props.updateTask(this.state.task, true);
       }
     );
   }
@@ -135,7 +135,7 @@ export default class TaskIndexItem extends React.Component {
         task,
       },
       () => {
-        this.props.updateTask(this.state.task);
+        this.props.updateTask({ id: task.id, complete: task.complete });
       }
     );
   }
@@ -157,7 +157,7 @@ export default class TaskIndexItem extends React.Component {
         showColorPicker: false,
       },
       () => {
-        this.props.updateTask(this.state.task);
+        this.props.updateTask(this.state.task, true);
       }
     );
   }

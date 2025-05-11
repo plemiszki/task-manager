@@ -80,17 +80,33 @@ export default class TasksIndex extends React.Component {
     });
   }
 
-  updateTask(newTask) {
+  updateTask(newTask, ignoreSelected = false) {
+    const { selectedTasks } = this.state;
     this.setState({
       spinner: true,
     });
-    updateEntity({
-      directory: "tasks",
-      entityName: "task",
-      entity: newTask,
-    }).then((response) => {
-      this.updateComponentTasks(response);
-    });
+    if (selectedTasks.length > 0 && ignoreSelected == false) {
+      sendRequest("/api/tasks", {
+        method: "PUT",
+        data: {
+          taskIds: selectedTasks,
+          task: newTask,
+        },
+      }).then((response) => {
+        this.updateComponentTasks(response);
+        this.setState({
+          selectedTasks: [],
+        });
+      });
+    } else {
+      updateEntity({
+        directory: "tasks",
+        entityName: "task",
+        entity: newTask,
+      }).then((response) => {
+        this.updateComponentTasks(response);
+      });
+    }
   }
 
   copyIncompleteSubtasks(args) {

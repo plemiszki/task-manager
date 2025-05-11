@@ -46,7 +46,7 @@ class Task < ActiveRecord::Base
   end
 
   def update_self_and_duplicates!(obj)
-    obj = obj.slice(:text, :completed, :color)
+    obj = obj.slice(:text, :complete, :color)
 
     update!(obj)
     duplicate = self.duplicate
