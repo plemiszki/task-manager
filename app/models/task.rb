@@ -244,16 +244,16 @@ class Task < ActiveRecord::Base
   end
 
   def nested_subtasks
-    result = []
+    ids = []
     queue = subtasks
     until queue.empty?
       subtask = queue.first
-      result << subtask
+      ids << subtask.id
       queue += subtask.subtasks
       queue.shift
     end
 
-    result
+    Task.where(id: ids)
   end
 
   def existing_copy?
