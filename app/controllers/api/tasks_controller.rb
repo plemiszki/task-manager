@@ -98,9 +98,7 @@ class Api::TasksController < ActionController::Base
       task = Task.find(params[:task][:id])
       original_color = task.color
       task_text = params[:task][:text]
-      p task_text
       numbered_subtasks_match_data = NUMBERED_SUBTASKS_REGEX.match(task_text)
-      p numbered_subtasks_match_data
       if numbered_subtasks_match_data && task.parent_id
         n = numbered_subtasks_match_data[:n].to_i
         text = numbered_subtasks_match_data[:text]
