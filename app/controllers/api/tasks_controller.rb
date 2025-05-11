@@ -1,3 +1,5 @@
+NUMBERED_SUBTASKS_REGEX = /\$-- (?<text>.*)\$(?<n>\d+)/
+
 class Api::TasksController < ActionController::Base
   include Clearance::Controller
 
@@ -92,87 +94,69 @@ class Api::TasksController < ActionController::Base
   end
 
   def update
-    id = params[:task][:id]
-    updating_dups = false
-    while id
-      task = Task.find(id)
+    if params[:task]
+      task = Task.find(params[:task][:id])
       original_color = task.color
-      if updating_dups
-        task.update!(
-          complete: params[:task][:complete],
-          text: params[:task][:text],
-          color: params[:task][:color]
-        )
-      else
-        task_text = params[:task][:text]
-        numbered_subtasks_regex = /\$-- (?<text>.*)\$(?<n>\d+)/
-        numbered_subtasks_match_data = numbered_subtasks_regex.match(task_text)
-        if numbered_subtasks_match_data && task.parent_id
-          n = numbered_subtasks_match_data[:n].to_i
-          text = numbered_subtasks_match_data[:text]
+      task_text = params[:task][:text]
+      p task_text
+      numbered_subtasks_match_data = NUMBERED_SUBTASKS_REGEX.match(task_text)
+      p numbered_subtasks_match_data
+      if numbered_subtasks_match_data && task.parent_id
+        n = numbered_subtasks_match_data[:n].to_i
+        text = numbered_subtasks_match_data[:text]
 
-          # update the text of the "mother" task and all duplicates
-          mother_task = task
-          mother_task.update_self_and_duplicates!({ text: "#{text}1" })
+        # update the text of the "mother" task and all duplicates
+        mother_task = task
+        mother_task.update_self_and_duplicates!({ text: "#{text}1" })
 
-          # create additional tasks
-          current_length = mother_task.siblings.length
-          additional_tasks = []
-          (n - 1).times do |index|
-            additional_task = Task.new(
+        # create additional tasks
+        current_length = mother_task.siblings.length
+        additional_tasks = []
+        (n - 1).times do |index|
+          additional_task = Task.new(
+            task_params.merge({
+                                text: "#{text}#{index + 2}",
+                                position: current_length + index
+                              })
+          )
+          additional_task.user_id = current_user.id
+          additional_task.save!
+          additional_tasks << additional_task
+        end
+
+        # create duplicates of additional tasks for every duplicate of the mother task
+        mother_task.duplicates.each do |duplicate_task|
+          new_additional_tasks = []
+          additional_tasks.each do |additional_task|
+            duplicate_additional_task = Task.new(
               task_params.merge({
-                                  text: "#{text}#{index + 2}",
-                                  position: current_length + index
+                                  timeframe: duplicate_task.timeframe,
+                                  parent_id: duplicate_task.parent_id,
+                                  duplicate_id: additional_task.id,
+                                  text: additional_task.text,
+                                  position: additional_task.position
                                 })
             )
-            additional_task.user_id = current_user.id
-            additional_task.save!
-            additional_tasks << additional_task
+            duplicate_additional_task.user_id = current_user.id
+            duplicate_additional_task.save!
+            new_additional_tasks << duplicate_additional_task
           end
-
-          # create duplicates of additional tasks for every duplicate of the mother task
-          mother_task.duplicates.each do |duplicate_task|
-            new_additional_tasks = []
-            additional_tasks.each do |additional_task|
-              duplicate_additional_task = Task.new(
-                task_params.merge({
-                                    timeframe: duplicate_task.timeframe,
-                                    parent_id: duplicate_task.parent_id,
-                                    duplicate_id: additional_task.id,
-                                    text: additional_task.text,
-                                    position: additional_task.position
-                                  })
-              )
-              duplicate_additional_task.user_id = current_user.id
-              duplicate_additional_task.save!
-              new_additional_tasks << duplicate_additional_task
-            end
-            additional_tasks = new_additional_tasks
-          end
-        else
-          task.update(task_params)
-          if task.joint_id
-            joint_task = Task.find(task.joint_id)
-            joint_task.update!(
-              complete: params[:task][:complete]
-            )
-          end
-          mark_master_complete(task.duplicate_id, params[:task][:complete]) if task.duplicate_id
-          update_subtask_colors(task) if original_color != task.color
+          additional_tasks = new_additional_tasks
         end
-      end
-      if numbered_subtasks_match_data # <-- if this is a multiple subtask creation, duplicates are dealt with above
-        id = nil
       else
-        @dup_task = Task.where(duplicate_id: id).first
-        id = @dup_task ? @dup_task.id : nil
-        updating_dups = true
+        task.update_self_and_duplicates!(task_params)
+        if task.joint_id
+          joint_task = Task.find(task.joint_id)
+          joint_task.update!(
+            complete: params[:task][:complete]
+          )
+        end
+        mark_master_complete(task.duplicate_id, params[:task][:complete]) if task.duplicate_id
+        update_subtask_colors(task) if original_color != task.color
+        check_if_all_siblings_complete(task)
       end
-      check_if_all_siblings_complete(task)
+      build_response(timeframe: task.original_day_task? ? 'day' : nil)
     end
-
-    timeframe = task.timeframe == 'day' && !task.duplicate_id ? 'day' : nil
-    build_response(timeframe: timeframe)
   end
 
   def add_subtasks_from_list

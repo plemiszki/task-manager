@@ -37,7 +37,17 @@ class Task < ActiveRecord::Base
     serializable_hash(include: { subtasks: { include: { subtasks: { include: { subtasks: { include: :subtasks } } } } } })
   end
 
+  def original?
+    !duplicate_id
+  end
+
+  def original_day_task?
+    original? && timeframe == 'day'
+  end
+
   def update_self_and_duplicates!(obj)
+    obj = obj.slice(:text, :completed, :color)
+
     update!(obj)
     duplicate = self.duplicate
     until duplicate.nil?
