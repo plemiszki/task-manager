@@ -45,13 +45,14 @@ class Task < ActiveRecord::Base
     original? && timeframe == 'day'
   end
 
-  def update_self_and_duplicates!(obj)
-    obj = obj.slice(:text, :complete, :color)
+  def update_self_and_duplicates!(obj:, duplicate_columns: nil)
+    dup_obj = obj.dup
+    dup_obj.slice!(*duplicate_columns) unless duplicate_columns.nil?
 
     update!(obj)
     duplicate = self.duplicate
     until duplicate.nil?
-      duplicate.update!(obj)
+      duplicate.update!(dup_obj)
       duplicate = duplicate.duplicate
     end
     nil

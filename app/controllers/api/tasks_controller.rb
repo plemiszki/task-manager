@@ -96,7 +96,7 @@ class Api::TasksController < ActionController::Base
       tasks = Task.find(params[:task_ids])
       tasks.each do |task|
         original_color = task.color
-        task.update_self_and_duplicates!(task_params)
+        task.update_self_and_duplicates!(obj: task_params.slice(:complete))
         if task.joint_id
           joint_task = Task.find(task.joint_id)
           joint_task.update!(
@@ -157,7 +157,7 @@ class Api::TasksController < ActionController::Base
           additional_tasks = new_additional_tasks
         end
       else
-        task.update_self_and_duplicates!(task_params)
+        task.update_self_and_duplicates!(obj: task_params, duplicate_columns: [:complete, :text, :color])
         if task.joint_id
           joint_task = Task.find(task.joint_id)
           joint_task.update!(
