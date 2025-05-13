@@ -88,6 +88,21 @@ class Task < ActiveRecord::Base
     duplicate_tasks = duplicates
     duplicate_tasks.each do |duplicate_task|
       duplicate_task.destroy!
+      duplicate_task.close_parent_if_no_siblings_left!
+      duplicate_task.reassign_order_of_siblings!
+    end
+  end
+
+  def close_parent_if_no_siblings_left!
+    parent_task = subtask.parent
+    if parent_task && subtask.siblings.empty?
+      parent_task.update(expanded: false)
+    end
+  end
+
+  def reassign_order_of_siblings!
+    siblings.each_with_index do |task, index|
+      task.update!(position: index)
     end
   end
 
@@ -122,98 +137,6 @@ class Task < ActiveRecord::Base
     FutureTask.create!(text: text, timeframe: timeframe.capitalize, color: "rgb(#{color})", user_id: user_id,
                        date: date || DateTime.now.in_time_zone('America/New_York').to_date + 1.day, add_to_end: true)
   end
-
-  # def self.clear_daily_tasks!(user:, date: DateTime.now.in_time_zone('America/New_York').to_date)
-  #   # delete completed and expiring tasks
-  #   tasks_to_delete = Task.where(timeframe: 'day', parent_id: nil, complete: true,
-  #                                user: user) + Task.where(timeframe: 'day',
-  #                                                         parent_id: nil, template: true, user: user)
-  #   if date.strftime('%A') == (user.long_weekend ? 'Tuesday' : 'Monday')
-  #     tasks_to_delete += Task.where(timeframe: 'weekend', parent_id: nil, complete: true,
-  #                                   user: user)
-  #   end
-  #   if date.strftime('%-d') == '1'
-  #     tasks_to_delete += Task.where(timeframe: 'month', parent_id: nil, complete: true,
-  #                                   user: user)
-  #   end
-  #   tasks_to_delete.each do |task|
-  #     Task.delete_task_and_subs_and_dups(task)
-  #   end
-
-  #   # DAY
-  #   day_tasks = []
-  #   existing_day_tasks = Task.where(user_id: user.id, timeframe: 'day', parent_id: nil).order(:position).to_a
-
-  #   # beginning
-  #   Task.convert_recurring_tasks!(tasks: day_tasks, user: user, timeframe: 'Day', position: 'beginning', date: date)
-  #   Task.convert_future_tasks(tasks_array: day_tasks, user: user, timeframe: 'Day', position: 'beginning', date: date)
-  #   Task.create_joint_tasks_from_other_users(tasks: day_tasks, user: user, timeframe: 'Day', position: 'beginning',
-  #                                            date: date)
-
-  #   # middle
-  #   day_tasks += existing_day_tasks
-
-  #   # end
-  #   Task.convert_recurring_tasks!(tasks: day_tasks, user: user, timeframe: 'Day', position: 'end', date: date)
-  #   Task.convert_future_tasks(tasks_array: day_tasks, user: user, timeframe: 'Day', position: 'end', date: date)
-  #   Task.create_joint_tasks_from_other_users(tasks: day_tasks, user: user, timeframe: 'Day', position: 'end',
-  #                                            date: date)
-
-  #   day_tasks.each_with_index do |task, index|
-  #     task.update(position: index)
-  #   end
-
-  #   # WEEKEND
-  #   weekend_tasks = []
-  #   existing_weekend_tasks = Task.where(user_id: 1, timeframe: 'weekend', parent_id: nil).order(:position)
-
-  #   # beginning
-  #   Task.convert_recurring_tasks!(tasks: weekend_tasks, user: user, timeframe: 'Weekend', position: 'beginning',
-  #                                 date: date)
-  #   Task.convert_future_tasks(tasks_array: weekend_tasks, user: user, timeframe: 'Weekend', position: 'beginning',
-  #                             date: date)
-  #   Task.create_joint_tasks_from_other_users(tasks: weekend_tasks, user: user, timeframe: 'Weekend',
-  #                                            position: 'beginning', date: date)
-
-  #   # middle
-  #   weekend_tasks += existing_weekend_tasks
-
-  #   # end
-  #   Task.convert_recurring_tasks!(tasks: weekend_tasks, user: user, timeframe: 'Weekend', position: 'end', date: date)
-  #   Task.convert_future_tasks(tasks_array: weekend_tasks, user: user, timeframe: 'Weekend', position: 'end',
-  #                             date: date)
-  #   Task.create_joint_tasks_from_other_users(tasks: weekend_tasks, user: user, timeframe: 'Weekend', position: 'end',
-  #                                            date: date)
-
-  #   weekend_tasks.each_with_index do |task, index|
-  #     task.update(position: index)
-  #   end
-
-  #   # MONTH
-  #   month_tasks = []
-  #   existing_month_tasks = Task.where(user_id: 1, timeframe: 'month', parent_id: nil).order(:position)
-
-  #   # beginning
-  #   Task.convert_recurring_tasks!(tasks: month_tasks, user: user, timeframe: 'Month', position: 'beginning',
-  #                                 date: date)
-  #   Task.convert_future_tasks(tasks_array: month_tasks, user: user, timeframe: 'Month', position: 'beginning',
-  #                             date: date)
-  #   Task.create_joint_tasks_from_other_users(tasks: month_tasks, user: user, timeframe: 'Month',
-  #                                            position: 'beginning', date: date)
-
-  #   # middle
-  #   month_tasks += existing_month_tasks
-
-  #   # end
-  #   Task.convert_recurring_tasks!(tasks: month_tasks, user: user, timeframe: 'Month', position: 'end', date: date)
-  #   Task.convert_future_tasks(tasks_array: month_tasks, user: user, timeframe: 'Month', position: 'end', date: date)
-  #   Task.create_joint_tasks_from_other_users(tasks: month_tasks, user: user, timeframe: 'Month', position: 'end',
-  #                                            date: date)
-
-  #   month_tasks.each_with_index do |task, index|
-  #     task.update(position: index)
-  #   end
-  # end
 
   def self.delete_task_and_subs_and_dups(task)
     tasks_queue = [task]
@@ -265,6 +188,14 @@ class Task < ActiveRecord::Base
     end
 
     Task.where(id: ids)
+  end
+
+  def delete_nested_subtasks!
+    nested_subtasks.each do |subtask|
+      subtask.destroy!
+      subtask.close_parent_if_no_siblings_left!
+      subtask.reassign_order_of_siblings!
+    end
   end
 
   def existing_copy?
