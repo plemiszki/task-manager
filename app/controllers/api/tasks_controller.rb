@@ -120,7 +120,7 @@ class Api::TasksController < ActionController::Base
 
         # update the text of the "mother" task and all duplicates
         mother_task = task
-        mother_task.update_self_and_duplicates!({ text: "#{text}1" })
+        mother_task.update_self_and_duplicates!(obj: { text: "#{text}1" })
 
         # create additional tasks
         current_length = mother_task.siblings.length
