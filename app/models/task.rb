@@ -94,8 +94,8 @@ class Task < ActiveRecord::Base
   end
 
   def close_parent_if_no_siblings_left!
-    parent_task = subtask.parent
-    if parent_task && subtask.siblings.empty?
+    parent_task = self.parent
+    if parent_task && self.siblings.empty?
       parent_task.update(expanded: false)
     end
   end
@@ -136,6 +136,12 @@ class Task < ActiveRecord::Base
   def convert_to_future_task!(date: nil)
     FutureTask.create!(text: text, timeframe: timeframe.capitalize, color: "rgb(#{color})", user_id: user_id,
                        date: date || DateTime.now.in_time_zone('America/New_York').to_date + 1.day, add_to_end: true)
+  end
+
+  def delete_self_and_subs_and_dups!
+    delete_nested_subtasks!
+    delete_duplicates!
+    destroy!
   end
 
   def self.delete_task_and_subs_and_dups(task)
@@ -192,6 +198,7 @@ class Task < ActiveRecord::Base
 
   def delete_nested_subtasks!
     nested_subtasks.each do |subtask|
+      subtask.delete_duplicates!
       subtask.destroy!
       subtask.close_parent_if_no_siblings_left!
       subtask.reassign_order_of_siblings!
