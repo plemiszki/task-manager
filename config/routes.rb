@@ -25,6 +25,7 @@ Rails.application.routes.draw do
     patch '/tasks/move' => '/api/tasks#move_all'
     post '/tasks/copy' => '/api/tasks#copy_all'
     post '/tasks/:id/convert_to_future' => '/api/tasks#convert_to_future'
+    post '/tasks/convert_to_future' => '/api/tasks#convert_all_to_future'
     post '/tasks/:task_id/add_subtasks_from_list/:list_id' => '/api/tasks#add_subtasks_from_list'
     patch '/tasks/:id/move' => '/api/tasks#move'
     resources :future_tasks, only: [:index, :create, :destroy]

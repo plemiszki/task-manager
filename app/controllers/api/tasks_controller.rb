@@ -220,6 +220,21 @@ class Api::TasksController < ActionController::Base
     build_response
   end
 
+  def convert_all_to_future
+    today = DateTime.now.in_time_zone('America/New_York').to_date
+    tomorrow = today + 1.day
+    in_three_days = today + 3.days
+
+    tasks = Task.find(params[:ids])
+    tasks.each do |task|
+      task.convert_to_future_task!(date: params[:monday] ? in_three_days : tomorrow)
+      task.delete
+      task.reassign_order_of_siblings!
+    end
+
+    build_response
+  end
+
   def move
     task = Task.find(params[:id])
     task.move!(new_timeframe: params[:timeframe])

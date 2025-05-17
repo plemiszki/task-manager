@@ -255,20 +255,37 @@ export default class TasksIndex extends React.Component {
 
   convertToFutureTask(args) {
     const { id, monday } = args;
+    const { selectedTasks } = this.state;
     this.setState({
       spinner: true,
     });
-    sendRequest(`/api/tasks/${id}/convert_to_future`, {
-      method: "post",
-      data: {
-        monday,
-      },
-    }).then((response) => {
-      this.setState({
-        spinner: false,
-        tasks: response.tasks,
+    if (selectedTasks.length > 0) {
+      sendRequest("/api/tasks/convert_to_future", {
+        method: "post",
+        data: {
+          monday,
+          ids: selectedTasks,
+        },
+      }).then((response) => {
+        this.setState({
+          spinner: false,
+          tasks: response.tasks,
+          selectedTasks: [],
+        });
       });
-    });
+    } else {
+      sendRequest(`/api/tasks/${id}/convert_to_future`, {
+        method: "post",
+        data: {
+          monday,
+        },
+      }).then((response) => {
+        this.setState({
+          spinner: false,
+          tasks: response.tasks,
+        });
+      });
+    }
   }
 
   deleteTask(id) {
