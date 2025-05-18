@@ -163,7 +163,8 @@ export default class TasksIndex extends React.Component {
   }
 
   copyTask(args) {
-    let { duplicateOf, timeframe, position, selectedTasks } = args;
+    let { duplicateOf, timeframe, position } = args;
+    const { selectedTasks } = this.state;
     this.setState({
       spinner: true,
     });
