@@ -11,6 +11,16 @@ class ResetTasks
     tomorrow = today + 1.day
     date = do_for_tomorrow ? tomorrow : today
 
+    Sentry.capture_message(
+      "Reset Tasks",
+      extra: {
+        user: user.email,
+        early_reset: do_for_tomorrow,
+        today: today,
+        tomorrow: tomorrow,
+      }
+    )
+
     # delete completed and expiring tasks
     tasks_to_delete = Task.where(timeframe: 'day', parent_id: nil, complete: true,
     user: user) + Task.where(timeframe: 'day',
