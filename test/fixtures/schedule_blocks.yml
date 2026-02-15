@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  weekday: 1
+  start_time: 2026-02-15 15:50:43
+  end_time: 2026-02-15 15:50:43
+  color: MyString
+  text: MyString
+  user: one
+  category_id: 1
+  schedule_day_variant_id: 1
+
+two:
+  weekday: 1
+  start_time: 2026-02-15 15:50:43
+  end_time: 2026-02-15 15:50:43
+  color: MyString
+  text: MyString
+  user: two
+  category_id: 1
+  schedule_day_variant_id: 1

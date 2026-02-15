@@ -289,7 +289,6 @@ GEM
       logger (>= 1.7.0)
       rack (>= 3.2.0)
       redis-client (>= 0.26.0)
-    spring (4.4.2)
     sprockets (4.2.2)
       concurrent-ruby (~> 1.0)
       logger
@@ -352,7 +351,6 @@ DEPENDENCIES
   sassc-rails
   sentry-ruby
   sidekiq
-  spring
   timeliness
   uglifier
   web-console
