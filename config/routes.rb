@@ -41,6 +41,7 @@ Rails.application.routes.draw do
     resources :grocery_items, only: [:index, :create, :show, :update, :destroy]
     resources :grocery_lists, only: [:index, :create, :show, :update, :destroy]
     resources :grocery_list_items, only: [:create, :destroy]
+    resources :schedule_blocks, only: [:index]
     resources :recipe_items, only: [:create, :destroy]
     resources :grocery_sections, only: [:create, :destroy]
     resources :grocery_section_items, only: [:create, :destroy]

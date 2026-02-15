@@ -1,4 +1,5 @@
 import React from "react";
+import { sendRequest } from "handy-components";
 
 const DAYS = [
   "Monday",
@@ -43,6 +44,9 @@ export default class Schedule extends React.Component {
   }
 
   componentDidMount() {
+    sendRequest("/api/schedule_blocks").then((response) => {
+      console.log(response);
+    });
     this.timer = setInterval(() => {
       this.setState({ now: new Date() });
     }, 60000);
