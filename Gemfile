@@ -21,14 +21,12 @@ gem 'sidekiq'
 gem 'timeliness'
 gem 'uglifier'
 
-group :development, :test do
-  gem 'byebug'
-  gem 'better_errors'
-  gem 'dotenv-rails'
+group :test do
+  gem 'rspec-rails'
 end
 
-group :development do
-  gem 'web-console'
+group :development, :test do
+  gem 'dotenv-rails'
 end
 
 group :production do
