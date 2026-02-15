@@ -11,6 +11,8 @@ const DAYS = [
   "Sunday",
 ];
 
+const SLOT_HEIGHT = 24;
+
 function buildTimeSlots() {
   const slots = [];
   for (let hour = 6; hour <= 22; hour++) {
@@ -33,6 +35,16 @@ function getCurrentDayIndex() {
   return jsDay === 0 ? 6 : jsDay - 1;
 }
 
+function parseTime(timeStr) {
+  const [h, m] = timeStr.split(":").map(Number);
+  return { hour: h, minute: m };
+}
+
+function timeToMinutes(timeStr) {
+  const { hour, minute } = parseTime(timeStr);
+  return hour * 60 + minute;
+}
+
 const TIME_SLOTS = buildTimeSlots();
 
 export default class Schedule extends React.Component {
@@ -40,12 +52,13 @@ export default class Schedule extends React.Component {
     super(props);
     this.state = {
       now: new Date(),
+      scheduleBlocks: [],
     };
   }
 
   componentDidMount() {
     sendRequest("/api/schedule_blocks").then((response) => {
-      console.log(response);
+      this.setState({ scheduleBlocks: response.scheduleBlocks });
     });
     this.timer = setInterval(() => {
       this.setState({ now: new Date() });
@@ -54,6 +67,16 @@ export default class Schedule extends React.Component {
 
   componentWillUnmount() {
     clearInterval(this.timer);
+  }
+
+  getBlockForCell(dayIndex, hour, minute) {
+    const { scheduleBlocks } = this.state;
+    const cellMinutes = hour * 60 + minute;
+    return scheduleBlocks.find((block) => {
+      if (block.weekday !== dayIndex) return false;
+      const startMinutes = timeToMinutes(block.startTime);
+      return startMinutes === cellMinutes;
+    });
   }
 
   render() {
@@ -75,6 +98,7 @@ export default class Schedule extends React.Component {
           backgroundColor: "white",
           borderRadius: 6,
           boxShadow: "1px 2px 3px 0px #e6e9ec",
+          userSelect: "none",
           marginBottom: 20,
         }}
       >
@@ -110,47 +134,76 @@ export default class Schedule extends React.Component {
                   <td style={styles.timeCell}>
                     {minute === 0 ? formatTime(hour, minute) : ""}
                   </td>
-                  {DAYS.map((day, dayIndex) => (
-                    <td
-                      key={`${day}-${hour}-${minute}`}
-                      style={{
-                        ...styles.cell,
-                        borderTopWidth: minute === 0 ? 1 : 0,
-                        borderTopStyle: minute === 0 ? "solid" : "none",
-                        borderTopColor: "#ccc",
-                        position: "relative",
-                      }}
-                    >
-                      {isInRange &&
-                        dayIndex === currentDayIndex &&
-                        hour === Math.floor(currentHour) &&
-                        minute === (currentMinutes >= 30 ? 30 : 0) && (
+                  {DAYS.map((day, dayIndex) => {
+                    const block = this.getBlockForCell(dayIndex, hour, minute);
+                    const startMinutes = block ? timeToMinutes(block.startTime) : 0;
+                    const endMinutes = block ? timeToMinutes(block.endTime) : 0;
+                    const durationSlots = block ? (endMinutes - startMinutes) / 30 : 0;
+                    const blockHeight = durationSlots * SLOT_HEIGHT;
+
+                    return (
+                      <td
+                        key={`${day}-${hour}-${minute}`}
+                        style={{
+                          ...styles.cell,
+                          borderTopWidth: minute === 0 ? 1 : 0,
+                          borderTopStyle: minute === 0 ? "solid" : "none",
+                          borderTopColor: "#ccc",
+                          position: "relative",
+                        }}
+                      >
+                        {block && (
                           <div
                             style={{
                               position: "absolute",
-                              top: ((currentMinutes % 30) / 30) * 24,
-                              left: 0,
-                              right: 0,
-                              height: 2,
-                              backgroundColor: "#d9534f",
-                              zIndex: 1,
+                              top: 0,
+                              left: 2,
+                              right: 2,
+                              height: blockHeight,
+                              backgroundColor: block.color,
+                              borderRadius: 4,
+                              padding: "2px 6px",
+                              fontSize: 11,
+                              color: "white",
+                              overflow: "hidden",
+                              zIndex: 2,
+                              lineHeight: "14px",
                             }}
                           >
+                            {block.text}
+                          </div>
+                        )}
+                        {isInRange &&
+                          dayIndex === currentDayIndex &&
+                          hour === Math.floor(currentHour) &&
+                          minute === (currentMinutes >= 30 ? 30 : 0) && (
                             <div
                               style={{
                                 position: "absolute",
-                                left: -4,
-                                top: -3,
-                                width: 8,
-                                height: 8,
-                                borderRadius: "50%",
+                                top: ((currentMinutes % 30) / 30) * SLOT_HEIGHT,
+                                left: 0,
+                                right: 0,
+                                height: 2,
                                 backgroundColor: "#d9534f",
+                                zIndex: 3,
                               }}
-                            />
-                          </div>
-                        )}
-                    </td>
-                  ))}
+                            >
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  left: -4,
+                                  top: -3,
+                                  width: 8,
+                                  height: 8,
+                                  borderRadius: "50%",
+                                  backgroundColor: "#d9534f",
+                                }}
+                              />
+                            </div>
+                          )}
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
             </tbody>
@@ -183,12 +236,12 @@ const styles = {
     color: "#888",
     verticalAlign: "top",
     whiteSpace: "nowrap",
-    height: 24,
+    height: SLOT_HEIGHT,
   },
   cell: {
     borderLeft: "1px solid #ddd",
     borderRight: "1px solid #ddd",
-    height: 24,
+    height: SLOT_HEIGHT,
     padding: 0,
   },
 };
