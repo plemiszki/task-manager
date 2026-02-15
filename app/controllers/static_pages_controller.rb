@@ -11,6 +11,9 @@ class StaticPagesController < ApplicationController
   def settings
   end
 
+  def schedule
+  end
+
   def grocery_list
     grocery_stores = GroceryStore.all.includes(grocery_sections: [:grocery_items]).order(:name)
     redis = Redis.new(url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })

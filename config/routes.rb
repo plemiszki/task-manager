@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   resources :grocery_lists, only: [:show]
   get '/settings' => 'static_pages#settings'
   get '/grocery_list' => 'static_pages#grocery_list'
+  get '/schedule' => 'static_pages#schedule'
 
   namespace :api, defaults: { format: :json } do
     resources :users, only: [:index]

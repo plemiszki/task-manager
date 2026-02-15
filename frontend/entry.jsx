@@ -14,6 +14,7 @@ import RecipeDetails from './components/recipe-details.jsx'
 import RecipesIndex from './components/recipes-index.jsx'
 import RecurringTaskDetails from './components/recurring-task-details.jsx'
 import RecurringTasksIndex from './components/recurring-tasks-index.jsx'
+import Schedule from './components/schedule.jsx'
 import TasksIndex from './components/tasks-index.jsx'
 
 const renderFullIndex = (id, props = {}, args = {}) => {
@@ -83,6 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
       <div className="container widened-container">
         <RecipeDetails />
       </div>
+    );
+  }
+
+  const scheduleNode = document.getElementById('schedule');
+  if (scheduleNode) {
+    createRoot(scheduleNode).render(
+      <Schedule />
     );
   }
 
