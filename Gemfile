@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
-ruby '4.0.0'
+ruby '4.0.1'
 
-gem 'rails', '8.1.1'
+gem 'rails'
 gem 'pg'
 
 gem 'american_date'
@@ -28,7 +28,7 @@ group :development, :test do
 end
 
 group :development do
-  gem 'web-console', '~> 2.0'
+  gem 'web-console'
   gem 'spring'
 end
 
