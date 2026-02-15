@@ -115,6 +115,9 @@ export default class CurrentUser extends React.Component {
                 >
                   Recipes
                 </a>
+                <a className="btn btn-primary" rel="nofollow" href="/schedule">
+                  Schedule
+                </a>
                 <a
                   className="btn btn-success"
                   rel="nofollow"
