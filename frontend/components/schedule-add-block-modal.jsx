@@ -101,19 +101,27 @@ export default class ScheduleAddBlockModal extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.isOpen && !prevProps.isOpen) {
-      const { block } = this.props;
-      this.setState({
-        newBlock: block
-          ? {
-              weekday: block.weekday,
-              startTime: block.startTime,
-              endTime: block.endTime,
-              color: block.color,
-              text: block.text,
-            }
-          : { ...DEFAULT_BLOCK },
-        errors: [],
-      });
+      const { block, defaults } = this.props;
+      let newBlock;
+      if (block) {
+        newBlock = {
+          weekday: block.weekday,
+          startTime: block.startTime,
+          endTime: block.endTime,
+          color: block.color,
+          text: block.text,
+        };
+      } else if (defaults) {
+        newBlock = {
+          ...DEFAULT_BLOCK,
+          weekday: defaults.weekday,
+          startTime: defaults.startTime,
+          endTime: addMinutes(defaults.startTime, 15),
+        };
+      } else {
+        newBlock = { ...DEFAULT_BLOCK };
+      }
+      this.setState({ newBlock, errors: [] });
     }
   }
 

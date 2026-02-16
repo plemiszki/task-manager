@@ -126,6 +126,12 @@ export default class ScheduleTable extends React.Component {
                         borderTopColor: "#ccc",
                         position: "relative",
                       }}
+                      onDoubleClick={() => {
+                        if (!block) {
+                          const startTime = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+                          this.props.onCellDoubleClick(dayIndex, startTime);
+                        }
+                      }}
                     >
                       {block && (
                         <div

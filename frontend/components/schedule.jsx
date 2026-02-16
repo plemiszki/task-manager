@@ -13,6 +13,7 @@ export default class Schedule extends React.Component {
       scheduleHeight: 0,
       modalOpen: false,
       editingBlock: null,
+      newBlockDefaults: null,
     };
     this.scheduleRef = React.createRef();
   }
@@ -45,8 +46,14 @@ export default class Schedule extends React.Component {
   }
 
   render() {
-    const { now, scheduleBlocks, scheduleHeight, modalOpen, editingBlock } =
-      this.state;
+    const {
+      now,
+      scheduleBlocks,
+      scheduleHeight,
+      modalOpen,
+      editingBlock,
+      newBlockDefaults,
+    } = this.state;
 
     return (
       <div
@@ -73,17 +80,25 @@ export default class Schedule extends React.Component {
             onBlockClick={(block) =>
               this.setState({ modalOpen: true, editingBlock: block })
             }
+            onCellDoubleClick={(weekday, startTime) =>
+              this.setState({
+                modalOpen: true,
+                editingBlock: null,
+                newBlockDefaults: { weekday, startTime },
+              })
+            }
           />
         </div>
         <ScheduleSidebar
           height={scheduleHeight}
           onAddBlock={() =>
-            this.setState({ modalOpen: true, editingBlock: null })
+            this.setState({ modalOpen: true, editingBlock: null, newBlockDefaults: null })
           }
         />
         <ScheduleAddBlockModal
           isOpen={modalOpen}
           block={editingBlock}
+          defaults={newBlockDefaults}
           onClose={() => this.setState({ modalOpen: false })}
           onSave={(scheduleBlocks) =>
             this.setState({ scheduleBlocks, modalOpen: false })
