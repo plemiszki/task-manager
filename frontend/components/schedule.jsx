@@ -55,6 +55,16 @@ export default class Schedule extends React.Component {
       newBlockDefaults,
     } = this.state;
 
+    const jsDay = now.getDay();
+    const currentDayIndex = jsDay === 0 ? 6 : jsDay - 1;
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    const currentBlock = scheduleBlocks.find((block) => {
+      if (block.weekday !== currentDayIndex) return false;
+      const [sh, sm] = block.startTime.split(":").map(Number);
+      const [eh, em] = block.endTime.split(":").map(Number);
+      return nowMinutes >= sh * 60 + sm && nowMinutes < eh * 60 + em;
+    });
+
     return (
       <div
         className="container widened-container"
@@ -91,6 +101,7 @@ export default class Schedule extends React.Component {
         </div>
         <ScheduleSidebar
           height={scheduleHeight}
+          currentActivity={currentBlock ? currentBlock.text : null}
           onAddBlock={() =>
             this.setState({ modalOpen: true, editingBlock: null, newBlockDefaults: null })
           }

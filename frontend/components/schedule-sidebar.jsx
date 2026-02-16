@@ -4,7 +4,7 @@ const SIDEBAR_WIDTH = 250;
 
 export default class ScheduleSidebar extends React.Component {
   render() {
-    const { height, onAddBlock } = this.props;
+    const { height, onAddBlock, currentActivity } = this.props;
 
     return (
       <div
@@ -19,6 +19,21 @@ export default class ScheduleSidebar extends React.Component {
           boxShadow: "1px 2px 3px 0px #e6e9ec",
         }}
       >
+        <div
+          style={{
+            marginBottom: 20,
+            border: "solid 1px lightgray",
+            borderRadius: 5,
+            padding: 10,
+          }}
+        >
+          <div style={{ fontSize: 12, color: "#888", marginBottom: 4 }}>
+            Current Activity
+          </div>
+          <div style={{ fontSize: 14, fontWeight: "bold" }}>
+            {currentActivity || "(None)"}
+          </div>
+        </div>
         <div
           className="btn"
           style={{ width: "100%", backgroundColor: "black", color: "white" }}
