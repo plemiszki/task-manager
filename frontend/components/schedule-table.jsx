@@ -143,7 +143,9 @@ export default class ScheduleTable extends React.Component {
                             overflow: "hidden",
                             zIndex: 2,
                             lineHeight: "14px",
+                            cursor: "pointer",
                           }}
+                          onClick={() => this.props.onBlockClick(block)}
                         >
                           {block.text}
                         </div>

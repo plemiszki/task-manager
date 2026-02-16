@@ -16,6 +16,16 @@ class Api::ScheduleBlocksController < ActionController::Base
     end
   end
 
+  def update
+    @schedule_block = ScheduleBlock.find(params[:id])
+    if @schedule_block.update(schedule_block_params)
+      @schedule_blocks = ScheduleBlock.where(user_id: current_user.id).order(:weekday, :start_time)
+      render 'index'
+    else
+      render_errors(@schedule_block)
+    end
+  end
+
   private
 
   def schedule_block_params

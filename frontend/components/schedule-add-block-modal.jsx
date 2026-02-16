@@ -3,6 +3,7 @@ import Modal from "react-modal";
 import {
   Details,
   createEntity,
+  updateEntity,
   setUpNiceSelect,
   Spinner,
   GrayedOut,
@@ -93,8 +94,17 @@ export default class ScheduleAddBlockModal extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.isOpen && !prevProps.isOpen) {
+      const { block } = this.props;
       this.setState({
-        newBlock: { ...DEFAULT_BLOCK },
+        newBlock: block
+          ? {
+              weekday: block.weekday,
+              startTime: block.startTime,
+              endTime: block.endTime,
+              color: block.color,
+              text: block.text,
+            }
+          : { ...DEFAULT_BLOCK },
         errors: [],
       });
     }
@@ -112,23 +122,33 @@ export default class ScheduleAddBlockModal extends React.Component {
     this.setState({ newBlock: { ...newBlock, [field]: value } });
   }
 
-  submitNewBlock() {
+  submitBlock() {
+    const { block, onSave } = this.props;
     const { newBlock } = this.state;
+    const entity = {
+      weekday: newBlock.weekday,
+      startTime: newBlock.startTime,
+      endTime: newBlock.endTime,
+      color: newBlock.color,
+      text: newBlock.text,
+    };
     this.setState({ spinner: true });
-    createEntity({
-      directory: "schedule_blocks",
-      entityName: "scheduleBlock",
-      entity: {
-        weekday: newBlock.weekday,
-        startTime: newBlock.startTime,
-        endTime: newBlock.endTime,
-        color: newBlock.color,
-        text: newBlock.text,
-      },
-    }).then(
+    const request = block
+      ? updateEntity({
+          id: block.id,
+          directory: "schedule_blocks",
+          entityName: "scheduleBlock",
+          entity,
+        })
+      : createEntity({
+          directory: "schedule_blocks",
+          entityName: "scheduleBlock",
+          entity,
+        });
+    request.then(
       (response) => {
         this.setState({ spinner: false });
-        this.props.onBlockCreated(response.scheduleBlocks);
+        onSave(response.scheduleBlocks);
       },
       (response) => {
         this.setState({
@@ -140,7 +160,7 @@ export default class ScheduleAddBlockModal extends React.Component {
   }
 
   render() {
-    const { isOpen, onClose } = this.props;
+    const { isOpen, onClose, block } = this.props;
     const { newBlock, spinner, errors } = this.state;
 
     return (
@@ -229,9 +249,9 @@ export default class ScheduleAddBlockModal extends React.Component {
                     backgroundColor: "black",
                     color: "white",
                   }}
-                  onClick={this.submitNewBlock.bind(this)}
+                  onClick={this.submitBlock.bind(this)}
                 >
-                  Add Block
+                  {block ? "Edit Block" : "Add Block"}
                 </div>
               </div>
             </div>
