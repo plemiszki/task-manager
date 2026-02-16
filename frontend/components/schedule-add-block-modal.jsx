@@ -6,6 +6,7 @@ import {
   updateEntity,
   deleteEntity,
   setUpNiceSelect,
+  resetNiceSelect,
   Spinner,
   GrayedOut,
 } from "handy-components";
@@ -43,18 +44,23 @@ const DAY_OPTIONS = DAYS.map((day, i) => ({ value: i, text: day }));
 function buildTimeOptions() {
   const options = [];
   for (let hour = 6; hour <= 22; hour++) {
-    options.push({
-      value: `${hour.toString().padStart(2, "0")}:00`,
-      text: formatTime(hour, 0),
-    });
-    if (hour < 22) {
+    for (let minute = 0; minute < 60; minute += 15) {
+      if (hour === 22 && minute > 30) break;
       options.push({
-        value: `${hour.toString().padStart(2, "0")}:30`,
-        text: formatTime(hour, 30),
+        value: `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`,
+        text: formatTime(hour, minute),
       });
     }
   }
   return options;
+}
+
+function addMinutes(timeStr, mins) {
+  const [h, m] = timeStr.split(":").map(Number);
+  const total = h * 60 + m + mins;
+  const newH = Math.floor(total / 60);
+  const newM = total % 60;
+  return `${newH.toString().padStart(2, "0")}:${newM.toString().padStart(2, "0")}`;
 }
 
 const TIME_OPTIONS = buildTimeOptions();
@@ -62,7 +68,7 @@ const TIME_OPTIONS = buildTimeOptions();
 const DEFAULT_BLOCK = {
   weekday: 0,
   startTime: "09:00",
-  endTime: "10:00",
+  endTime: "09:15",
   color: COLORS[0],
   text: "",
 };
@@ -115,6 +121,17 @@ export default class ScheduleAddBlockModal extends React.Component {
     return {
       entity: "newBlock",
       errorsArray: this.state.errors,
+      beforeSave: (obj, property, newValue) => {
+        if (property === "startTime") {
+          obj.endTime = addMinutes(newValue, 15);
+          setTimeout(() => {
+            resetNiceSelect({
+              selector: "select",
+              func: Details.changeDropdownField.bind(this),
+            });
+          }, 0);
+        }
+      },
     };
   }
 
