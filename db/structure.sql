@@ -1,6 +1,7 @@
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -539,6 +540,38 @@ ALTER SEQUENCE public.schedule_blocks_id_seq OWNED BY public.schedule_blocks.id;
 
 
 --
+-- Name: schedule_categories; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.schedule_categories (
+    id bigint NOT NULL,
+    name character varying NOT NULL,
+    user_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: schedule_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.schedule_categories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: schedule_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.schedule_categories_id_seq OWNED BY public.schedule_categories.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -722,6 +755,13 @@ ALTER TABLE ONLY public.schedule_blocks ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
+-- Name: schedule_categories id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schedule_categories ALTER COLUMN id SET DEFAULT nextval('public.schedule_categories_id_seq'::regclass);
+
+
+--
 -- Name: tasks id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -864,6 +904,14 @@ ALTER TABLE ONLY public.schedule_blocks
 
 
 --
+-- Name: schedule_categories schedule_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schedule_categories
+    ADD CONSTRAINT schedule_categories_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: tasks tasks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -950,6 +998,13 @@ CREATE INDEX index_schedule_blocks_on_user_id ON public.schedule_blocks USING bt
 
 
 --
+-- Name: index_schedule_categories_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_schedule_categories_on_user_id ON public.schedule_categories USING btree (user_id);
+
+
+--
 -- Name: index_tasks_on_duplicate_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -999,6 +1054,14 @@ CREATE UNIQUE INDEX unique_schema_migrations ON public.schema_migrations USING b
 
 
 --
+-- Name: schedule_categories fk_rails_c67060ac84; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schedule_categories
+    ADD CONSTRAINT fk_rails_c67060ac84 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: schedule_blocks fk_rails_e95bb54aa4; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1013,6 +1076,7 @@ ALTER TABLE ONLY public.schedule_blocks
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260216194552'),
 ('20260215210523'),
 ('20260215205043'),
 ('20250207023419'),
