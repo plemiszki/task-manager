@@ -26,6 +26,12 @@ class Api::ScheduleBlocksController < ActionController::Base
     end
   end
 
+  def destroy
+    ScheduleBlock.find(params[:id]).destroy
+    @schedule_blocks = ScheduleBlock.where(user_id: current_user.id).order(:weekday, :start_time)
+    render 'index'
+  end
+
   private
 
   def schedule_block_params

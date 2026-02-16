@@ -4,6 +4,7 @@ import {
   Details,
   createEntity,
   updateEntity,
+  deleteEntity,
   setUpNiceSelect,
   Spinner,
   GrayedOut,
@@ -122,6 +123,18 @@ export default class ScheduleAddBlockModal extends React.Component {
     this.setState({ newBlock: { ...newBlock, [field]: value } });
   }
 
+  deleteBlock() {
+    const { block, onSave } = this.props;
+    this.setState({ spinner: true });
+    deleteEntity({
+      id: block.id,
+      directory: "schedule_blocks",
+    }).then((response) => {
+      this.setState({ spinner: false });
+      onSave(response.scheduleBlocks);
+    });
+  }
+
   submitBlock() {
     const { block, onSave } = this.props;
     const { newBlock } = this.state;
@@ -222,8 +235,7 @@ export default class ScheduleAddBlockModal extends React.Component {
                     <div
                       key={color}
                       className={
-                        "color" +
-                        (newBlock.color === color ? " selected" : "")
+                        "color" + (newBlock.color === color ? " selected" : "")
                       }
                       style={{ backgroundColor: color }}
                       onClick={() => this.changeNewBlockField("color", color)}
@@ -253,6 +265,17 @@ export default class ScheduleAddBlockModal extends React.Component {
                 >
                   {block ? "Edit Block" : "Add Block"}
                 </div>
+                {block && (
+                  <div
+                    className="btn btn-danger"
+                    style={{
+                      marginLeft: 10,
+                    }}
+                    onClick={this.deleteBlock.bind(this)}
+                  >
+                    Delete Block
+                  </div>
+                )}
               </div>
             </div>
             <GrayedOut visible={spinner} />
