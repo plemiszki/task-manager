@@ -49,11 +49,12 @@ const TIME_SLOTS = buildTimeSlots();
 export default class ScheduleTable extends React.Component {
   getBlockForCell(dayIndex, hour, minute) {
     const { scheduleBlocks } = this.props;
-    const cellMinutes = hour * 60 + minute;
+    const cellStart = hour * 60 + minute;
+    const cellEnd = cellStart + 30;
     return scheduleBlocks.find((block) => {
       if (block.weekday !== dayIndex) return false;
       const startMinutes = timeToMinutes(block.startTime);
-      return startMinutes === cellMinutes;
+      return startMinutes >= cellStart && startMinutes < cellEnd;
     });
   }
 
@@ -105,16 +106,19 @@ export default class ScheduleTable extends React.Component {
                     hour,
                     minute,
                   );
+                  const cellStart = hour * 60 + minute;
                   const startMinutes = block
                     ? timeToMinutes(block.startTime)
                     : 0;
                   const endMinutes = block
                     ? timeToMinutes(block.endTime)
                     : 0;
-                  const durationSlots = block
-                    ? (endMinutes - startMinutes) / 30
+                  const offsetWithinCell = block
+                    ? ((startMinutes - cellStart) / 30) * SLOT_HEIGHT
                     : 0;
-                  const blockHeight = durationSlots * SLOT_HEIGHT;
+                  const blockHeight = block
+                    ? ((endMinutes - startMinutes) / 30) * SLOT_HEIGHT
+                    : 0;
 
                   return (
                     <td
@@ -137,7 +141,7 @@ export default class ScheduleTable extends React.Component {
                         <div
                           style={{
                             position: "absolute",
-                            top: 0,
+                            top: offsetWithinCell,
                             left: 2,
                             right: 2,
                             height: blockHeight,
