@@ -1,5 +1,5 @@
 import React from "react";
-import { sendRequest } from "handy-components";
+import { sendRequest, Spinner } from "handy-components";
 import ScheduleTable from "./schedule-table.jsx";
 import ScheduleSidebar from "./schedule-sidebar.jsx";
 import ScheduleAddBlockModal from "./schedule-add-block-modal.jsx";
@@ -11,6 +11,7 @@ export default class Schedule extends React.Component {
     super(props);
     this.state = {
       now: new Date(),
+      loading: true,
       scheduleBlocks: [],
       scheduleHeight: 0,
       modalOpen: false,
@@ -27,19 +28,20 @@ export default class Schedule extends React.Component {
   }
 
   componentDidMount() {
-    sendRequest("/api/schedule_blocks").then((response) => {
-      this.setState({ scheduleBlocks: response.scheduleBlocks });
-    });
-    sendRequest("/api/schedule_categories").then((response) => {
-      this.setState({ scheduleCategories: response.scheduleCategories });
-    });
-    sendRequest("/api/schedule_day_variants").then((response) => {
+    Promise.all([
+      sendRequest("/api/schedule_blocks"),
+      sendRequest("/api/schedule_categories"),
+      sendRequest("/api/schedule_day_variants"),
+    ]).then(([blocksRes, categoriesRes, variantsRes]) => {
       const activeDayVariants = {};
-      response.scheduleDayVariants.forEach((v) => {
+      variantsRes.scheduleDayVariants.forEach((v) => {
         if (v.active) activeDayVariants[v.weekday] = v.id;
       });
       this.setState({
-        scheduleDayVariants: response.scheduleDayVariants,
+        loading: false,
+        scheduleBlocks: blocksRes.scheduleBlocks,
+        scheduleCategories: categoriesRes.scheduleCategories,
+        scheduleDayVariants: variantsRes.scheduleDayVariants,
         activeDayVariants,
       });
     });
@@ -76,6 +78,17 @@ export default class Schedule extends React.Component {
       editingBlock,
       newBlockDefaults,
     } = this.state;
+
+    if (this.state.loading) {
+      return (
+        <div
+          className="container widened-container"
+          style={{ position: "relative", height: 200 }}
+        >
+          <Spinner visible={true} />
+        </div>
+      );
+    }
 
     const jsDay = now.getDay();
     const currentDayIndex = jsDay === 0 ? 6 : jsDay - 1;
@@ -145,10 +158,15 @@ export default class Schedule extends React.Component {
               this.setState({
                 activeDayVariants: { ...activeDayVariants, [weekday]: nextId },
               });
-              const activateParams = nextId ? `weekday=${weekday}&id=${nextId}` : `weekday=${weekday}`;
-              sendRequest(`/api/schedule_day_variants/activate?${activateParams}`, {
-                method: "PATCH",
-              });
+              const activateParams = nextId
+                ? `weekday=${weekday}&id=${nextId}`
+                : `weekday=${weekday}`;
+              sendRequest(
+                `/api/schedule_day_variants/activate?${activateParams}`,
+                {
+                  method: "PATCH",
+                },
+              );
             }}
           />
         </div>
