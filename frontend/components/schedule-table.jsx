@@ -1,4 +1,5 @@
 import React from "react";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const DAYS = [
   "Monday",
@@ -89,7 +90,20 @@ export default class ScheduleTable extends React.Component {
                       : {}),
                   }}
                 >
-                  {day}
+                  <div style={{ marginBottom: 4 }}>{day}</div>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color: "#888",
+                      position: "relative",
+                      textAlign: "center",
+                    }}
+                  >
+                    Normal
+                    <AddCircleOutlineIcon
+                      style={{ fontSize: 14, cursor: "pointer", position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)" }}
+                    />
+                  </div>
                 </th>
               ))}
             </tr>
@@ -101,18 +115,12 @@ export default class ScheduleTable extends React.Component {
                   {minute === 0 ? formatTime(hour, minute) : ""}
                 </td>
                 {DAYS.map((day, dayIndex) => {
-                  const block = this.getBlockForCell(
-                    dayIndex,
-                    hour,
-                    minute,
-                  );
+                  const block = this.getBlockForCell(dayIndex, hour, minute);
                   const cellStart = hour * 60 + minute;
                   const startMinutes = block
                     ? timeToMinutes(block.startTime)
                     : 0;
-                  const endMinutes = block
-                    ? timeToMinutes(block.endTime)
-                    : 0;
+                  const endMinutes = block ? timeToMinutes(block.endTime) : 0;
                   const offsetWithinCell = block
                     ? ((startMinutes - cellStart) / 30) * SLOT_HEIGHT
                     : 0;
@@ -167,8 +175,7 @@ export default class ScheduleTable extends React.Component {
                           <div
                             style={{
                               position: "absolute",
-                              top:
-                                ((currentMinutes % 30) / 30) * SLOT_HEIGHT,
+                              top: ((currentMinutes % 30) / 30) * SLOT_HEIGHT,
                               left: 0,
                               right: 0,
                               height: 2,
