@@ -21,6 +21,7 @@ export default class Schedule extends React.Component {
       newBlockDefaults: null,
       scheduleCategories: [],
       scheduleDayVariants: [],
+      activeDayVariants: {},
     };
     this.scheduleRef = React.createRef();
   }
@@ -31,6 +32,9 @@ export default class Schedule extends React.Component {
     });
     sendRequest("/api/schedule_categories").then((response) => {
       this.setState({ scheduleCategories: response.scheduleCategories });
+    });
+    sendRequest("/api/schedule_day_variants").then((response) => {
+      this.setState({ scheduleDayVariants: response.scheduleDayVariants });
     });
     this.timer = setInterval(() => {
       this.setState({ now: new Date() });
@@ -97,6 +101,8 @@ export default class Schedule extends React.Component {
         >
           <ScheduleTable
             scheduleBlocks={scheduleBlocks}
+            scheduleDayVariants={this.state.scheduleDayVariants}
+            activeDayVariants={this.state.activeDayVariants}
             now={now}
             onBlockClick={(block) =>
               this.setState({ modalOpen: true, editingBlock: block })
@@ -111,6 +117,23 @@ export default class Schedule extends React.Component {
             onAddDayVariant={(weekday) =>
               this.setState({ dayVariantModalOpen: true, dayVariantWeekday: weekday })
             }
+            onCycleDayVariant={(weekday) => {
+              const { scheduleDayVariants, activeDayVariants } = this.state;
+              const variants = scheduleDayVariants.filter((v) => v.weekday === weekday);
+              const currentId = activeDayVariants[weekday] || null;
+              let nextId = null;
+              if (currentId === null && variants.length > 0) {
+                nextId = variants[0].id;
+              } else if (currentId !== null) {
+                const idx = variants.findIndex((v) => v.id === currentId);
+                if (idx < variants.length - 1) {
+                  nextId = variants[idx + 1].id;
+                }
+              }
+              this.setState({
+                activeDayVariants: { ...activeDayVariants, [weekday]: nextId },
+              });
+            }}
           />
         </div>
         <ScheduleSidebar

@@ -48,6 +48,14 @@ function timeToMinutes(timeStr) {
 const TIME_SLOTS = buildTimeSlots();
 
 export default class ScheduleTable extends React.Component {
+  getVariantLabel(dayIndex) {
+    const { scheduleDayVariants, activeDayVariants } = this.props;
+    const activeId = activeDayVariants[dayIndex] || null;
+    if (activeId === null) return "Normal";
+    const variant = scheduleDayVariants.find((v) => v.id === activeId);
+    return variant ? variant.name : "Normal";
+  }
+
   getBlockForCell(dayIndex, hour, minute) {
     const { scheduleBlocks } = this.props;
     const cellStart = hour * 60 + minute;
@@ -99,7 +107,12 @@ export default class ScheduleTable extends React.Component {
                       textAlign: "center",
                     }}
                   >
-                    Normal
+                    <span
+                      style={{ cursor: (this.props.scheduleDayVariants || []).some((v) => v.weekday === i) ? "pointer" : "default" }}
+                      onClick={() => this.props.onCycleDayVariant(i)}
+                    >
+                      {this.getVariantLabel(i)}
+                    </span>
                     <AddCircleOutlineIcon
                       style={{ fontSize: 14, cursor: "pointer", position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)" }}
                       onClick={() => this.props.onAddDayVariant(i)}
