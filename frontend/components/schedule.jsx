@@ -25,6 +25,9 @@ export default class Schedule extends React.Component {
     sendRequest("/api/schedule_blocks").then((response) => {
       this.setState({ scheduleBlocks: response.scheduleBlocks });
     });
+    sendRequest("/api/schedule_categories").then((response) => {
+      this.setState({ scheduleCategories: response.scheduleCategories });
+    });
     this.timer = setInterval(() => {
       this.setState({ now: new Date() });
     }, 60000);
@@ -52,6 +55,7 @@ export default class Schedule extends React.Component {
     const {
       now,
       scheduleBlocks,
+      scheduleCategories,
       scheduleHeight,
       modalOpen,
       editingBlock,
@@ -105,6 +109,8 @@ export default class Schedule extends React.Component {
         <ScheduleSidebar
           height={scheduleHeight}
           currentActivity={currentBlock ? currentBlock.text : null}
+          scheduleBlocks={scheduleBlocks}
+          scheduleCategories={scheduleCategories}
           onAddBlock={() =>
             this.setState({ modalOpen: true, editingBlock: null, newBlockDefaults: null })
           }
