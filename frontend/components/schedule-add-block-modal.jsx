@@ -299,7 +299,12 @@ export default class ScheduleAddBlockModal extends React.Component {
                 </div>
               </div>
             </div>
-            <div className="row">
+            <div
+              className="row"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") this.submitBlock();
+              }}
+            >
               {Details.renderField.bind(this)({
                 columnWidth: 12,
                 entity: "newBlock",

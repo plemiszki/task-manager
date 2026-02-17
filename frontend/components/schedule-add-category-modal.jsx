@@ -76,7 +76,12 @@ export default class ScheduleAddCategoryModal extends React.Component {
       >
         <div className="admin-modal handy-component">
           <div className="white-box" style={{ marginBottom: 0 }}>
-            <div className="row">
+            <div
+              className="row"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") this.submitCategory();
+              }}
+            >
               {Details.renderField.bind(this)({
                 columnWidth: 12,
                 entity: "newCategory",
