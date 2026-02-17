@@ -31,7 +31,7 @@ const COLORS = [
   "rgb(111, 138, 240)",
   "rgb(181, 111, 240)",
   "rgb(175, 96, 26)",
-  "rgb(210, 206, 200)",
+  "rgb(170, 165, 158)",
 ];
 
 function formatTime(hour, minute) {
