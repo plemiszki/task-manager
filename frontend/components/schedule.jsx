@@ -34,7 +34,14 @@ export default class Schedule extends React.Component {
       this.setState({ scheduleCategories: response.scheduleCategories });
     });
     sendRequest("/api/schedule_day_variants").then((response) => {
-      this.setState({ scheduleDayVariants: response.scheduleDayVariants });
+      const activeDayVariants = {};
+      response.scheduleDayVariants.forEach((v) => {
+        if (v.active) activeDayVariants[v.weekday] = v.id;
+      });
+      this.setState({
+        scheduleDayVariants: response.scheduleDayVariants,
+        activeDayVariants,
+      });
     });
     this.timer = setInterval(() => {
       this.setState({ now: new Date() });
@@ -115,11 +122,16 @@ export default class Schedule extends React.Component {
               })
             }
             onAddDayVariant={(weekday) =>
-              this.setState({ dayVariantModalOpen: true, dayVariantWeekday: weekday })
+              this.setState({
+                dayVariantModalOpen: true,
+                dayVariantWeekday: weekday,
+              })
             }
             onCycleDayVariant={(weekday) => {
               const { scheduleDayVariants, activeDayVariants } = this.state;
-              const variants = scheduleDayVariants.filter((v) => v.weekday === weekday);
+              const variants = scheduleDayVariants.filter(
+                (v) => v.weekday === weekday,
+              );
               const currentId = activeDayVariants[weekday] || null;
               let nextId = null;
               if (currentId === null && variants.length > 0) {
@@ -133,6 +145,10 @@ export default class Schedule extends React.Component {
               this.setState({
                 activeDayVariants: { ...activeDayVariants, [weekday]: nextId },
               });
+              const activateParams = nextId ? `weekday=${weekday}&id=${nextId}` : `weekday=${weekday}`;
+              sendRequest(`/api/schedule_day_variants/activate?${activateParams}`, {
+                method: "PATCH",
+              });
             }}
           />
         </div>
@@ -142,7 +158,11 @@ export default class Schedule extends React.Component {
           scheduleBlocks={scheduleBlocks}
           scheduleCategories={scheduleCategories}
           onAddBlock={() =>
-            this.setState({ modalOpen: true, editingBlock: null, newBlockDefaults: null })
+            this.setState({
+              modalOpen: true,
+              editingBlock: null,
+              newBlockDefaults: null,
+            })
           }
           onAddCategory={() => this.setState({ categoryModalOpen: true })}
         />

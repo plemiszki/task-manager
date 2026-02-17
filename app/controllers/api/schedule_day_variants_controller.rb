@@ -26,6 +26,16 @@ class Api::ScheduleDayVariantsController < ActionController::Base
     end
   end
 
+  def activate
+    weekday = params[:weekday].to_i
+    ScheduleDayVariant.where(user_id: current_user.id, weekday: weekday).update_all(active: false)
+    if params[:id].present?
+      ScheduleDayVariant.where(id: params[:id], user_id: current_user.id).update_all(active: true)
+    end
+    @schedule_day_variants = ScheduleDayVariant.where(user_id: current_user.id).order(:weekday, :name)
+    render 'index'
+  end
+
   def destroy
     ScheduleDayVariant.find(params[:id]).destroy
     @schedule_day_variants = ScheduleDayVariant.where(user_id: current_user.id).order(:weekday, :name)

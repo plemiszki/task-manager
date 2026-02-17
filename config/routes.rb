@@ -43,6 +43,7 @@ Rails.application.routes.draw do
     resources :grocery_list_items, only: [:create, :destroy]
     resources :schedule_blocks, only: [:index, :create, :update, :destroy]
     resources :schedule_categories, only: [:index, :create, :update, :destroy]
+    patch '/schedule_day_variants/activate' => '/api/schedule_day_variants#activate'
     resources :schedule_day_variants, only: [:index, :create, :update, :destroy]
     resources :recipe_items, only: [:create, :destroy]
     resources :grocery_sections, only: [:create, :destroy]
