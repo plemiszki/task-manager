@@ -1,5 +1,6 @@
 class ScheduleBlock < ActiveRecord::Base
   belongs_to :user
+  belongs_to :schedule_category, optional: true
 
   validates :user, :weekday, :start_time, :end_time, :color, :text, presence: true
   validate :no_overlapping_blocks

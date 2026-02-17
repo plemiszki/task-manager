@@ -516,7 +516,8 @@ CREATE TABLE public.schedule_blocks (
     text character varying NOT NULL,
     user_id bigint NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    schedule_category_id bigint
 );
 
 
@@ -991,6 +992,13 @@ CREATE UNIQUE INDEX index_recipe_items_on_grocery_item_id_and_recipe_id ON publi
 
 
 --
+-- Name: index_schedule_blocks_on_schedule_category_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_schedule_blocks_on_schedule_category_id ON public.schedule_blocks USING btree (schedule_category_id);
+
+
+--
 -- Name: index_schedule_blocks_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1054,6 +1062,14 @@ CREATE UNIQUE INDEX unique_schema_migrations ON public.schema_migrations USING b
 
 
 --
+-- Name: schedule_blocks fk_rails_214d51c816; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schedule_blocks
+    ADD CONSTRAINT fk_rails_214d51c816 FOREIGN KEY (schedule_category_id) REFERENCES public.schedule_categories(id);
+
+
+--
 -- Name: schedule_categories fk_rails_c67060ac84; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1076,6 +1092,7 @@ ALTER TABLE ONLY public.schedule_blocks
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260217002816'),
 ('20260216194552'),
 ('20260215210523'),
 ('20260215205043'),

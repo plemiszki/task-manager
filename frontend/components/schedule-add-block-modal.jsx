@@ -2,6 +2,7 @@ import React from "react";
 import Modal from "react-modal";
 import {
   Details,
+  sendRequest,
   createEntity,
   updateEntity,
   deleteEntity,
@@ -71,6 +72,7 @@ const DEFAULT_BLOCK = {
   endTime: "09:15",
   color: COLORS[0],
   text: "",
+  scheduleCategoryId: "",
 };
 
 const modalStyles = {
@@ -82,7 +84,7 @@ const modalStyles = {
     background: "#FFFFFF",
     margin: "auto",
     maxWidth: 600,
-    height: 429,
+    height: 477,
     border: "solid 1px black",
     borderRadius: "6px",
     padding: 0,
@@ -96,6 +98,7 @@ export default class ScheduleAddBlockModal extends React.Component {
       newBlock: { ...DEFAULT_BLOCK },
       spinner: false,
       errors: [],
+      categoryOptions: [],
     };
   }
 
@@ -110,6 +113,7 @@ export default class ScheduleAddBlockModal extends React.Component {
           endTime: block.endTime,
           color: block.color,
           text: block.text,
+          scheduleCategoryId: block.scheduleCategoryId || "",
         };
       } else if (defaults) {
         newBlock = {
@@ -122,6 +126,20 @@ export default class ScheduleAddBlockModal extends React.Component {
         newBlock = { ...DEFAULT_BLOCK };
       }
       this.setState({ newBlock, errors: [] });
+      sendRequest("/api/schedule_categories").then((response) => {
+        const categoryOptions = response.scheduleCategories.map((c) => ({
+          value: c.id,
+          text: c.name,
+        }));
+        this.setState({ categoryOptions }, () => {
+          setTimeout(() => {
+            resetNiceSelect({
+              selector: "select",
+              func: Details.changeDropdownField.bind(this),
+            });
+          }, 0);
+        });
+      });
     }
   }
 
@@ -169,6 +187,7 @@ export default class ScheduleAddBlockModal extends React.Component {
       endTime: newBlock.endTime,
       color: newBlock.color,
       text: newBlock.text,
+      scheduleCategoryId: newBlock.scheduleCategoryId || null,
     };
     this.setState({ spinner: true });
     const request = block
@@ -199,7 +218,7 @@ export default class ScheduleAddBlockModal extends React.Component {
 
   render() {
     const { isOpen, onClose, block } = this.props;
-    const { newBlock, spinner, errors } = this.state;
+    const { newBlock, spinner, errors, categoryOptions } = this.state;
 
     return (
       <Modal
@@ -246,28 +265,46 @@ export default class ScheduleAddBlockModal extends React.Component {
               })}
             </div>
             <div className="row">
-              {Details.renderField.bind(this)({
-                columnWidth: 12,
+              {Details.renderDropDown.bind(this)({
+                columnWidth: 6,
                 entity: "newBlock",
-                property: "text",
+                property: "scheduleCategoryId",
+                columnHeader: "Category",
+                options: categoryOptions,
+                optionDisplayProperty: "text",
+                optionSortProperty: "text",
+                optional: true,
               })}
-            </div>
-            <div className="row">
-              <div className="col-xs-12">
+              <div className="col-xs-6">
                 <h2>Color</h2>
-                <div className="colors">
+                <div
+                  className="colors"
+                  style={{ display: "flex", flexWrap: "wrap", gap: 6 }}
+                >
                   {COLORS.map((color) => (
                     <div
                       key={color}
                       className={
                         "color" + (newBlock.color === color ? " selected" : "")
                       }
-                      style={{ backgroundColor: color }}
+                      style={{
+                        backgroundColor: color,
+                        width: 28,
+                        height: 28,
+                        margin: 0,
+                      }}
                       onClick={() => this.changeNewBlockField("color", color)}
                     />
                   ))}
                 </div>
               </div>
+            </div>
+            <div className="row">
+              {Details.renderField.bind(this)({
+                columnWidth: 12,
+                entity: "newBlock",
+                property: "text",
+              })}
             </div>
             {errors.length > 0 && (
               <div className="row">
