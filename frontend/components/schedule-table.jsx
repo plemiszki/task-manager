@@ -102,6 +102,7 @@ export default class ScheduleTable extends React.Component {
                     Normal
                     <AddCircleOutlineIcon
                       style={{ fontSize: 14, cursor: "pointer", position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)" }}
+                      onClick={() => this.props.onAddDayVariant(i)}
                     />
                   </div>
                 </th>

@@ -4,6 +4,7 @@ import ScheduleTable from "./schedule-table.jsx";
 import ScheduleSidebar from "./schedule-sidebar.jsx";
 import ScheduleAddBlockModal from "./schedule-add-block-modal.jsx";
 import ScheduleAddCategoryModal from "./schedule-add-category-modal.jsx";
+import ScheduleAddDayVariantModal from "./schedule-add-day-variant-modal.jsx";
 
 export default class Schedule extends React.Component {
   constructor(props) {
@@ -14,9 +15,12 @@ export default class Schedule extends React.Component {
       scheduleHeight: 0,
       modalOpen: false,
       categoryModalOpen: false,
+      dayVariantModalOpen: false,
+      dayVariantWeekday: null,
       editingBlock: null,
       newBlockDefaults: null,
       scheduleCategories: [],
+      scheduleDayVariants: [],
     };
     this.scheduleRef = React.createRef();
   }
@@ -104,6 +108,9 @@ export default class Schedule extends React.Component {
                 newBlockDefaults: { weekday, startTime },
               })
             }
+            onAddDayVariant={(weekday) =>
+              this.setState({ dayVariantModalOpen: true, dayVariantWeekday: weekday })
+            }
           />
         </div>
         <ScheduleSidebar
@@ -130,6 +137,14 @@ export default class Schedule extends React.Component {
           onClose={() => this.setState({ categoryModalOpen: false })}
           onSave={(scheduleCategories) =>
             this.setState({ scheduleCategories, categoryModalOpen: false })
+          }
+        />
+        <ScheduleAddDayVariantModal
+          isOpen={this.state.dayVariantModalOpen}
+          weekday={this.state.dayVariantWeekday}
+          onClose={() => this.setState({ dayVariantModalOpen: false })}
+          onSave={(scheduleDayVariants) =>
+            this.setState({ scheduleDayVariants, dayVariantModalOpen: false })
           }
         />
       </div>
