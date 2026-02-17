@@ -4,7 +4,7 @@ const SIDEBAR_WIDTH = 250;
 
 export default class ScheduleSidebar extends React.Component {
   render() {
-    const { height, onAddBlock, currentActivity } = this.props;
+    const { height, onAddBlock, onAddCategory, currentActivity } = this.props;
 
     return (
       <div
@@ -40,6 +40,13 @@ export default class ScheduleSidebar extends React.Component {
           onClick={onAddBlock}
         >
           Add Block
+        </div>
+        <div
+          className="btn"
+          style={{ width: "100%", backgroundColor: "black", color: "white", marginTop: 10 }}
+          onClick={onAddCategory}
+        >
+          Add Category
         </div>
       </div>
     );

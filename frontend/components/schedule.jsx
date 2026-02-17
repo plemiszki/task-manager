@@ -3,6 +3,7 @@ import { sendRequest } from "handy-components";
 import ScheduleTable from "./schedule-table.jsx";
 import ScheduleSidebar from "./schedule-sidebar.jsx";
 import ScheduleAddBlockModal from "./schedule-add-block-modal.jsx";
+import ScheduleAddCategoryModal from "./schedule-add-category-modal.jsx";
 
 export default class Schedule extends React.Component {
   constructor(props) {
@@ -12,8 +13,10 @@ export default class Schedule extends React.Component {
       scheduleBlocks: [],
       scheduleHeight: 0,
       modalOpen: false,
+      categoryModalOpen: false,
       editingBlock: null,
       newBlockDefaults: null,
+      scheduleCategories: [],
     };
     this.scheduleRef = React.createRef();
   }
@@ -105,6 +108,7 @@ export default class Schedule extends React.Component {
           onAddBlock={() =>
             this.setState({ modalOpen: true, editingBlock: null, newBlockDefaults: null })
           }
+          onAddCategory={() => this.setState({ categoryModalOpen: true })}
         />
         <ScheduleAddBlockModal
           isOpen={modalOpen}
@@ -113,6 +117,13 @@ export default class Schedule extends React.Component {
           onClose={() => this.setState({ modalOpen: false })}
           onSave={(scheduleBlocks) =>
             this.setState({ scheduleBlocks, modalOpen: false })
+          }
+        />
+        <ScheduleAddCategoryModal
+          isOpen={this.state.categoryModalOpen}
+          onClose={() => this.setState({ categoryModalOpen: false })}
+          onSave={(scheduleCategories) =>
+            this.setState({ scheduleCategories, categoryModalOpen: false })
           }
         />
       </div>
