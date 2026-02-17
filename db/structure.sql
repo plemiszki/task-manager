@@ -573,6 +573,39 @@ ALTER SEQUENCE public.schedule_categories_id_seq OWNED BY public.schedule_catego
 
 
 --
+-- Name: schedule_day_variants; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.schedule_day_variants (
+    id bigint NOT NULL,
+    name character varying NOT NULL,
+    weekday integer NOT NULL,
+    user_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: schedule_day_variants_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.schedule_day_variants_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: schedule_day_variants_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.schedule_day_variants_id_seq OWNED BY public.schedule_day_variants.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -763,6 +796,13 @@ ALTER TABLE ONLY public.schedule_categories ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
+-- Name: schedule_day_variants id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schedule_day_variants ALTER COLUMN id SET DEFAULT nextval('public.schedule_day_variants_id_seq'::regclass);
+
+
+--
 -- Name: tasks id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -913,6 +953,14 @@ ALTER TABLE ONLY public.schedule_categories
 
 
 --
+-- Name: schedule_day_variants schedule_day_variants_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schedule_day_variants
+    ADD CONSTRAINT schedule_day_variants_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: tasks tasks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1013,6 +1061,20 @@ CREATE INDEX index_schedule_categories_on_user_id ON public.schedule_categories 
 
 
 --
+-- Name: index_schedule_day_variants_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_schedule_day_variants_on_user_id ON public.schedule_day_variants USING btree (user_id);
+
+
+--
+-- Name: index_schedule_day_variants_on_user_id_and_name_and_weekday; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_schedule_day_variants_on_user_id_and_name_and_weekday ON public.schedule_day_variants USING btree (user_id, name, weekday);
+
+
+--
 -- Name: index_tasks_on_duplicate_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1070,6 +1132,14 @@ ALTER TABLE ONLY public.schedule_blocks
 
 
 --
+-- Name: schedule_day_variants fk_rails_b056569c72; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schedule_day_variants
+    ADD CONSTRAINT fk_rails_b056569c72 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: schedule_categories fk_rails_c67060ac84; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1092,6 +1162,7 @@ ALTER TABLE ONLY public.schedule_blocks
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260217140615'),
 ('20260217002816'),
 ('20260216194552'),
 ('20260215210523'),
