@@ -56,11 +56,11 @@ export default class ScheduleTable extends React.Component {
     return variant ? variant.name : "Normal";
   }
 
-  getBlockForCell(dayIndex, hour, minute) {
+  getBlocksForCell(dayIndex, hour, minute) {
     const { scheduleBlocks } = this.props;
     const cellStart = hour * 60 + minute;
     const cellEnd = cellStart + 30;
-    return scheduleBlocks.find((block) => {
+    return scheduleBlocks.filter((block) => {
       if (block.weekday !== dayIndex) return false;
       const startMinutes = timeToMinutes(block.startTime);
       return startMinutes >= cellStart && startMinutes < cellEnd;
@@ -129,18 +129,8 @@ export default class ScheduleTable extends React.Component {
                   {minute === 0 ? formatTime(hour, minute) : ""}
                 </td>
                 {DAYS.map((day, dayIndex) => {
-                  const block = this.getBlockForCell(dayIndex, hour, minute);
+                  const blocks = this.getBlocksForCell(dayIndex, hour, minute);
                   const cellStart = hour * 60 + minute;
-                  const startMinutes = block
-                    ? timeToMinutes(block.startTime)
-                    : 0;
-                  const endMinutes = block ? timeToMinutes(block.endTime) : 0;
-                  const offsetWithinCell = block
-                    ? ((startMinutes - cellStart) / 30) * SLOT_HEIGHT
-                    : 0;
-                  const blockHeight = block
-                    ? ((endMinutes - startMinutes) / 30) * SLOT_HEIGHT
-                    : 0;
 
                   return (
                     <td
@@ -153,35 +143,42 @@ export default class ScheduleTable extends React.Component {
                         position: "relative",
                       }}
                       onDoubleClick={() => {
-                        if (!block) {
+                        if (blocks.length === 0) {
                           const startTime = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
                           this.props.onCellDoubleClick(dayIndex, startTime);
                         }
                       }}
                     >
-                      {block && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: offsetWithinCell,
-                            left: 2,
-                            right: 2,
-                            height: blockHeight,
-                            backgroundColor: block.color,
-                            borderRadius: 4,
-                            padding: "2px 6px",
-                            fontSize: 11,
-                            color: "white",
-                            overflow: "hidden",
-                            zIndex: 2,
-                            lineHeight: "14px",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => this.props.onBlockClick(block)}
-                        >
-                          {block.text}
-                        </div>
-                      )}
+                      {blocks.map((block) => {
+                        const startMinutes = timeToMinutes(block.startTime);
+                        const endMinutes = timeToMinutes(block.endTime);
+                        const offsetWithinCell = ((startMinutes - cellStart) / 30) * SLOT_HEIGHT;
+                        const blockHeight = ((endMinutes - startMinutes) / 30) * SLOT_HEIGHT;
+                        return (
+                          <div
+                            key={block.id}
+                            style={{
+                              position: "absolute",
+                              top: offsetWithinCell,
+                              left: 2,
+                              right: 2,
+                              height: blockHeight,
+                              backgroundColor: block.color,
+                              borderRadius: 4,
+                              padding: "2px 6px",
+                              fontSize: 11,
+                              color: "white",
+                              overflow: "hidden",
+                              zIndex: 2,
+                              lineHeight: "14px",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => this.props.onBlockClick(block)}
+                          >
+                            {block.text}
+                          </div>
+                        );
+                      })}
                       {isInRange &&
                         dayIndex === currentDayIndex &&
                         hour === Math.floor(currentHour) &&
