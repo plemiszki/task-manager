@@ -149,7 +149,9 @@ export default class ScheduleAddBlockModal extends React.Component {
       errorsArray: this.state.errors,
       beforeSave: (obj, property, newValue) => {
         if (property === "startTime") {
-          obj.endTime = addMinutes(newValue, 15);
+          if (obj.endTime <= newValue) {
+            obj.endTime = addMinutes(newValue, 15);
+          }
           setTimeout(() => {
             resetNiceSelect({
               selector: "select",
@@ -259,7 +261,7 @@ export default class ScheduleAddBlockModal extends React.Component {
                 entity: "newBlock",
                 property: "endTime",
                 columnHeader: "End Time",
-                options: TIME_OPTIONS,
+                options: TIME_OPTIONS.filter((o) => o.value > this.state.newBlock.startTime),
                 optionDisplayProperty: "text",
                 optionSortProperty: "value",
               })}
