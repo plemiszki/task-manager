@@ -21,6 +21,7 @@ export default class ScheduleSidebar extends React.Component {
       height,
       onAddBlock,
       onAddCategory,
+      onEditCategory,
       currentActivity,
       scheduleBlocks,
       scheduleCategories,
@@ -43,7 +44,7 @@ export default class ScheduleSidebar extends React.Component {
     const breakdown = [];
     scheduleCategories.forEach((c) => {
       if (minutesByCategory[c.id]) {
-        breakdown.push({ name: c.name, minutes: minutesByCategory[c.id] });
+        breakdown.push({ id: c.id, name: c.name, minutes: minutesByCategory[c.id] });
       }
     });
     if (minutesByCategory["uncategorized"]) {
@@ -110,6 +111,13 @@ export default class ScheduleSidebar extends React.Component {
                     fontSize: 13,
                     marginBottom: 4,
                     fontStyle: isUncategorized ? "italic" : "normal",
+                    cursor: item.id ? "pointer" : "default",
+                  }}
+                  onClick={() => {
+                    if (item.id) {
+                      const cat = scheduleCategories.find((c) => c.id === item.id);
+                      if (cat) onEditCategory(cat);
+                    }
                   }}
                 >
                   <span>{item.name}</span>

@@ -20,6 +20,7 @@ export default class Schedule extends React.Component {
       dayVariantWeekday: null,
       editingBlock: null,
       newBlockDefaults: null,
+      editingCategory: null,
       scheduleCategories: [],
       scheduleDayVariants: [],
       activeDayVariants: {},
@@ -182,7 +183,8 @@ export default class Schedule extends React.Component {
               newBlockDefaults: null,
             })
           }
-          onAddCategory={() => this.setState({ categoryModalOpen: true })}
+          onAddCategory={() => this.setState({ categoryModalOpen: true, editingCategory: null })}
+          onEditCategory={(category) => this.setState({ categoryModalOpen: true, editingCategory: category })}
         />
         <ScheduleAddBlockModal
           isOpen={modalOpen}
@@ -195,6 +197,7 @@ export default class Schedule extends React.Component {
         />
         <ScheduleAddCategoryModal
           isOpen={this.state.categoryModalOpen}
+          category={this.state.editingCategory}
           onClose={() => this.setState({ categoryModalOpen: false })}
           onSave={(scheduleCategories) =>
             this.setState({ scheduleCategories, categoryModalOpen: false })

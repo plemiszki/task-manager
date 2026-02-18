@@ -1,6 +1,6 @@
 import React from "react";
 import Modal from "react-modal";
-import { Details, createEntity, Spinner, GrayedOut } from "handy-components";
+import { Details, createEntity, updateEntity, Spinner, GrayedOut } from "handy-components";
 
 const modalStyles = {
   overlay: {
@@ -30,7 +30,11 @@ export default class ScheduleAddCategoryModal extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.isOpen && !prevProps.isOpen) {
-      this.setState({ newCategory: { name: "" }, errors: [] });
+      const { category } = this.props;
+      this.setState({
+        newCategory: { name: category ? category.name : "" },
+        errors: [],
+      });
     }
   }
 
@@ -42,14 +46,22 @@ export default class ScheduleAddCategoryModal extends React.Component {
   }
 
   submitCategory() {
-    const { onSave } = this.props;
+    const { category, onSave } = this.props;
     const { newCategory } = this.state;
     this.setState({ spinner: true });
-    createEntity({
-      directory: "schedule_categories",
-      entityName: "scheduleCategory",
-      entity: { name: newCategory.name },
-    }).then(
+    const request = category
+      ? updateEntity({
+          id: category.id,
+          directory: "schedule_categories",
+          entityName: "scheduleCategory",
+          entity: { name: newCategory.name },
+        })
+      : createEntity({
+          directory: "schedule_categories",
+          entityName: "scheduleCategory",
+          entity: { name: newCategory.name },
+        });
+    request.then(
       (response) => {
         this.setState({ spinner: false });
         onSave(response.scheduleCategories);
@@ -64,7 +76,7 @@ export default class ScheduleAddCategoryModal extends React.Component {
   }
 
   render() {
-    const { isOpen, onClose } = this.props;
+    const { isOpen, onClose, category } = this.props;
     const { spinner, errors } = this.state;
 
     return (
@@ -107,8 +119,9 @@ export default class ScheduleAddCategoryModal extends React.Component {
                   }}
                   onClick={this.submitCategory.bind(this)}
                 >
-                  Add Category
+                  {category ? "Edit Category" : "Add Category"}
                 </div>
+
               </div>
             </div>
             <GrayedOut visible={spinner} />
