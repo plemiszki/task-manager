@@ -57,13 +57,21 @@ export default class ScheduleTable extends React.Component {
   }
 
   getBlocksForCell(dayIndex, hour, minute) {
-    const { scheduleBlocks } = this.props;
+    const { scheduleBlocks, activeDayVariants } = this.props;
     const cellStart = hour * 60 + minute;
     const cellEnd = cellStart + 30;
+    const activeVariantId = activeDayVariants[dayIndex] || null;
     return scheduleBlocks.filter((block) => {
       if (block.weekday !== dayIndex) return false;
       const startMinutes = timeToMinutes(block.startTime);
-      return startMinutes >= cellStart && startMinutes < cellEnd;
+      if (startMinutes < cellStart || startMinutes >= cellEnd) return false;
+      if (block.scheduleDayVariantId) {
+        return block.scheduleDayVariantId === activeVariantId;
+      }
+      if (block.normalDayOnly) {
+        return activeVariantId === null;
+      }
+      return true;
     });
   }
 
