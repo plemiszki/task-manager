@@ -517,7 +517,8 @@ CREATE TABLE public.schedule_blocks (
     user_id bigint NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    schedule_category_id bigint
+    schedule_category_id bigint,
+    schedule_day_variant_id bigint
 );
 
 
@@ -1048,6 +1049,13 @@ CREATE INDEX index_schedule_blocks_on_schedule_category_id ON public.schedule_bl
 
 
 --
+-- Name: index_schedule_blocks_on_schedule_day_variant_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_schedule_blocks_on_schedule_day_variant_id ON public.schedule_blocks USING btree (schedule_day_variant_id);
+
+
+--
 -- Name: index_schedule_blocks_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1133,6 +1141,14 @@ ALTER TABLE ONLY public.schedule_blocks
 
 
 --
+-- Name: schedule_blocks fk_rails_251e32f5c0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schedule_blocks
+    ADD CONSTRAINT fk_rails_251e32f5c0 FOREIGN KEY (schedule_day_variant_id) REFERENCES public.schedule_day_variants(id);
+
+
+--
 -- Name: schedule_day_variants fk_rails_b056569c72; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1163,6 +1179,7 @@ ALTER TABLE ONLY public.schedule_blocks
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260218194753'),
 ('20260217145308'),
 ('20260217140615'),
 ('20260217002816'),
