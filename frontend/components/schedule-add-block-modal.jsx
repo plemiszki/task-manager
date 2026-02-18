@@ -74,6 +74,7 @@ const DEFAULT_BLOCK = {
   color: COLORS[0],
   text: "",
   scheduleCategoryId: "",
+  thisVariantOnly: false,
 };
 
 const modalStyles = {
@@ -115,6 +116,7 @@ export default class ScheduleAddBlockModal extends React.Component {
           color: block.color,
           text: block.text,
           scheduleCategoryId: block.scheduleCategoryId || "",
+          thisVariantOnly: block.scheduleDayVariantId != null || block.normalDayOnly,
         };
       } else if (defaults) {
         newBlock = {
@@ -182,8 +184,18 @@ export default class ScheduleAddBlockModal extends React.Component {
   }
 
   submitBlock() {
-    const { block, onSave } = this.props;
+    const { block, onSave, activeDayVariants } = this.props;
     const { newBlock } = this.state;
+    let scheduleDayVariantId = null;
+    let normalDayOnly = false;
+    if (newBlock.thisVariantOnly) {
+      const activeVariantId = activeDayVariants[newBlock.weekday] || null;
+      if (activeVariantId) {
+        scheduleDayVariantId = activeVariantId;
+      } else {
+        normalDayOnly = true;
+      }
+    }
     const entity = {
       weekday: newBlock.weekday,
       startTime: newBlock.startTime,
@@ -191,6 +203,8 @@ export default class ScheduleAddBlockModal extends React.Component {
       color: newBlock.color,
       text: newBlock.text,
       scheduleCategoryId: newBlock.scheduleCategoryId || null,
+      scheduleDayVariantId,
+      normalDayOnly,
     };
     this.setState({ spinner: true });
     const request = block
@@ -220,8 +234,11 @@ export default class ScheduleAddBlockModal extends React.Component {
   }
 
   render() {
-    const { isOpen, onClose, block } = this.props;
+    const { isOpen, onClose, block, activeDayVariants, scheduleDayVariants } = this.props;
     const { newBlock, spinner, errors, categoryOptions } = this.state;
+    const activeVariantId = activeDayVariants[newBlock.weekday] || null;
+    const activeVariant = activeVariantId ? scheduleDayVariants.find((v) => v.id === activeVariantId) : null;
+    const switchHeader = activeVariant ? `${activeVariant.name} Day Only` : "Normal Day Only";
 
     return (
       <Modal
@@ -309,9 +326,15 @@ export default class ScheduleAddBlockModal extends React.Component {
               }}
             >
               {Details.renderField.bind(this)({
-                columnWidth: 12,
+                columnWidth: 8,
                 entity: "newBlock",
                 property: "text",
+              })}
+              {Details.renderSwitch.bind(this)({
+                columnWidth: 4,
+                entity: "newBlock",
+                property: "thisVariantOnly",
+                columnHeader: switchHeader,
               })}
             </div>
             {errors.length > 0 && (

@@ -35,6 +35,6 @@ class Api::ScheduleBlocksController < ActionController::Base
   private
 
   def schedule_block_params
-    params.require(:schedule_block).permit(:weekday, :start_time, :end_time, :color, :text, :schedule_category_id)
+    params.require(:schedule_block).permit(:weekday, :start_time, :end_time, :color, :text, :schedule_category_id, :schedule_day_variant_id, :normal_day_only)
   end
 end

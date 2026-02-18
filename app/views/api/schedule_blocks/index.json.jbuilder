@@ -6,4 +6,6 @@ json.scheduleBlocks @schedule_blocks do |block|
   json.color block.color
   json.text block.text
   json.scheduleCategoryId block.schedule_category_id
+  json.scheduleDayVariantId block.schedule_day_variant_id
+  json.normalDayOnly block.normal_day_only
 end

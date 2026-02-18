@@ -190,6 +190,8 @@ export default class Schedule extends React.Component {
           isOpen={modalOpen}
           block={editingBlock}
           defaults={newBlockDefaults}
+          activeDayVariants={this.state.activeDayVariants}
+          scheduleDayVariants={this.state.scheduleDayVariants}
           onClose={() => this.setState({ modalOpen: false })}
           onSave={(scheduleBlocks) =>
             this.setState({ scheduleBlocks, modalOpen: false })

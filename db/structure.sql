@@ -518,7 +518,8 @@ CREATE TABLE public.schedule_blocks (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     schedule_category_id bigint,
-    schedule_day_variant_id bigint
+    schedule_day_variant_id bigint,
+    normal_day_only boolean DEFAULT false NOT NULL
 );
 
 
@@ -1179,6 +1180,7 @@ ALTER TABLE ONLY public.schedule_blocks
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260218200040'),
 ('20260218194753'),
 ('20260217145308'),
 ('20260217140615'),
