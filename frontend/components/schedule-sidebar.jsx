@@ -12,12 +12,19 @@ function formatMinutes(totalMinutes) {
 function blockDuration(block) {
   const [sh, sm] = block.startTime.split(":").map(Number);
   const [eh, em] = block.endTime.split(":").map(Number);
-  return (eh * 60 + em) - (sh * 60 + sm);
+  return eh * 60 + em - (sh * 60 + sm);
 }
 
 export default class ScheduleSidebar extends React.Component {
   render() {
-    const { height, onAddBlock, onAddCategory, currentActivity, scheduleBlocks, scheduleCategories } = this.props;
+    const {
+      height,
+      onAddBlock,
+      onAddCategory,
+      currentActivity,
+      scheduleBlocks,
+      scheduleCategories,
+    } = this.props;
 
     const categoryMap = {};
     scheduleCategories.forEach((c) => {
@@ -40,9 +47,15 @@ export default class ScheduleSidebar extends React.Component {
       }
     });
     if (minutesByCategory["uncategorized"]) {
-      breakdown.push({ name: "Uncategorized", minutes: minutesByCategory["uncategorized"] });
+      breakdown.push({
+        name: "Uncategorized",
+        minutes: minutesByCategory["uncategorized"],
+      });
     }
-    breakdown.push({ name: "Free", minutes: TOTAL_WEEKLY_MINUTES - totalScheduled });
+    breakdown.push({
+      name: "Free",
+      minutes: TOTAL_WEEKLY_MINUTES - totalScheduled,
+    });
 
     return (
       <div
@@ -57,61 +70,67 @@ export default class ScheduleSidebar extends React.Component {
           boxShadow: "1px 2px 3px 0px #e6e9ec",
         }}
       >
-        <div
-          style={{
-            marginBottom: 20,
-            border: "solid 1px lightgray",
-            borderRadius: 5,
-            padding: 10,
-          }}
-        >
-          <div style={{ fontSize: 12, color: "#888", marginBottom: 4 }}>
-            Current Activity
+        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <div
+            style={{
+              border: "solid 1px lightgray",
+              borderRadius: 5,
+              padding: 10,
+            }}
+          >
+            <div style={{ fontSize: 12, color: "#888", marginBottom: 4 }}>
+              Current Activity
+            </div>
+            <div style={{ fontSize: 14, fontWeight: "bold" }}>
+              {currentActivity || "(None)"}
+            </div>
           </div>
-          <div style={{ fontSize: 14, fontWeight: "bold" }}>
-            {currentActivity || "(None)"}
+          <div
+            className="btn"
+            style={{ width: "100%", backgroundColor: "black", color: "white" }}
+            onClick={onAddBlock}
+          >
+            Add Block
           </div>
-        </div>
-        <div
-          style={{
-            marginBottom: 20,
-            border: "solid 1px lightgray",
-            borderRadius: 5,
-            padding: 10,
-          }}
-        >
-          {breakdown.map((item) => {
-            const isUncategorized = item.name === "Uncategorized";
-            return (
-              <div
-                key={item.name}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: 13,
-                  marginBottom: 4,
-                  fontStyle: isUncategorized ? "italic" : "normal",
-                }}
-              >
-                <span>{item.name}</span>
-                <span style={{ fontWeight: "bold" }}>{formatMinutes(item.minutes)}</span>
-              </div>
-            );
-          })}
-        </div>
-        <div
-          className="btn"
-          style={{ width: "100%", backgroundColor: "black", color: "white" }}
-          onClick={onAddBlock}
-        >
-          Add Block
-        </div>
-        <div
-          className="btn"
-          style={{ width: "100%", backgroundColor: "black", color: "white", marginTop: 10 }}
-          onClick={onAddCategory}
-        >
-          Add Category
+          <div
+            style={{
+              border: "solid 1px lightgray",
+              borderRadius: 5,
+              padding: 10,
+            }}
+          >
+            {breakdown.map((item) => {
+              const isUncategorized = item.name === "Uncategorized";
+              return (
+                <div
+                  key={item.name}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: 13,
+                    marginBottom: 4,
+                    fontStyle: isUncategorized ? "italic" : "normal",
+                  }}
+                >
+                  <span>{item.name}</span>
+                  <span style={{ fontWeight: "bold" }}>
+                    {formatMinutes(item.minutes)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          <div
+            className="btn"
+            style={{
+              width: "100%",
+              backgroundColor: "black",
+              color: "white",
+            }}
+            onClick={onAddCategory}
+          >
+            Add Category
+          </div>
         </div>
       </div>
     );
