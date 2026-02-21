@@ -85,7 +85,8 @@ export default class ScheduleTable extends React.Component {
       (currentHour < 22 || (currentHour === 22 && currentMinutes <= 30));
 
     return (
-      <div style={{ overflowX: "auto" }}>
+      <div style={{ overflowX: "auto", overflowY: "hidden", position: "relative" }}>
+        <div style={{ position: "absolute", bottom: 0, left: 90, right: 0, height: 2, backgroundColor: "#333", zIndex: 10 }} />
         <table
           style={{
             width: "100%",
@@ -160,8 +161,9 @@ export default class ScheduleTable extends React.Component {
                       {blocks.map((block) => {
                         const startMinutes = timeToMinutes(block.startTime);
                         const endMinutes = timeToMinutes(block.endTime);
+                        const durationMinutes = endMinutes - startMinutes;
                         const offsetWithinCell = ((startMinutes - cellStart) / 30) * SLOT_HEIGHT;
-                        const blockHeight = ((endMinutes - startMinutes) / 30) * SLOT_HEIGHT;
+                        const blockHeight = (durationMinutes / 30) * SLOT_HEIGHT;
                         return (
                           <div
                             key={block.id}
@@ -173,13 +175,15 @@ export default class ScheduleTable extends React.Component {
                               height: blockHeight,
                               backgroundColor: block.color,
                               borderRadius: 4,
-                              padding: "2px 6px",
-                              fontSize: 11,
+                              padding: durationMinutes <= 15 ? "1px 3px" : "2px 6px",
+                              fontSize: durationMinutes <= 15 ? 9 : 11,
                               color: "white",
                               overflow: "hidden",
                               zIndex: 2,
                               lineHeight: "14px",
                               cursor: "pointer",
+                              display: durationMinutes <= 15 ? "flex" : "block",
+                              alignItems: durationMinutes <= 15 ? "center" : undefined,
                             }}
                             onClick={() => this.props.onBlockClick(block)}
                           >
