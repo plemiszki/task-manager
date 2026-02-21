@@ -1,5 +1,6 @@
 import React from "react";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const DAYS = [
   "Monday",
@@ -48,6 +49,11 @@ function timeToMinutes(timeStr) {
 const TIME_SLOTS = buildTimeSlots();
 
 export default class ScheduleTable extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { headerExpanded: true };
+  }
+
   getVariantLabel(dayIndex) {
     const { scheduleDayVariants, activeDayVariants } = this.props;
     const activeId = activeDayVariants[dayIndex] || null;
@@ -77,6 +83,7 @@ export default class ScheduleTable extends React.Component {
 
   render() {
     const { now } = this.props;
+    const { headerExpanded } = this.state;
     const currentDayIndex = getCurrentDayIndex();
     const currentHour = now.getHours();
     const currentMinutes = now.getMinutes();
@@ -96,7 +103,12 @@ export default class ScheduleTable extends React.Component {
         >
           <thead>
             <tr>
-              <th style={styles.timeHeader}></th>
+              <th style={styles.timeHeader}>
+                <ExpandMoreIcon
+                  style={{ fontSize: 16, cursor: "pointer", color: "#666", transform: headerExpanded ? "rotate(0deg)" : "rotate(-90deg)", transition: "transform 0.2s" }}
+                  onClick={() => this.setState({ headerExpanded: !headerExpanded })}
+                />
+              </th>
               {DAYS.map((day, i) => (
                 <th
                   key={day}
@@ -108,25 +120,27 @@ export default class ScheduleTable extends React.Component {
                   }}
                 >
                   <div style={{ marginBottom: 4 }}>{day}</div>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      color: "#888",
-                      position: "relative",
-                      textAlign: "center",
-                    }}
-                  >
-                    <span
-                      style={{ cursor: (this.props.scheduleDayVariants || []).some((v) => v.weekday === i) ? "pointer" : "default" }}
-                      onClick={() => this.props.onCycleDayVariant(i)}
+                  {headerExpanded && (
+                    <div
+                      style={{
+                        fontSize: 11,
+                        color: "#888",
+                        position: "relative",
+                        textAlign: "center",
+                      }}
                     >
-                      {this.getVariantLabel(i)}
-                    </span>
-                    <AddCircleOutlineIcon
-                      style={{ fontSize: 14, cursor: "pointer", position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)" }}
-                      onClick={() => this.props.onAddDayVariant(i)}
-                    />
-                  </div>
+                      <span
+                        style={{ cursor: (this.props.scheduleDayVariants || []).some((v) => v.weekday === i) ? "pointer" : "default" }}
+                        onClick={() => this.props.onCycleDayVariant(i)}
+                      >
+                        {this.getVariantLabel(i)}
+                      </span>
+                      <AddCircleOutlineIcon
+                        style={{ fontSize: 14, cursor: "pointer", position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)" }}
+                        onClick={() => this.props.onAddDayVariant(i)}
+                      />
+                    </div>
+                  )}
                 </th>
               ))}
             </tr>
@@ -238,6 +252,7 @@ const styles = {
     textAlign: "right",
     fontSize: 12,
     color: "#666",
+    verticalAlign: "top",
   },
   dayHeader: {
     padding: "8px 4px",
@@ -245,6 +260,7 @@ const styles = {
     fontWeight: "bold",
     fontSize: 14,
     borderBottom: "2px solid #333",
+    verticalAlign: "top",
   },
   timeCell: {
     padding: "0 8px 0 0",
