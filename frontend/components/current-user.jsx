@@ -3,6 +3,7 @@ import Modal from "react-modal";
 import GroceryList from "./grocery-list";
 import { sendRequest, Common } from "handy-components";
 import UpdateIcon from "@mui/icons-material/Update";
+import ConfirmModal from "./confirm-modal.jsx";
 
 const modalStyles = {
   overlay: {
@@ -151,41 +152,16 @@ export default class CurrentUser extends React.Component {
           >
             <GroceryList />
           </Modal>
-          <Modal
+          <ConfirmModal
             isOpen={confirmResetModalOpen}
-            onRequestClose={Common.closeModals.bind(this)}
-            contentLabel="Modal"
-            style={{
-              ...modalStyles,
-              ...{
-                content: { ...modalStyles.content, height: 120, width: 350 },
-              },
+            header="Run the nightly reset now?"
+            confirmText="DO IT"
+            onConfirm={() => {
+              this.clickResetTasksEarly();
+              this.setState({ confirmResetModalOpen: false });
             }}
-          >
-            <p
-              style={{
-                fontSize: 20,
-                fontWeight: 500,
-                fontFamily: "Helvetica Neue",
-                letterSpacing: 1.08,
-                textAlign: "center",
-                marginBottom: 15,
-              }}
-            >
-              Run the nightly reset now?
-            </p>
-            <div className="text-center">
-              <a
-                className="btn btn-danger"
-                onClick={() => {
-                  this.clickResetTasksEarly();
-                  this.setState({ confirmResetModalOpen: false });
-                }}
-              >
-                DO IT
-              </a>
-            </div>
-          </Modal>
+            onClose={Common.closeModals.bind(this)}
+          />
           {Common.renderJobModal.call(this, job)}
         </div>
         <style jsx>{`
