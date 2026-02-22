@@ -55,6 +55,7 @@ export default class ScheduleSidebar extends React.Component {
         breakdown.push({ id: c.id, name: c.name, minutes: minutesByCategory[c.id] });
       }
     });
+    breakdown.sort((a, b) => b.minutes - a.minutes);
     if (minutesByCategory["uncategorized"]) {
       breakdown.push({
         name: "Uncategorized",
