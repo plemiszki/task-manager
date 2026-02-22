@@ -315,8 +315,8 @@ export default class TasksTimeframe extends React.Component {
       case "weekend":
         var text = longWeekend ? "Long Weekend" : "Weekend";
         return (
-          <h1 id="weekend-header" onClick={this.clickWeekend.bind(this)}>
-            {text}
+          <h1 id="weekend-header">
+            <span onClick={this.clickWeekend.bind(this)}>{text}</span>
           </h1>
         );
       case "month":

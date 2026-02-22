@@ -18,7 +18,11 @@
   }
 
   h1#weekend-header {
-    cursor: pointer;
+    cursor: default;
+
+    span {
+      cursor: pointer;
+    }
   }
 
   hr {
