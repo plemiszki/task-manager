@@ -18,6 +18,7 @@ export default class Schedule extends React.Component {
       categoryModalOpen: false,
       dayVariantModalOpen: false,
       dayVariantWeekday: null,
+      variantViewWeekday: null,
       editingBlock: null,
       newBlockDefaults: null,
       editingCategory: null,
@@ -135,6 +136,9 @@ export default class Schedule extends React.Component {
                 newBlockDefaults: { weekday, startTime },
               })
             }
+            variantViewWeekday={this.state.variantViewWeekday}
+            onDayDoubleClick={(weekday) => this.setState({ variantViewWeekday: weekday })}
+            onExitVariantView={() => this.setState({ variantViewWeekday: null })}
             onAddDayVariant={(weekday) =>
               this.setState({
                 dayVariantModalOpen: true,

@@ -1,6 +1,7 @@
 import React from "react";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const DAYS = [
   "Monday",
@@ -51,7 +52,7 @@ const TIME_SLOTS = buildTimeSlots();
 export default class ScheduleTable extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { headerExpanded: true };
+    this.state = { headerExpanded: false };
   }
 
   getVariantLabel(dayIndex) {
@@ -62,13 +63,12 @@ export default class ScheduleTable extends React.Component {
     return variant ? variant.name : "Normal";
   }
 
-  getBlocksForCell(dayIndex, hour, minute) {
-    const { scheduleBlocks, activeDayVariants } = this.props;
+  getBlocksForColumn(weekday, activeVariantId, hour, minute) {
+    const { scheduleBlocks } = this.props;
     const cellStart = hour * 60 + minute;
     const cellEnd = cellStart + 30;
-    const activeVariantId = activeDayVariants[dayIndex] || null;
     return scheduleBlocks.filter((block) => {
-      if (block.weekday !== dayIndex) return false;
+      if (block.weekday !== weekday) return false;
       const startMinutes = timeToMinutes(block.startTime);
       if (startMinutes < cellStart || startMinutes >= cellEnd) return false;
       if (block.scheduleDayVariantId) {
@@ -82,7 +82,7 @@ export default class ScheduleTable extends React.Component {
   }
 
   render() {
-    const { now } = this.props;
+    const { now, variantViewWeekday, scheduleDayVariants, activeDayVariants } = this.props;
     const { headerExpanded } = this.state;
     const currentDayIndex = getCurrentDayIndex();
     const currentHour = now.getHours();
@@ -91,12 +91,33 @@ export default class ScheduleTable extends React.Component {
       currentHour >= 6 &&
       (currentHour < 22 || (currentHour === 22 && currentMinutes <= 30));
 
+    const inVariantView = variantViewWeekday !== null;
+
+    let columns;
+    if (inVariantView) {
+      const dayVariants = (scheduleDayVariants || [])
+        .filter((v) => v.weekday === variantViewWeekday)
+        .slice(0, 6);
+      columns = [
+        { label: DAYS[variantViewWeekday], weekday: variantViewWeekday, activeVariantId: null },
+        ...dayVariants.map((v) => ({ label: v.name, weekday: variantViewWeekday, activeVariantId: v.id })),
+      ];
+    } else {
+      columns = DAYS.map((day, i) => ({
+        label: day,
+        weekday: i,
+        activeVariantId: (activeDayVariants || {})[i] || null,
+      }));
+    }
+
     return (
       <div style={{ overflowX: "auto", overflowY: "hidden", position: "relative" }}>
         <div style={{ position: "absolute", bottom: 0, left: 90, right: 0, height: 2, backgroundColor: "#333", zIndex: 10 }} />
         <table
           style={{
-            width: "100%",
+            width: inVariantView
+              ? `calc(90px + ${columns.length} * (100% - 90px) / 7)`
+              : "100%",
             borderCollapse: "collapse",
             tableLayout: "fixed",
           }}
@@ -104,23 +125,42 @@ export default class ScheduleTable extends React.Component {
           <thead>
             <tr>
               <th style={styles.timeHeader}>
-                <ExpandMoreIcon
-                  style={{ fontSize: 16, cursor: "pointer", color: "#666", transform: headerExpanded ? "rotate(0deg)" : "rotate(-90deg)", transition: "transform 0.2s" }}
-                  onClick={() => this.setState({ headerExpanded: !headerExpanded })}
-                />
+                {inVariantView ? (
+                  <ArrowBackIcon
+                    style={{ fontSize: 16, cursor: "pointer", color: "#666" }}
+                    onClick={() => this.props.onExitVariantView()}
+                  />
+                ) : (
+                  <ExpandMoreIcon
+                    style={{ fontSize: 16, cursor: "pointer", color: "#666", transform: headerExpanded ? "rotate(0deg)" : "rotate(-90deg)", transition: "transform 0.2s" }}
+                    onClick={() => this.setState({ headerExpanded: !headerExpanded })}
+                  />
+                )}
               </th>
-              {DAYS.map((day, i) => (
+              {columns.map((col) => (
                 <th
-                  key={day}
+                  key={col.label}
                   style={{
                     ...styles.dayHeader,
-                    ...(i === currentDayIndex
+                    ...(!inVariantView && col.weekday === currentDayIndex
                       ? { color: "#d9534f", fontWeight: "bold" }
                       : {}),
                   }}
                 >
-                  <div style={{ marginBottom: 4 }}>{day}</div>
-                  {headerExpanded && (
+                  <div
+                    style={{
+                      marginBottom: 4,
+                      cursor: !inVariantView ? "pointer" : "default",
+                    }}
+                    onClick={() => {
+                      if (!inVariantView) {
+                        this.props.onDayDoubleClick(col.weekday);
+                      }
+                    }}
+                  >
+                    {col.label}
+                  </div>
+                  {!inVariantView && headerExpanded && (
                     <div
                       style={{
                         fontSize: 11,
@@ -130,14 +170,14 @@ export default class ScheduleTable extends React.Component {
                       }}
                     >
                       <span
-                        style={{ cursor: (this.props.scheduleDayVariants || []).some((v) => v.weekday === i) ? "pointer" : "default" }}
-                        onClick={() => this.props.onCycleDayVariant(i)}
+                        style={{ cursor: (scheduleDayVariants || []).some((v) => v.weekday === col.weekday) ? "pointer" : "default" }}
+                        onClick={() => this.props.onCycleDayVariant(col.weekday)}
                       >
-                        {this.getVariantLabel(i)}
+                        {this.getVariantLabel(col.weekday)}
                       </span>
                       <AddCircleOutlineIcon
                         style={{ fontSize: 14, cursor: "pointer", position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)" }}
-                        onClick={() => this.props.onAddDayVariant(i)}
+                        onClick={() => this.props.onAddDayVariant(col.weekday)}
                       />
                     </div>
                   )}
@@ -151,13 +191,13 @@ export default class ScheduleTable extends React.Component {
                 <td style={styles.timeCell}>
                   {minute === 0 ? formatTime(hour, minute) : ""}
                 </td>
-                {DAYS.map((day, dayIndex) => {
-                  const blocks = this.getBlocksForCell(dayIndex, hour, minute);
+                {columns.map((col) => {
+                  const blocks = this.getBlocksForColumn(col.weekday, col.activeVariantId, hour, minute);
                   const cellStart = hour * 60 + minute;
 
                   return (
                     <td
-                      key={`${day}-${hour}-${minute}`}
+                      key={`${col.label}-${hour}-${minute}`}
                       style={{
                         ...styles.cell,
                         borderTopWidth: minute === 0 ? 1 : 0,
@@ -168,7 +208,7 @@ export default class ScheduleTable extends React.Component {
                       onDoubleClick={() => {
                         if (blocks.length === 0) {
                           const startTime = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-                          this.props.onCellDoubleClick(dayIndex, startTime);
+                          this.props.onCellDoubleClick(col.weekday, startTime);
                         }
                       }}
                     >
@@ -205,8 +245,9 @@ export default class ScheduleTable extends React.Component {
                           </div>
                         );
                       })}
-                      {isInRange &&
-                        dayIndex === currentDayIndex &&
+                      {!inVariantView &&
+                        isInRange &&
+                        col.weekday === currentDayIndex &&
                         hour === Math.floor(currentHour) &&
                         minute === (currentMinutes >= 30 ? 30 : 0) && (
                           <div
