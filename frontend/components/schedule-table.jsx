@@ -82,7 +82,8 @@ export default class ScheduleTable extends React.Component {
   }
 
   render() {
-    const { now, variantViewWeekday, scheduleDayVariants, activeDayVariants } = this.props;
+    const { now, variantViewWeekday, scheduleDayVariants, activeDayVariants } =
+      this.props;
     const { headerExpanded } = this.state;
     const currentDayIndex = getCurrentDayIndex();
     const currentHour = now.getHours();
@@ -99,8 +100,16 @@ export default class ScheduleTable extends React.Component {
         .filter((v) => v.weekday === variantViewWeekday)
         .slice(0, 6);
       columns = [
-        { label: DAYS[variantViewWeekday], weekday: variantViewWeekday, activeVariantId: null },
-        ...dayVariants.map((v) => ({ label: v.name, weekday: variantViewWeekday, activeVariantId: v.id })),
+        {
+          label: DAYS[variantViewWeekday],
+          weekday: variantViewWeekday,
+          activeVariantId: null,
+        },
+        ...dayVariants.map((v) => ({
+          label: v.name,
+          weekday: variantViewWeekday,
+          activeVariantId: v.id,
+        })),
       ];
     } else {
       columns = DAYS.map((day, i) => ({
@@ -110,177 +119,248 @@ export default class ScheduleTable extends React.Component {
       }));
     }
 
+    const showAddButton = inVariantView && columns.length < 7;
+
     return (
-      <div style={{ overflowX: "auto", overflowY: "hidden", position: "relative" }}>
-        <div style={{ position: "absolute", bottom: 0, left: 90, right: 0, height: 2, backgroundColor: "#333", zIndex: 10 }} />
-        <table
+      <div style={{ position: "relative" }}>
+        <div
           style={{
-            width: inVariantView
-              ? `calc(90px + ${columns.length} * (100% - 90px) / 7)`
-              : "100%",
-            borderCollapse: "collapse",
-            tableLayout: "fixed",
+            overflowX: "auto",
+            overflowY: "hidden",
+            position: "relative",
           }}
         >
-          <thead>
-            <tr>
-              <th style={styles.timeHeader}>
-                {inVariantView ? (
-                  <ArrowBackIcon
-                    style={{ fontSize: 16, cursor: "pointer", color: "#666" }}
-                    onClick={() => this.props.onExitVariantView()}
-                  />
-                ) : (
-                  <ExpandMoreIcon
-                    style={{ fontSize: 16, cursor: "pointer", color: "#666", transform: headerExpanded ? "rotate(0deg)" : "rotate(-90deg)", transition: "transform 0.2s" }}
-                    onClick={() => this.setState({ headerExpanded: !headerExpanded })}
-                  />
-                )}
-              </th>
-              {columns.map((col) => (
-                <th
-                  key={col.label}
-                  style={{
-                    ...styles.dayHeader,
-                    ...(!inVariantView && col.weekday === currentDayIndex
-                      ? { color: "#d9534f", fontWeight: "bold" }
-                      : {}),
-                  }}
-                >
-                  <div
-                    style={{
-                      marginBottom: 4,
-                      cursor: !inVariantView ? "pointer" : "default",
-                    }}
-                    onClick={() => {
-                      if (!inVariantView) {
-                        this.props.onDayDoubleClick(col.weekday);
-                      }
-                    }}
-                  >
-                    {col.label}
-                  </div>
-                  {!inVariantView && headerExpanded && (
-                    <div
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 90,
+              right: 0,
+              height: 2,
+              backgroundColor: "#333",
+              zIndex: 10,
+            }}
+          />
+          <table
+            style={{
+              width: inVariantView
+                ? `calc(90px + ${columns.length} * (100% - 90px) / 7)`
+                : "100%",
+              borderCollapse: "collapse",
+              tableLayout: "fixed",
+            }}
+          >
+            <thead>
+              <tr>
+                <th style={styles.timeHeader}>
+                  {inVariantView ? (
+                    <ArrowBackIcon
+                      style={{ fontSize: 16, cursor: "pointer", color: "#666" }}
+                      onClick={() => this.props.onExitVariantView()}
+                    />
+                  ) : (
+                    <ExpandMoreIcon
                       style={{
-                        fontSize: 11,
-                        color: "#888",
-                        position: "relative",
-                        textAlign: "center",
+                        fontSize: 16,
+                        cursor: "pointer",
+                        color: "#666",
+                        transform: headerExpanded
+                          ? "rotate(0deg)"
+                          : "rotate(-90deg)",
+                        transition: "transform 0.2s",
                       }}
-                    >
-                      <span
-                        style={{ cursor: (scheduleDayVariants || []).some((v) => v.weekday === col.weekday) ? "pointer" : "default" }}
-                        onClick={() => this.props.onCycleDayVariant(col.weekday)}
-                      >
-                        {this.getVariantLabel(col.weekday)}
-                      </span>
-                      <AddCircleOutlineIcon
-                        style={{ fontSize: 14, cursor: "pointer", position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)" }}
-                        onClick={() => this.props.onAddDayVariant(col.weekday)}
-                      />
-                    </div>
+                      onClick={() =>
+                        this.setState({ headerExpanded: !headerExpanded })
+                      }
+                    />
                   )}
                 </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {TIME_SLOTS.map(({ hour, minute }) => (
-              <tr key={`${hour}-${minute}`}>
-                <td style={styles.timeCell}>
-                  {minute === 0 ? formatTime(hour, minute) : ""}
-                </td>
-                {columns.map((col) => {
-                  const blocks = this.getBlocksForColumn(col.weekday, col.activeVariantId, hour, minute);
-                  const cellStart = hour * 60 + minute;
-
-                  return (
-                    <td
-                      key={`${col.label}-${hour}-${minute}`}
+                {columns.map((col) => (
+                  <th
+                    key={col.label}
+                    style={{
+                      ...styles.dayHeader,
+                      ...(!inVariantView && col.weekday === currentDayIndex
+                        ? { color: "#d9534f", fontWeight: "bold" }
+                        : {}),
+                    }}
+                  >
+                    <div
                       style={{
-                        ...styles.cell,
-                        borderTopWidth: minute === 0 ? 1 : 0,
-                        borderTopStyle: minute === 0 ? "solid" : "none",
-                        borderTopColor: "#ccc",
-                        position: "relative",
+                        marginBottom: 4,
+                        cursor: !inVariantView ? "pointer" : "default",
                       }}
-                      onDoubleClick={() => {
-                        if (blocks.length === 0) {
-                          const startTime = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-                          this.props.onCellDoubleClick(col.weekday, startTime);
+                      onClick={() => {
+                        if (!inVariantView) {
+                          this.props.onDayDoubleClick(col.weekday);
                         }
                       }}
                     >
-                      {blocks.map((block) => {
-                        const startMinutes = timeToMinutes(block.startTime);
-                        const endMinutes = timeToMinutes(block.endTime);
-                        const durationMinutes = endMinutes - startMinutes;
-                        const offsetWithinCell = ((startMinutes - cellStart) / 30) * SLOT_HEIGHT;
-                        const blockHeight = (durationMinutes / 30) * SLOT_HEIGHT;
-                        return (
-                          <div
-                            key={block.id}
-                            style={{
-                              position: "absolute",
-                              top: offsetWithinCell,
-                              left: 2,
-                              right: 2,
-                              height: blockHeight,
-                              backgroundColor: block.color,
-                              borderRadius: 4,
-                              padding: durationMinutes <= 15 ? "1px 3px" : "2px 6px",
-                              fontSize: durationMinutes <= 15 ? 9 : 11,
-                              color: "white",
-                              overflow: "hidden",
-                              zIndex: 2,
-                              lineHeight: "14px",
-                              cursor: "pointer",
-                              display: durationMinutes <= 15 ? "flex" : "block",
-                              alignItems: durationMinutes <= 15 ? "center" : undefined,
-                            }}
-                            onClick={() => this.props.onBlockClick(block)}
-                          >
-                            {block.text}
-                          </div>
-                        );
-                      })}
-                      {!inVariantView &&
-                        isInRange &&
-                        col.weekday === currentDayIndex &&
-                        hour === Math.floor(currentHour) &&
-                        minute === (currentMinutes >= 30 ? 30 : 0) && (
-                          <div
-                            style={{
-                              position: "absolute",
-                              top: ((currentMinutes % 30) / 30) * SLOT_HEIGHT,
-                              left: 0,
-                              right: 0,
-                              height: 2,
-                              backgroundColor: "#d9534f",
-                              zIndex: 3,
-                            }}
-                          >
+                      {col.label}
+                    </div>
+                    {!inVariantView && headerExpanded && (
+                      <div
+                        style={{
+                          fontSize: 11,
+                          color: "#888",
+                          position: "relative",
+                          textAlign: "center",
+                        }}
+                      >
+                        <span
+                          style={{
+                            cursor: (scheduleDayVariants || []).some(
+                              (v) => v.weekday === col.weekday,
+                            )
+                              ? "pointer"
+                              : "default",
+                          }}
+                          onClick={() =>
+                            this.props.onCycleDayVariant(col.weekday)
+                          }
+                        >
+                          {this.getVariantLabel(col.weekday)}
+                        </span>
+                      </div>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {TIME_SLOTS.map(({ hour, minute }) => (
+                <tr key={`${hour}-${minute}`}>
+                  <td style={styles.timeCell}>
+                    {minute === 0 ? formatTime(hour, minute) : ""}
+                  </td>
+                  {columns.map((col) => {
+                    const blocks = this.getBlocksForColumn(
+                      col.weekday,
+                      col.activeVariantId,
+                      hour,
+                      minute,
+                    );
+                    const cellStart = hour * 60 + minute;
+
+                    return (
+                      <td
+                        key={`${col.label}-${hour}-${minute}`}
+                        style={{
+                          ...styles.cell,
+                          borderTopWidth: minute === 0 ? 1 : 0,
+                          borderTopStyle: minute === 0 ? "solid" : "none",
+                          borderTopColor: "#ccc",
+                          position: "relative",
+                        }}
+                        onDoubleClick={() => {
+                          if (blocks.length === 0) {
+                            const startTime = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+                            this.props.onCellDoubleClick(
+                              col.weekday,
+                              startTime,
+                            );
+                          }
+                        }}
+                      >
+                        {blocks.map((block) => {
+                          const startMinutes = timeToMinutes(block.startTime);
+                          const endMinutes = timeToMinutes(block.endTime);
+                          const durationMinutes = endMinutes - startMinutes;
+                          const offsetWithinCell =
+                            ((startMinutes - cellStart) / 30) * SLOT_HEIGHT;
+                          const blockHeight =
+                            (durationMinutes / 30) * SLOT_HEIGHT;
+                          return (
+                            <div
+                              key={block.id}
+                              style={{
+                                position: "absolute",
+                                top: offsetWithinCell,
+                                left: 2,
+                                right: 2,
+                                height: blockHeight,
+                                backgroundColor: block.color,
+                                borderRadius: 4,
+                                padding:
+                                  durationMinutes <= 15 ? "1px 3px" : "2px 6px",
+                                fontSize: durationMinutes <= 15 ? 9 : 11,
+                                color: "white",
+                                overflow: "hidden",
+                                zIndex: 2,
+                                lineHeight: "14px",
+                                cursor: "pointer",
+                                display:
+                                  durationMinutes <= 15 ? "flex" : "block",
+                                alignItems:
+                                  durationMinutes <= 15 ? "center" : undefined,
+                              }}
+                              onClick={() => this.props.onBlockClick(block)}
+                            >
+                              {block.text}
+                            </div>
+                          );
+                        })}
+                        {!inVariantView &&
+                          isInRange &&
+                          col.weekday === currentDayIndex &&
+                          hour === Math.floor(currentHour) &&
+                          minute === (currentMinutes >= 30 ? 30 : 0) && (
                             <div
                               style={{
                                 position: "absolute",
-                                left: -4,
-                                top: -3,
-                                width: 8,
-                                height: 8,
-                                borderRadius: "50%",
+                                top: ((currentMinutes % 30) / 30) * SLOT_HEIGHT,
+                                left: 0,
+                                right: 0,
+                                height: 2,
                                 backgroundColor: "#d9534f",
+                                zIndex: 3,
                               }}
-                            />
-                          </div>
-                        )}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                            >
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  left: -4,
+                                  top: -3,
+                                  width: 8,
+                                  height: 8,
+                                  borderRadius: "50%",
+                                  backgroundColor: "#d9534f",
+                                }}
+                              />
+                            </div>
+                          )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {showAddButton && (
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              transform: "translateY(-50%)",
+              left: `calc(90px + ${columns.length} * (100% - 90px) / 7 + 8px)`,
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              cursor: "pointer",
+              color: "#666",
+              border: "1px solid #ccc",
+              borderRadius: 6,
+              padding: "4px 8px",
+            }}
+            onClick={() => this.props.onAddDayVariant(variantViewWeekday)}
+          >
+            <AddCircleOutlineIcon style={{ fontSize: 18 }} />
+            <span style={{ fontSize: 12, whiteSpace: "nowrap" }}>
+              Add Variant
+            </span>
+          </div>
+        )}
       </div>
     );
   }
