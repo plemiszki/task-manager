@@ -2,6 +2,8 @@ import React from "react";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const DAYS = [
   "Monday",
@@ -52,7 +54,7 @@ const TIME_SLOTS = buildTimeSlots();
 export default class ScheduleTable extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { headerExpanded: false };
+    this.state = { headerExpanded: false, hoveredVariantCol: null };
   }
 
   getVariantLabel(dayIndex) {
@@ -84,7 +86,7 @@ export default class ScheduleTable extends React.Component {
   render() {
     const { now, variantViewWeekday, scheduleDayVariants, activeDayVariants } =
       this.props;
-    const { headerExpanded } = this.state;
+    const { headerExpanded, hoveredVariantCol } = this.state;
     const currentDayIndex = getCurrentDayIndex();
     const currentHour = now.getHours();
     const currentMinutes = now.getMinutes();
@@ -109,6 +111,7 @@ export default class ScheduleTable extends React.Component {
           label: v.name,
           weekday: variantViewWeekday,
           activeVariantId: v.id,
+          variant: v,
         })),
       ];
     } else {
@@ -184,6 +187,8 @@ export default class ScheduleTable extends React.Component {
                         ? { color: "#d9534f", fontWeight: "bold" }
                         : {}),
                     }}
+                    onMouseEnter={() => this.setState({ hoveredVariantCol: col.label })}
+                    onMouseLeave={() => this.setState({ hoveredVariantCol: null })}
                   >
                     <div
                       style={{
@@ -198,6 +203,12 @@ export default class ScheduleTable extends React.Component {
                     >
                       {col.label}
                     </div>
+                    {inVariantView && col.activeVariantId !== null && (
+                      <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 4, visibility: hoveredVariantCol === col.label ? "visible" : "hidden" }}>
+                        <EditIcon style={{ fontSize: 14, cursor: "pointer", color: "#888" }} onClick={() => this.props.onEditDayVariant(col.variant)} />
+                        <DeleteIcon style={{ fontSize: 14, cursor: "pointer", color: "#888" }} />
+                      </div>
+                    )}
                     {!inVariantView && headerExpanded && (
                       <div
                         style={{

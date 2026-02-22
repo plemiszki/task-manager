@@ -18,6 +18,7 @@ export default class Schedule extends React.Component {
       categoryModalOpen: false,
       dayVariantModalOpen: false,
       dayVariantWeekday: null,
+      editingDayVariant: null,
       variantViewWeekday: null,
       editingBlock: null,
       newBlockDefaults: null,
@@ -143,6 +144,14 @@ export default class Schedule extends React.Component {
               this.setState({
                 dayVariantModalOpen: true,
                 dayVariantWeekday: weekday,
+                editingDayVariant: null,
+              })
+            }
+            onEditDayVariant={(variant) =>
+              this.setState({
+                dayVariantModalOpen: true,
+                dayVariantWeekday: variant.weekday,
+                editingDayVariant: variant,
               })
             }
             onCycleDayVariant={(weekday) => {
@@ -213,9 +222,10 @@ export default class Schedule extends React.Component {
         <ScheduleAddDayVariantModal
           isOpen={this.state.dayVariantModalOpen}
           weekday={this.state.dayVariantWeekday}
-          onClose={() => this.setState({ dayVariantModalOpen: false })}
+          editingVariant={this.state.editingDayVariant}
+          onClose={() => this.setState({ dayVariantModalOpen: false, editingDayVariant: null })}
           onSave={(scheduleDayVariants) =>
-            this.setState({ scheduleDayVariants, dayVariantModalOpen: false })
+            this.setState({ scheduleDayVariants, dayVariantModalOpen: false, editingDayVariant: null })
           }
         />
       </div>

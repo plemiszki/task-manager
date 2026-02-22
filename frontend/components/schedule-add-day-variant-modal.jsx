@@ -1,6 +1,6 @@
 import React from "react";
 import Modal from "react-modal";
-import { Details, createEntity, Spinner, GrayedOut } from "handy-components";
+import { Details, createEntity, updateEntity, Spinner, GrayedOut } from "handy-components";
 
 const DAYS = [
   "Monday",
@@ -40,7 +40,11 @@ export default class ScheduleAddDayVariantModal extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.isOpen && !prevProps.isOpen) {
-      this.setState({ newVariant: { name: "" }, errors: [] });
+      const { editingVariant } = this.props;
+      this.setState({
+        newVariant: { name: editingVariant ? editingVariant.name : "" },
+        errors: [],
+      });
     }
   }
 
@@ -52,29 +56,34 @@ export default class ScheduleAddDayVariantModal extends React.Component {
   }
 
   submitVariant() {
-    const { weekday, onSave } = this.props;
+    const { weekday, editingVariant, onSave } = this.props;
     const { newVariant } = this.state;
     this.setState({ spinner: true });
-    createEntity({
-      directory: "schedule_day_variants",
-      entityName: "scheduleDayVariant",
-      entity: { name: newVariant.name, weekday },
-    }).then(
+    const request = editingVariant
+      ? updateEntity({
+          id: editingVariant.id,
+          directory: "schedule_day_variants",
+          entityName: "scheduleDayVariant",
+          entity: { name: newVariant.name },
+        })
+      : createEntity({
+          directory: "schedule_day_variants",
+          entityName: "scheduleDayVariant",
+          entity: { name: newVariant.name, weekday },
+        });
+    request.then(
       (response) => {
         this.setState({ spinner: false });
         onSave(response.scheduleDayVariants);
       },
       (response) => {
-        this.setState({
-          spinner: false,
-          errors: response.errors,
-        });
+        this.setState({ spinner: false, errors: response.errors });
       },
     );
   }
 
   render() {
-    const { isOpen, onClose, weekday } = this.props;
+    const { isOpen, onClose, weekday, editingVariant } = this.props;
     const { spinner, errors } = this.state;
 
     return (
@@ -117,7 +126,7 @@ export default class ScheduleAddDayVariantModal extends React.Component {
                   }}
                   onClick={this.submitVariant.bind(this)}
                 >
-                  Add {DAYS[weekday]} Variant
+                  {editingVariant ? "Save" : `Add ${DAYS[weekday]} Variant`}
                 </div>
               </div>
             </div>
