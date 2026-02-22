@@ -14,7 +14,8 @@
     font-size: 20px;
     color: #2c2f33;
     letter-spacing: 1.08px;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
+    user-select: none;
   }
 
   h1#weekend-header {
@@ -26,7 +27,7 @@
   }
 
   hr {
-    margin-top: 20px;
+    margin-top: 0;
     margin-bottom: 10px;
   }
 

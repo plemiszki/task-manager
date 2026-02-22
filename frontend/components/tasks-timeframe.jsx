@@ -6,6 +6,7 @@ import TasksIndexItem from "./tasks-index-item.jsx";
 import { orderBy } from "lodash";
 import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const SLOT_HEIGHT = 24;
 
@@ -37,6 +38,7 @@ export default class TasksTimeframe extends React.Component {
       showTopColorPicker: false,
       shiftPressed: false,
       scheduleView: props.scheduleToggle ? "calendar" : "checkbox",
+      headerHovered: false,
       scheduleBlocks: null,
       scheduleDayVariants: null,
       activeDayVariants: {},
@@ -295,14 +297,21 @@ export default class TasksTimeframe extends React.Component {
     const { spinner, scheduleView } = this.state;
     return (
       <div className="tasks-timeframe match-height" data-index={timeframe}>
-        {!(
-          this.props.timeframe === "weekend" &&
-          this.state.scheduleView === "calendar"
-        ) && this.renderHeader()}
-        {this.props.scheduleToggle && this.renderScheduleToggle()}
+        <div
+          onMouseEnter={() => this.setState({ headerHovered: true })}
+          onMouseLeave={() => this.setState({ headerHovered: false })}
+          style={{ paddingBottom: 10 }}
+        >
+          {!(
+            this.props.timeframe === "weekend" &&
+            scheduleView === "calendar"
+          ) && this.renderHeader()}
+          {this.props.scheduleToggle && this.renderScheduleToggle()}
+          {scheduleView !== "calendar" && this.renderAddButton()}
+        </div>
         {scheduleView === "calendar"
           ? this.renderCalendarView()
-          : this.renderTaskList()}
+          : this.renderTaskListBody()}
         <Spinner visible={propsSpinner || spinner} />
         <GrayedOut visible={propsSpinner || spinner} />
       </div>
@@ -443,14 +452,13 @@ export default class TasksTimeframe extends React.Component {
     );
   }
 
-  renderTaskList() {
+  renderTaskListBody() {
     const { debug, debugPositions, selectedTasks, selectTask, unselectTask } =
       this.props;
     const { showTopColorPicker, shiftPressed } = this.state;
     const { timeframeTasks, openListsModal, setActiveTaskId } = this.props;
     return (
       <>
-        {this.renderAddButton()}
         <hr />
         {this.renderTopColorPicker()}
         <div
@@ -577,15 +585,18 @@ export default class TasksTimeframe extends React.Component {
     } else {
       return (
         <div
-          className="add-task"
-          href=""
-          onClick={Common.changeState.bind(
-            this,
-            "showNewTaskColorPicker",
-            true,
-          )}
+          style={{
+            height: 20,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            visibility: this.state.headerHovered ? "visible" : "hidden",
+          }}
         >
-          Add Task
+          <AddCircleOutlineIcon
+            style={{ color: "#aaaaaa", fontSize: 18, cursor: "pointer" }}
+            onClick={Common.changeState.bind(this, "showNewTaskColorPicker", true)}
+          />
         </div>
       );
     }
