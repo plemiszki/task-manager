@@ -1,10 +1,11 @@
 import React from "react";
-import { sendRequest, Spinner } from "handy-components";
+import { sendRequest, deleteEntity, Spinner } from "handy-components";
 import ScheduleTable from "./schedule-table.jsx";
 import ScheduleSidebar from "./schedule-sidebar.jsx";
 import ScheduleAddBlockModal from "./schedule-add-block-modal.jsx";
 import ScheduleAddCategoryModal from "./schedule-add-category-modal.jsx";
 import ScheduleAddDayVariantModal from "./schedule-add-day-variant-modal.jsx";
+import ConfirmModal from "./confirm-modal.jsx";
 
 export default class Schedule extends React.Component {
   constructor(props) {
@@ -19,6 +20,7 @@ export default class Schedule extends React.Component {
       dayVariantModalOpen: false,
       dayVariantWeekday: null,
       editingDayVariant: null,
+      deletingDayVariant: null,
       variantViewWeekday: null,
       editingBlock: null,
       newBlockDefaults: null,
@@ -60,6 +62,24 @@ export default class Schedule extends React.Component {
 
   componentWillUnmount() {
     clearInterval(this.timer);
+  }
+
+  confirmDeleteVariant() {
+    const { deletingDayVariant, activeDayVariants } = this.state;
+    deleteEntity({
+      id: deletingDayVariant.id,
+      directory: "schedule_day_variants",
+    }).then((response) => {
+      const newActiveDayVariants = { ...activeDayVariants };
+      if (newActiveDayVariants[deletingDayVariant.weekday] === deletingDayVariant.id) {
+        newActiveDayVariants[deletingDayVariant.weekday] = null;
+      }
+      this.setState({
+        scheduleDayVariants: response.scheduleDayVariants,
+        activeDayVariants: newActiveDayVariants,
+        deletingDayVariant: null,
+      });
+    });
   }
 
   updateHeight() {
@@ -154,6 +174,9 @@ export default class Schedule extends React.Component {
                 editingDayVariant: variant,
               })
             }
+            onDeleteDayVariant={(variant) =>
+              this.setState({ deletingDayVariant: variant })
+            }
             onCycleDayVariant={(weekday) => {
               const { scheduleDayVariants, activeDayVariants } = this.state;
               const variants = scheduleDayVariants.filter(
@@ -227,6 +250,13 @@ export default class Schedule extends React.Component {
           onSave={(scheduleDayVariants) =>
             this.setState({ scheduleDayVariants, dayVariantModalOpen: false, editingDayVariant: null })
           }
+        />
+        <ConfirmModal
+          isOpen={!!this.state.deletingDayVariant}
+          header="Delete this variant?"
+          confirmText="Delete"
+          onConfirm={this.confirmDeleteVariant.bind(this)}
+          onClose={() => this.setState({ deletingDayVariant: null })}
         />
       </div>
     );

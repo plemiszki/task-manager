@@ -206,7 +206,7 @@ export default class ScheduleTable extends React.Component {
                     {inVariantView && col.activeVariantId !== null && (
                       <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 4, visibility: hoveredVariantCol === col.label ? "visible" : "hidden" }}>
                         <EditIcon style={{ fontSize: 14, cursor: "pointer", color: "#888" }} onClick={() => this.props.onEditDayVariant(col.variant)} />
-                        <DeleteIcon style={{ fontSize: 14, cursor: "pointer", color: "#888" }} />
+                        <DeleteIcon style={{ fontSize: 14, cursor: "pointer", color: "#888" }} onClick={() => this.props.onDeleteDayVariant(col.variant)} />
                       </div>
                     )}
                     {!inVariantView && headerExpanded && (
