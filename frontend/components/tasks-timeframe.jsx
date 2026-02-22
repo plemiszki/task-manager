@@ -7,6 +7,8 @@ import { orderBy } from "lodash";
 import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 
 const SLOT_HEIGHT = 24;
 
@@ -37,8 +39,11 @@ export default class TasksTimeframe extends React.Component {
       showNewTaskColorPicker: false,
       showTopColorPicker: false,
       shiftPressed: false,
-      scheduleView: props.scheduleToggle ? "calendar" : "checkbox",
+      scheduleView: props.scheduleToggle
+        ? (localStorage.getItem("scheduleView-weekend") || "checkbox")
+        : "checkbox",
       headerHovered: false,
+      showCompleted: localStorage.getItem(`showCompleted-${props.timeframe}`) !== "false",
       scheduleBlocks: null,
       scheduleDayVariants: null,
       activeDayVariants: {},
@@ -83,7 +88,9 @@ export default class TasksTimeframe extends React.Component {
         });
       });
       this.timer = setInterval(() => this.setState({ now: new Date() }), 60000);
-      this.onCalendarClick();
+      if (this.state.scheduleView === "calendar") {
+        this.onCalendarClick();
+      }
     }
   }
 
@@ -235,6 +242,7 @@ export default class TasksTimeframe extends React.Component {
   }
 
   onCalendarClick() {
+    localStorage.setItem("scheduleView-weekend", "calendar");
     this.setState({ scheduleView: "calendar" });
     if (this.state.scheduleBlocks === null) {
       Promise.all([
@@ -455,8 +463,11 @@ export default class TasksTimeframe extends React.Component {
   renderTaskListBody() {
     const { debug, debugPositions, selectedTasks, selectTask, unselectTask } =
       this.props;
-    const { showTopColorPicker, shiftPressed } = this.state;
+    const { showTopColorPicker, shiftPressed, showCompleted } = this.state;
     const { timeframeTasks, openListsModal, setActiveTaskId } = this.props;
+    const visibleTasks = showCompleted
+      ? timeframeTasks
+      : timeframeTasks.filter((task) => !task.complete);
     return (
       <>
         <hr />
@@ -470,7 +481,7 @@ export default class TasksTimeframe extends React.Component {
             !showTopColorPicker,
           )}
         ></div>
-        {timeframeTasks.map((task, index) => {
+        {visibleTasks.map((task, index) => {
           return (
             <TasksIndexItem
               key={index}
@@ -526,7 +537,10 @@ export default class TasksTimeframe extends React.Component {
             color: scheduleView === "checkbox" ? activeColor : inactiveColor,
             cursor: "pointer",
           }}
-          onClick={() => this.setState({ scheduleView: "checkbox" })}
+          onClick={() => {
+              localStorage.setItem("scheduleView-weekend", "checkbox");
+              this.setState({ scheduleView: "checkbox" });
+            }}
         />
         <CalendarMonthOutlinedIcon
           style={{
@@ -583,6 +597,8 @@ export default class TasksTimeframe extends React.Component {
         </div>
       );
     } else {
+      const { showCompleted } = this.state;
+      const VisibilityIcon = showCompleted ? VisibilityOutlinedIcon : VisibilityOffOutlinedIcon;
       return (
         <div
           style={{
@@ -590,12 +606,21 @@ export default class TasksTimeframe extends React.Component {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            gap: 8,
             visibility: this.state.headerHovered ? "visible" : "hidden",
           }}
         >
           <AddCircleOutlineIcon
             style={{ color: "#aaaaaa", fontSize: 18, cursor: "pointer" }}
             onClick={Common.changeState.bind(this, "showNewTaskColorPicker", true)}
+          />
+          <VisibilityIcon
+            style={{ color: "#aaaaaa", fontSize: 18, cursor: "pointer" }}
+            onClick={() => {
+              const next = !showCompleted;
+              localStorage.setItem(`showCompleted-${this.props.timeframe}`, next);
+              this.setState({ showCompleted: next });
+            }}
           />
         </div>
       );
