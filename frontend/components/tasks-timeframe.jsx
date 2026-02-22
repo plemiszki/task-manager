@@ -36,7 +36,7 @@ export default class TasksTimeframe extends React.Component {
       showNewTaskColorPicker: false,
       showTopColorPicker: false,
       shiftPressed: false,
-      scheduleView: "checkbox",
+      scheduleView: props.scheduleToggle ? "calendar" : "checkbox",
       scheduleBlocks: null,
       scheduleDayVariants: null,
       activeDayVariants: {},
@@ -81,6 +81,7 @@ export default class TasksTimeframe extends React.Component {
         });
       });
       this.timer = setInterval(() => this.setState({ now: new Date() }), 60000);
+      this.onCalendarClick();
     }
   }
 
@@ -159,7 +160,7 @@ export default class TasksTimeframe extends React.Component {
         newHash = this.rearrangeMultipleFields(
           hash,
           dropZoneIndex,
-          selectedTasks
+          selectedTasks,
         );
       } else {
         newHash = this.rearrangeFields(hash, draggedIndex, dropZoneIndex);
@@ -201,9 +202,9 @@ export default class TasksTimeframe extends React.Component {
     let result = {};
     const orderedSelectedTasks = orderBy(
       this.props.timeframeTasks.filter((task) =>
-        selectedTasks.includes(task.id)
+        selectedTasks.includes(task.id),
       ),
-      "position"
+      "position",
     );
     if (dropZoneIndex == -1) {
       selectedTasks.forEach((selectedTaskId, index) => {
@@ -294,7 +295,10 @@ export default class TasksTimeframe extends React.Component {
     const { spinner, scheduleView } = this.state;
     return (
       <div className="tasks-timeframe match-height" data-index={timeframe}>
-        {!(this.props.timeframe === "weekend" && this.state.scheduleView === "calendar") && this.renderHeader()}
+        {!(
+          this.props.timeframe === "weekend" &&
+          this.state.scheduleView === "calendar"
+        ) && this.renderHeader()}
         {this.props.scheduleToggle && this.renderScheduleToggle()}
         {scheduleView === "calendar"
           ? this.renderCalendarView()
@@ -308,7 +312,11 @@ export default class TasksTimeframe extends React.Component {
   renderCalendarView() {
     const { scheduleBlocks, activeDayVariants, now } = this.state;
     if (scheduleBlocks === null) {
-      return <div style={{ position: "relative", height: 60 }}><Spinner visible={true} /></div>;
+      return (
+        <div style={{ position: "relative", height: 60 }}>
+          <Spinner visible={true} />
+        </div>
+      );
     }
     const jsDay = now.getDay();
     const todayIndex = jsDay === 0 ? 6 : jsDay - 1;
@@ -318,102 +326,118 @@ export default class TasksTimeframe extends React.Component {
     const isInRange = currentHour >= 6 && currentHour < 22;
     return (
       <div style={{ paddingTop: 24 }}>
-        <div style={{ borderTop: "2px solid #333", borderBottom: "2px solid #333" }}>
-        {TIME_SLOTS.map(({ hour, minute }) => {
-          const cellStart = hour * 60 + minute;
-          const blocks = scheduleBlocks.filter((block) => {
-            if (block.weekday !== todayIndex) return false;
-            const [h, m] = block.startTime.split(":").map(Number);
-            const startMinutes = h * 60 + m;
-            if (startMinutes < cellStart || startMinutes >= cellStart + 30) return false;
-            if (block.scheduleDayVariantId) return block.scheduleDayVariantId === activeVariantId;
-            if (block.normalDayOnly) return activeVariantId === null;
-            return true;
-          });
-          const isCurrentSlot =
-            isInRange &&
-            hour === currentHour &&
-            minute === (currentMinutes >= 30 ? 30 : 0);
-          return (
-            <div
-              key={`${hour}-${minute}`}
-              style={{
-                display: "flex",
-                height: SLOT_HEIGHT,
-                borderTop: minute === 0 && hour > 6 ? "1px solid #ccc" : "none",
-              }}
-            >
+        <div
+          style={{
+            borderTop: "2px solid #333",
+            borderBottom: "2px solid #333",
+          }}
+        >
+          {TIME_SLOTS.map(({ hour, minute }) => {
+            const cellStart = hour * 60 + minute;
+            const blocks = scheduleBlocks.filter((block) => {
+              if (block.weekday !== todayIndex) return false;
+              const [h, m] = block.startTime.split(":").map(Number);
+              const startMinutes = h * 60 + m;
+              if (startMinutes < cellStart || startMinutes >= cellStart + 30)
+                return false;
+              if (block.scheduleDayVariantId)
+                return block.scheduleDayVariantId === activeVariantId;
+              if (block.normalDayOnly) return activeVariantId === null;
+              return true;
+            });
+            const isCurrentSlot =
+              isInRange &&
+              hour === currentHour &&
+              minute === (currentMinutes >= 30 ? 30 : 0);
+            return (
               <div
+                key={`${hour}-${minute}`}
                 style={{
-                  width: 60,
-                  textAlign: "right",
-                  paddingRight: 6,
-                  fontSize: 11,
-                  color: "#888",
-                  flexShrink: 0,
-                  lineHeight: `${SLOT_HEIGHT}px`,
+                  display: "flex",
+                  height: SLOT_HEIGHT,
+                  borderTop:
+                    minute === 0 && hour > 6 ? "1px solid #ccc" : "none",
                 }}
               >
-                {minute === 0 ? formatSlotTime(hour, minute) : ""}
-              </div>
-              <div style={{ flex: 1, position: "relative", borderLeft: "1px solid #ddd" }}>
-                {blocks.map((block) => {
-                  const [sh, sm] = block.startTime.split(":").map(Number);
-                  const [eh, em] = block.endTime.split(":").map(Number);
-                  const durationMinutes = (eh * 60 + em) - (sh * 60 + sm);
-                  const offsetWithinCell = ((sh * 60 + sm - cellStart) / 30) * SLOT_HEIGHT;
-                  return (
+                <div
+                  style={{
+                    width: 60,
+                    textAlign: "right",
+                    paddingRight: 6,
+                    fontSize: 11,
+                    color: "#888",
+                    flexShrink: 0,
+                    lineHeight: `${SLOT_HEIGHT}px`,
+                  }}
+                >
+                  {minute === 0 ? formatSlotTime(hour, minute) : ""}
+                </div>
+                <div
+                  style={{
+                    flex: 1,
+                    position: "relative",
+                    borderLeft: "1px solid #ddd",
+                  }}
+                >
+                  {blocks.map((block) => {
+                    const [sh, sm] = block.startTime.split(":").map(Number);
+                    const [eh, em] = block.endTime.split(":").map(Number);
+                    const durationMinutes = eh * 60 + em - (sh * 60 + sm);
+                    const offsetWithinCell =
+                      ((sh * 60 + sm - cellStart) / 30) * SLOT_HEIGHT;
+                    return (
+                      <div
+                        key={block.id}
+                        style={{
+                          position: "absolute",
+                          top: offsetWithinCell,
+                          left: 2,
+                          right: 2,
+                          height: (durationMinutes / 30) * SLOT_HEIGHT,
+                          backgroundColor: block.color,
+                          borderRadius: 4,
+                          padding:
+                            durationMinutes <= 15 ? "1px 3px" : "2px 6px",
+                          fontSize: durationMinutes <= 15 ? 9 : 11,
+                          color: "white",
+                          overflow: "hidden",
+                          zIndex: 2,
+                          lineHeight: "14px",
+                        }}
+                      >
+                        {block.text}
+                      </div>
+                    );
+                  })}
+                  {isCurrentSlot && (
                     <div
-                      key={block.id}
                       style={{
                         position: "absolute",
-                        top: offsetWithinCell,
-                        left: 2,
-                        right: 2,
-                        height: (durationMinutes / 30) * SLOT_HEIGHT,
-                        backgroundColor: block.color,
-                        borderRadius: 4,
-                        padding: durationMinutes <= 15 ? "1px 3px" : "2px 6px",
-                        fontSize: durationMinutes <= 15 ? 9 : 11,
-                        color: "white",
-                        overflow: "hidden",
-                        zIndex: 2,
-                        lineHeight: "14px",
+                        top: ((currentMinutes % 30) / 30) * SLOT_HEIGHT,
+                        left: 0,
+                        right: 0,
+                        height: 2,
+                        backgroundColor: "#d9534f",
+                        zIndex: 3,
                       }}
                     >
-                      {block.text}
+                      <div
+                        style={{
+                          position: "absolute",
+                          left: -4,
+                          top: -3,
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          backgroundColor: "#d9534f",
+                        }}
+                      />
                     </div>
-                  );
-                })}
-                {isCurrentSlot && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: ((currentMinutes % 30) / 30) * SLOT_HEIGHT,
-                      left: 0,
-                      right: 0,
-                      height: 2,
-                      backgroundColor: "#d9534f",
-                      zIndex: 3,
-                    }}
-                  >
-                    <div
-                      style={{
-                        position: "absolute",
-                        left: -4,
-                        top: -3,
-                        width: 8,
-                        height: 8,
-                        borderRadius: "50%",
-                        backgroundColor: "#d9534f",
-                      }}
-                    />
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
         </div>
       </div>
     );
@@ -423,11 +447,7 @@ export default class TasksTimeframe extends React.Component {
     const { debug, debugPositions, selectedTasks, selectTask, unselectTask } =
       this.props;
     const { showTopColorPicker, shiftPressed } = this.state;
-    const {
-      timeframeTasks,
-      openListsModal,
-      setActiveTaskId,
-    } = this.props;
+    const { timeframeTasks, openListsModal, setActiveTaskId } = this.props;
     return (
       <>
         {this.renderAddButton()}
@@ -439,7 +459,7 @@ export default class TasksTimeframe extends React.Component {
           onDoubleClick={Common.changeState.bind(
             this,
             "showTopColorPicker",
-            !showTopColorPicker
+            !showTopColorPicker,
           )}
         ></div>
         {timeframeTasks.map((task, index) => {
@@ -455,7 +475,7 @@ export default class TasksTimeframe extends React.Component {
                 this.props.copyTask.call(this, { ...args, selectedTasks });
               }}
               copyIncompleteSubtasks={this.props.copyIncompleteSubtasks.bind(
-                this
+                this,
               )}
               moveTask={(args) => {
                 this.props.moveTask.call(this, { ...args, selectedTasks });
@@ -484,13 +504,27 @@ export default class TasksTimeframe extends React.Component {
     const activeColor = "#cc0000";
     const inactiveColor = "#aaaaaa";
     return (
-      <div style={{ position: "absolute", top: 10, right: 12, display: "flex", gap: 4 }}>
+      <div
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 12,
+          display: "flex",
+          gap: 4,
+        }}
+      >
         <CheckBoxOutlinedIcon
-          style={{ color: scheduleView === "checkbox" ? activeColor : inactiveColor, cursor: "pointer" }}
+          style={{
+            color: scheduleView === "checkbox" ? activeColor : inactiveColor,
+            cursor: "pointer",
+          }}
           onClick={() => this.setState({ scheduleView: "checkbox" })}
         />
         <CalendarMonthOutlinedIcon
-          style={{ color: scheduleView === "calendar" ? activeColor : inactiveColor, cursor: "pointer" }}
+          style={{
+            color: scheduleView === "calendar" ? activeColor : inactiveColor,
+            cursor: "pointer",
+          }}
           onClick={() => this.onCalendarClick()}
         />
       </div>
@@ -535,7 +569,7 @@ export default class TasksTimeframe extends React.Component {
             onClick={Common.changeState.bind(
               this,
               "showNewTaskColorPicker",
-              false
+              false,
             )}
           ></div>
         </div>
@@ -548,7 +582,7 @@ export default class TasksTimeframe extends React.Component {
           onClick={Common.changeState.bind(
             this,
             "showNewTaskColorPicker",
-            true
+            true,
           )}
         >
           Add Task
