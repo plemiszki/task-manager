@@ -58,7 +58,7 @@ RSpec.describe ScheduleBlock, type: :model do
 
   describe "overlap validation" do
     before do
-      # Monday 9:00-10:00
+      # Monday 9:00-10:00, all-days block
       build_block.save!
     end
 
@@ -103,6 +103,51 @@ RSpec.describe ScheduleBlock, type: :model do
       existing = ScheduleBlock.first
       existing.text = "Updated Text"
       expect(existing).to be_valid
+    end
+
+    context "variant-aware overlap" do
+      let(:variant_a) { ScheduleDayVariant.create!(user: user, weekday: 0, name: "Early") }
+      let(:variant_b) { ScheduleDayVariant.create!(user: user, weekday: 0, name: "Late") }
+
+      # These rely on the outer before-block's all-days block being present
+      it "rejects a normal-day-only block overlapping an all-days block" do
+        block = build_block(normal_day_only: true)
+        expect(block).not_to be_valid
+      end
+
+      it "rejects a variant block overlapping an all-days block" do
+        block = build_block(schedule_day_variant: variant_a)
+        expect(block).not_to be_valid
+      end
+
+      # These need a clean slate (no all-days block)
+      context "without an all-days block" do
+        before { ScheduleBlock.delete_all }
+
+        it "rejects two blocks with the same variant that overlap" do
+          build_block(schedule_day_variant: variant_a).save!
+          block = build_block(schedule_day_variant: variant_a)
+          expect(block).not_to be_valid
+        end
+
+        it "allows two blocks with different variants to overlap" do
+          build_block(schedule_day_variant: variant_a).save!
+          block = build_block(schedule_day_variant: variant_b)
+          expect(block).to be_valid
+        end
+
+        it "allows a variant block to overlap a normal-day-only block" do
+          build_block(normal_day_only: true).save!
+          block = build_block(schedule_day_variant: variant_a)
+          expect(block).to be_valid
+        end
+
+        it "rejects two normal-day-only blocks that overlap" do
+          build_block(normal_day_only: true).save!
+          block = build_block(normal_day_only: true)
+          expect(block).not_to be_valid
+        end
+      end
     end
   end
 end

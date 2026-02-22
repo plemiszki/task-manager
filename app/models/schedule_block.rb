@@ -15,8 +15,19 @@ class ScheduleBlock < ActiveRecord::Base
       .where("start_time < ? AND end_time > ?", end_time, start_time)
     scope = scope.where.not(id: id) if persisted?
 
-    if scope.exists?
-      errors.add(:base, "overlaps with an existing schedule block")
+    # Narrow to blocks that share the same day type as self.
+    # A variant block only conflicts with blocks for the same variant or "all-days" blocks.
+    # A normal-day-only block only conflicts with other normal-day-only or "all-days" blocks.
+    # An all-days block conflicts with everything.
+    if schedule_day_variant_id.present?
+      scope = scope.where(
+        "schedule_day_variant_id = ? OR (schedule_day_variant_id IS NULL AND normal_day_only = ?)",
+        schedule_day_variant_id, false
+      )
+    elsif normal_day_only?
+      scope = scope.where(schedule_day_variant_id: nil)
     end
+
+    errors.add(:base, "overlaps with an existing schedule block") if scope.exists?
   end
 end

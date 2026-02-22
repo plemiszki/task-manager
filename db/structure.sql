@@ -908,14 +908,6 @@ ALTER TABLE ONLY public.lists
 
 
 --
--- Name: schedule_blocks no_overlapping_schedule_blocks; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.schedule_blocks
-    ADD CONSTRAINT no_overlapping_schedule_blocks EXCLUDE USING gist (user_id WITH =, weekday WITH =, public.timerange(start_time, end_time) WITH &&);
-
-
---
 -- Name: recipe_items recipe_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1180,6 +1172,7 @@ ALTER TABLE ONLY public.schedule_blocks
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260222000001'),
 ('20260218200040'),
 ('20260218194753'),
 ('20260217145308'),
