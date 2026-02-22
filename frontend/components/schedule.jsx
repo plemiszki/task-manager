@@ -176,6 +176,7 @@ export default class Schedule extends React.Component {
           currentActivity={currentBlock ? currentBlock.text : null}
           scheduleBlocks={scheduleBlocks}
           scheduleCategories={scheduleCategories}
+          activeDayVariants={this.state.activeDayVariants}
           onAddBlock={() =>
             this.setState({
               modalOpen: true,

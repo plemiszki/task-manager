@@ -25,6 +25,7 @@ export default class ScheduleSidebar extends React.Component {
       currentActivity,
       scheduleBlocks,
       scheduleCategories,
+      activeDayVariants,
     } = this.props;
 
     const categoryMap = {};
@@ -32,9 +33,16 @@ export default class ScheduleSidebar extends React.Component {
       categoryMap[c.id] = c.name;
     });
 
+    const visibleBlocks = scheduleBlocks.filter((block) => {
+      const activeVariantId = (activeDayVariants || {})[block.weekday] || null;
+      if (block.scheduleDayVariantId) return block.scheduleDayVariantId === activeVariantId;
+      if (block.normalDayOnly) return activeVariantId === null;
+      return true;
+    });
+
     const minutesByCategory = {};
     let totalScheduled = 0;
-    scheduleBlocks.forEach((block) => {
+    visibleBlocks.forEach((block) => {
       const dur = blockDuration(block);
       totalScheduled += dur;
       const key = block.scheduleCategoryId || "uncategorized";
