@@ -386,6 +386,7 @@ export default class TasksIndex extends React.Component {
             <TasksTimeframe
               spinner={this.state.spinner}
               timeframe={timeframe}
+              scheduleToggle={timeframe === "weekend"}
               timeframeTasks={this.state.tasks[timeframe]}
               createTask={this.createTask.bind(this)}
               updateTask={this.updateTask.bind(this)}

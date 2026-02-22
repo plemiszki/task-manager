@@ -4,6 +4,8 @@ import ColorPicker from "./color-picker";
 import TasksCommon from "../../app/assets/javascripts/common.jsx";
 import TasksIndexItem from "./tasks-index-item.jsx";
 import { orderBy } from "lodash";
+import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
+import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 
 export default class TasksTimeframe extends React.Component {
   constructor(props) {
@@ -15,6 +17,7 @@ export default class TasksTimeframe extends React.Component {
       showNewTaskColorPicker: false,
       showTopColorPicker: false,
       shiftPressed: false,
+      scheduleView: "checkbox",
     };
   }
 
@@ -255,6 +258,7 @@ export default class TasksTimeframe extends React.Component {
     return (
       <div className="tasks-timeframe match-height" data-index={timeframe}>
         {this.renderHeader()}
+        {this.props.scheduleToggle && this.renderScheduleToggle()}
         {this.renderAddButton()}
         <hr />
         {this.renderTopColorPicker()}
@@ -302,6 +306,24 @@ export default class TasksTimeframe extends React.Component {
         })}
         <Spinner visible={propsSpinner || spinner} />
         <GrayedOut visible={propsSpinner || spinner} />
+      </div>
+    );
+  }
+
+  renderScheduleToggle() {
+    const { scheduleView } = this.state;
+    const activeColor = "#cc0000";
+    const inactiveColor = "#aaaaaa";
+    return (
+      <div style={{ position: "absolute", top: 10, right: 12, display: "flex", gap: 4 }}>
+        <CheckBoxOutlinedIcon
+          style={{ color: scheduleView === "checkbox" ? activeColor : inactiveColor, cursor: "pointer" }}
+          onClick={() => this.setState({ scheduleView: "checkbox" })}
+        />
+        <CalendarMonthOutlinedIcon
+          style={{ color: scheduleView === "calendar" ? activeColor : inactiveColor, cursor: "pointer" }}
+          onClick={() => this.setState({ scheduleView: "calendar" })}
+        />
       </div>
     );
   }
