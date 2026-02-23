@@ -354,7 +354,7 @@ class Api::TasksController < ActionController::Base
   private
 
   def build_rearrange_response(tasks:)
-    sample_task = Task.find(tasks['0'])
+    sample_task = Task.find(tasks.values.first)
     if sample_task.parent_id
       parent = sample_task.parent
       if parent.duplicate_id || parent.has_dups?

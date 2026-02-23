@@ -125,12 +125,15 @@ export default class TasksTimeframe extends React.Component {
     let hash = {};
     let parent = e.target.parentElement;
     let parentId, $tasks, timeframe;
+    let isRootLevel = false;
     if (parent.classList[0] == "tasks-timeframe") {
       // top drop zone
+      isRootLevel = true;
       parentId = parent.parentElement.getAttribute("id");
       $tasks = $("#" + parentId + " > .tasks-timeframe > .group > .task");
     } else if (parent.parentElement.classList[0] == "tasks-timeframe") {
       // root level
+      isRootLevel = true;
       parentId = parent.parentElement.parentElement.getAttribute("id");
       $tasks = $("#" + parentId + " > .tasks-timeframe > .group > .task");
     } else if (
@@ -173,6 +176,16 @@ export default class TasksTimeframe extends React.Component {
         );
       } else {
         newHash = this.rearrangeFields(hash, draggedIndex, dropZoneIndex);
+      }
+      if (!this.state.showCompleted && isRootLevel) {
+        const completedCount = this.props.timeframeTasks.filter((t) => t.complete).length;
+        if (completedCount > 0) {
+          const offsetHash = {};
+          Object.keys(newHash).forEach((key) => {
+            offsetHash[parseInt(key) + completedCount] = newHash[key];
+          });
+          newHash = offsetHash;
+        }
       }
       this.props.rearrangeTasks({
         newPositions: newHash,
