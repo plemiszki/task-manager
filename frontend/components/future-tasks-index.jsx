@@ -1,41 +1,40 @@
-import React, { useState, useEffect } from 'react'
-import { GrayedOut, Spinner, deleteEntity } from 'handy-components'
-import Modal from 'react-modal'
-import Moment from 'moment'
-import FutureTaskNew from './future-task-new.jsx'
+import React, { useState, useEffect } from "react";
+import { GrayedOut, Spinner, deleteEntity } from "handy-components";
+import Modal from "react-modal";
+import Moment from "moment";
+import FutureTaskNew from "./future-task-new.jsx";
 
 const ModalStyles = {
   overlay: {
-    background: 'rgba(0, 0, 0, 0.50)'
+    background: "rgba(0, 0, 0, 0.50)",
   },
   content: {
-    background: '#F5F6F7',
+    background: "#F5F6F7",
     padding: 0,
-    margin: 'auto',
+    margin: "auto",
     maxWidth: 1000,
     height: 343,
-  }
+  },
 };
 
 export default function FutureTasksIndex() {
-
-  const [spinner, setSpinner] = useState(true)
-  const [modalOpen, setModalOpen] = useState(false)
-  const [futureTasks, setFutureTasks] = useState([])
+  const [spinner, setSpinner] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [futureTasks, setFutureTasks] = useState([]);
 
   useEffect(() => {
     fetch(`/api/future_tasks`)
-      .then(data => data.json())
+      .then((data) => data.json())
       .then((response) => {
-        setFutureTasks(response.futureTasks)
-        setSpinner(false)
+        setFutureTasks(response.futureTasks);
+        setSpinner(false);
       });
-  }, [])
+  }, []);
 
   const deleteFutureTask = (id) => {
     setSpinner(true);
     deleteEntity({
-      directory: 'future_tasks',
+      directory: "future_tasks",
       id,
     }).then((response) => {
       const { futureTasks } = response;
@@ -50,8 +49,14 @@ export default function FutureTasksIndex() {
       <div className="row">
         <div className="col-xs-12">
           <div className="white-box">
-            <h1>Future Tasks</h1>
-            <table>
+            <div
+              className="btn btn-info"
+              style={{ position: "absolute", right: 26, top: 26 }}
+              onClick={() => setModalOpen(true)}
+            >
+              Add New
+            </div>
+            <table style={{ marginTop: 20 }}>
               <thead>
                 <tr>
                   <th>Date</th>
@@ -63,34 +68,54 @@ export default function FutureTasksIndex() {
                 </tr>
               </thead>
               <tbody>
-                <tr className="below-header"><td></td><td></td><td></td><td></td><td></td></tr>
-                { futureTasks.map((task) => {
+                <tr className="below-header">
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                {futureTasks.map((task) => {
                   const { text, timeframe, addToEnd, color, id, date } = task;
-                  return(
-                    <tr key={ id }>
-                      <td>{ Moment(date).format('l') }</td>
-                      <td>{ text }</td>
-                      <td>{ timeframe }</td>
-                      <td>{ addToEnd ? "End" : "Beginning" }</td>
-                      <td><div className="swatch" style={ { backgroundColor: color } }></div></td>
-                      <td><div className="x-button" onClick={ () => deleteFutureTask(id) }></div></td>
+                  return (
+                    <tr key={id}>
+                      <td>{Moment(date).format("l")}</td>
+                      <td>{text}</td>
+                      <td>{timeframe}</td>
+                      <td>{addToEnd ? "End" : "Beginning"}</td>
+                      <td>
+                        <div
+                          className="swatch"
+                          style={{ backgroundColor: color }}
+                        ></div>
+                      </td>
+                      <td>
+                        <div
+                          className="x-button"
+                          onClick={() => deleteFutureTask(id)}
+                        ></div>
+                      </td>
                     </tr>
                   );
-                }) }
+                })}
               </tbody>
             </table>
-            <div className="btn btn-info" onClick={ () => setModalOpen(true) }>Add New</div>
-            <GrayedOut visible={ spinner } />
-            <Spinner visible={ spinner } />
+            <GrayedOut visible={spinner} />
+            <Spinner visible={spinner} />
           </div>
         </div>
       </div>
-      <Modal isOpen={ modalOpen } onRequestClose={ () => setModalOpen(false) } contentLabel="Modal" style={ ModalStyles }>
+      <Modal
+        isOpen={modalOpen}
+        onRequestClose={() => setModalOpen(false)}
+        contentLabel="Modal"
+        style={ModalStyles}
+      >
         <FutureTaskNew
-          afterCreate={ (futureTasks) => {
+          afterCreate={(futureTasks) => {
             setFutureTasks(futureTasks);
             setModalOpen(false);
-          } }
+          }}
         />
       </Modal>
     </div>
