@@ -175,15 +175,15 @@ export default class CurrentUser extends React.Component {
                     icon={SettingsIcon}
                     activePath="/settings"
                   />
-                  {resetEarly ? null : (
-                    <UpdateIcon
-                      fontSize="large"
-                      style={{ fontSize: 30, cursor: "pointer" }}
-                      onClick={() =>
-                        this.setState({ confirmResetModalOpen: true })
-                      }
-                    />
-                  )}
+                  <UpdateIcon
+                    fontSize="large"
+                    style={{
+                      fontSize: 30,
+                      cursor: resetEarly ? "default" : "pointer",
+                      color: resetEarly ? "#ccc" : undefined,
+                    }}
+                    onClick={resetEarly ? undefined : () => this.setState({ confirmResetModalOpen: true })}
+                  />
                   <NavIconButton
                     href="/sign_out"
                     icon={LogoutIcon}
