@@ -116,7 +116,7 @@ export default class TopBar extends React.Component {
         <div className="container widened-container">
           <div className="row">
             <div className="col-xs-12">
-              <div className="current-user group">
+              <div className="top-bar">
                 <div
                   style={{
                     display: "flex",
@@ -126,10 +126,19 @@ export default class TopBar extends React.Component {
                     justifyContent: "flex-end",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginRight: "auto" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      marginRight: "auto",
+                    }}
+                  >
                     {backPath && (
                       <a href={backPath} style={{ display: "inline-flex" }}>
-                        <ArrowBackIcon style={{ fontSize: 22, color: "#2c2f33" }} />
+                        <ArrowBackIcon
+                          style={{ fontSize: 22, color: "#2c2f33" }}
+                        />
                       </a>
                     )}
                     <span
@@ -144,7 +153,11 @@ export default class TopBar extends React.Component {
                       {pageTitle}
                     </span>
                   </div>
-                  <NavIconButton href="/" icon={CheckBoxOutlinedIcon} activePath="/" />
+                  <NavIconButton
+                    href="/"
+                    icon={CheckBoxOutlinedIcon}
+                    activePath="/"
+                  />
                   <NavIconButton
                     href="/schedule"
                     icon={CalendarMonthIcon}
@@ -175,7 +188,11 @@ export default class TopBar extends React.Component {
                       style={{ fontSize: 30, color: "#333" }}
                     />
                   </span>
-                  <NavIconButton href="/properties" icon={HomeIcon} activePath="/properties" />
+                  <NavIconButton
+                    href="/properties"
+                    icon={HomeIcon}
+                    activePath="/properties"
+                  />
                   <NavIconButton
                     href="/settings"
                     icon={SettingsIcon}
@@ -188,7 +205,11 @@ export default class TopBar extends React.Component {
                       cursor: resetEarly ? "default" : "pointer",
                       color: resetEarly ? "#ccc" : undefined,
                     }}
-                    onClick={resetEarly ? undefined : () => this.setState({ confirmResetModalOpen: true })}
+                    onClick={
+                      resetEarly
+                        ? undefined
+                        : () => this.setState({ confirmResetModalOpen: true })
+                    }
                   />
                   <NavIconButton
                     href="/sign_out"
