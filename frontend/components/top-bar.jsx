@@ -7,7 +7,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import RamenDiningIcon from "@mui/icons-material/RamenDining";
-import HomeIcon from "@mui/icons-material/Home";
+import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import LocalGroceryStoreIcon from "@mui/icons-material/LocalGroceryStore";
@@ -139,7 +139,7 @@ export default class TopBar extends React.Component {
                       {pageTitle}
                     </span>
                   </div>
-                  <NavIconButton href="/" icon={HomeIcon} activePath="/" />
+                  <NavIconButton href="/" icon={CheckBoxOutlinedIcon} activePath="/" />
                   <NavIconButton
                     href="/schedule"
                     icon={CalendarMonthIcon}
