@@ -33,7 +33,7 @@ const modalStyles = {
   },
 };
 
-export default class CurrentUser extends React.Component {
+export default class TopBar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {

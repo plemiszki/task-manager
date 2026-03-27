@@ -1,7 +1,7 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import ReactModal from 'react-modal'
-import CurrentUser from './components/current-user.jsx'
+import TopBar from './components/top-bar.jsx'
 
 import { SimpleDetails, FullIndex } from 'handy-components'
 
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const currentUserNode = document.getElementById('current-user');
   if (currentUserNode) {
     createRoot(currentUserNode).render(
-      <CurrentUser />
+      <TopBar />
     );
   }
 
