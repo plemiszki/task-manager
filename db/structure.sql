@@ -400,6 +400,52 @@ ALTER SEQUENCE public.lists_id_seq OWNED BY public.lists.id;
 
 
 --
+-- Name: properties; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.properties (
+    id bigint NOT NULL,
+    label character varying NOT NULL,
+    street_address character varying NOT NULL,
+    apt_number character varying,
+    neighborhood character varying,
+    status character varying DEFAULT 'available'::character varying NOT NULL,
+    price integer NOT NULL,
+    bedrooms integer NOT NULL,
+    bathrooms double precision NOT NULL,
+    property_type character varying NOT NULL,
+    area integer,
+    school_district integer,
+    school_zone integer,
+    taxes double precision,
+    insurance double precision,
+    hoa_fees double precision,
+    date_added timestamp(6) without time zone NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: properties_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.properties_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: properties_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.properties_id_seq OWNED BY public.properties.id;
+
+
+--
 -- Name: recipe_items; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -764,6 +810,13 @@ ALTER TABLE ONLY public.lists ALTER COLUMN id SET DEFAULT nextval('public.lists_
 
 
 --
+-- Name: properties id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.properties ALTER COLUMN id SET DEFAULT nextval('public.properties_id_seq'::regclass);
+
+
+--
 -- Name: recipe_items id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -908,6 +961,14 @@ ALTER TABLE ONLY public.lists
 
 
 --
+-- Name: properties properties_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.properties
+    ADD CONSTRAINT properties_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: recipe_items recipe_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1025,6 +1086,13 @@ CREATE INDEX index_list_items_on_list_id ON public.list_items USING btree (list_
 --
 
 CREATE UNIQUE INDEX index_lists_on_user_id_and_name ON public.lists USING btree (user_id, name);
+
+
+--
+-- Name: index_properties_on_label; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_properties_on_label ON public.properties USING btree (label);
 
 
 --
@@ -1172,6 +1240,7 @@ ALTER TABLE ONLY public.schedule_blocks
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260327000001'),
 ('20260222000001'),
 ('20260218200040'),
 ('20260218194753'),

@@ -16,6 +16,7 @@ class CreateProperties < ActiveRecord::Migration[8.1]
       t.float :taxes
       t.float :insurance
       t.float :hoa_fees
+      t.datetime :date_added, null: false
 
       t.timestamps
     end

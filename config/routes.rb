@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :future_tasks, only: [:index]
   resources :recurring_tasks, only: [:index, :show]
   resources :recipes, only: [:index, :show]
+  resources :properties, only: [:index, :show]
   resources :lists, only: [:show]
   resources :grocery_stores, only: [:show]
   resources :grocery_items, only: [:show]
@@ -56,6 +57,7 @@ Rails.application.routes.draw do
     delete '/active_list/:id' => '/api/active_list#remove'
     delete '/active_list' => '/api/active_list#clear'
     post '/reset_tasks_early' => '/api/actions#reset_tasks_early'
+    resources :properties, only: [:index, :show]
   end
 
 end

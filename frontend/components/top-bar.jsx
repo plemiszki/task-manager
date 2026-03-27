@@ -8,6 +8,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import RamenDiningIcon from "@mui/icons-material/RamenDining";
 import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
+import HomeIcon from "@mui/icons-material/Home";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import LocalGroceryStoreIcon from "@mui/icons-material/LocalGroceryStore";
@@ -89,6 +90,7 @@ export default class TopBar extends React.Component {
       "/future_tasks": "Future Tasks",
       "/recurring_tasks": "Recurring Tasks",
       "/recipes": "Recipes",
+      "/properties": "Properties",
       "/settings": "Settings",
     };
     const { pathname } = window.location;
@@ -104,6 +106,9 @@ export default class TopBar extends React.Component {
       } else if (/^\/recipes\/\d+/.test(pathname)) {
         pageTitle = "Edit Recipe";
         backPath = "/recipes";
+      } else if (/^\/properties\/\d+/.test(pathname)) {
+        pageTitle = "Edit Property";
+        backPath = "/properties";
       }
     }
     return (
@@ -170,6 +175,7 @@ export default class TopBar extends React.Component {
                       style={{ fontSize: 30, color: "#333" }}
                     />
                   </span>
+                  <NavIconButton href="/properties" icon={HomeIcon} activePath="/properties" />
                   <NavIconButton
                     href="/settings"
                     icon={SettingsIcon}
