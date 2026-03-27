@@ -11,4 +11,8 @@ class Api::PropertiesController < ActionController::Base
     @property = Property.find(params[:id])
   end
 
+  def create
+    render json: {}, status: :ok
+  end
+
 end
