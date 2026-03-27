@@ -422,7 +422,8 @@ CREATE TABLE public.properties (
     hoa_fees double precision,
     date_added timestamp(6) without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    url character varying DEFAULT ''::character varying NOT NULL
 );
 
 
@@ -1240,6 +1241,7 @@ ALTER TABLE ONLY public.schedule_blocks
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260327000002'),
 ('20260327000001'),
 ('20260222000001'),
 ('20260218200040'),

@@ -16,4 +16,5 @@ json.property do
   json.insurance @property.insurance
   json.hoaFees @property.hoa_fees
   json.dateAdded @property.date_added
+  json.url @property.url
 end
