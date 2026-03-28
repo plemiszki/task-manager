@@ -12,7 +12,16 @@ class Api::PropertiesController < ActionController::Base
   end
 
   def create
-    render json: {}, status: :ok
+    clean_url = params[:property][:url].split('?').first
+    attributes = ScrapeStreetEasy.new(clean_url).call
+    @property = Property.new(attributes)
+    if @property.save
+      render json: {}, status: :ok
+    else
+      render_errors(@property)
+    end
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
   end
 
 end

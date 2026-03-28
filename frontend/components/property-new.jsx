@@ -10,7 +10,7 @@ export default class PropertyNew extends DetailsComponent {
       property: {
         url: "",
       },
-      errors: [],
+      errors: {},
     };
   }
 
@@ -32,9 +32,11 @@ export default class PropertyNew extends DetailsComponent {
         this.props.afterCreate(response);
       },
       (response) => {
+        const message =
+          response.errors?.label?.[0] || "Failed to process property";
         this.setState({
           spinner: false,
-          errors: response.errors,
+          errors: { url: [message] },
         });
       },
     );
@@ -42,7 +44,11 @@ export default class PropertyNew extends DetailsComponent {
 
   render() {
     return (
-      <div id="property-new" className="handy-component admin-modal" onKeyDown={(e) => e.key === "Enter" && this.clickSave()}>
+      <div
+        id="property-new"
+        className="handy-component admin-modal"
+        onKeyDown={(e) => e.key === "Enter" && this.clickSave()}
+      >
         <div className="white-box">
           <div className="row">
             {Details.renderField.bind(this)({

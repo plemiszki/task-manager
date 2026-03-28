@@ -1,7 +1,7 @@
 class Property < ActiveRecord::Base
 
   STATUSES = %w[available not_available].freeze
-  PROPERTY_TYPES = %w[townhouse condo co-op single-family double-family].freeze
+  PROPERTY_TYPES = %w[townhouse condo co-op single-family double-family multi-family].freeze
 
   validates :label, :street_address, :status, :price, :bedrooms, :bathrooms, :property_type, :date_added, :url, presence: true
   validates :label, uniqueness: true
