@@ -20,6 +20,14 @@ class Api::PropertiesController < ActionController::Base
     end
   end
 
+  def refetch
+    property = Property.find(params[:id])
+    attributes = ScrapeStreetEasy.new(property.url).call
+    render json: { property: attributes.transform_keys { |k| k.to_s.camelize(:lower) } }
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
   def create
     clean_url = params[:property][:url].split('?').first
     attributes = ScrapeStreetEasy.new(clean_url).call

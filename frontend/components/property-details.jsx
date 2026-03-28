@@ -135,7 +135,12 @@ export default class PropertyDetails extends React.Component {
           </div>
           <RefreshIcon
             style={{ position: "absolute", bottom: 26, right: 26, cursor: "pointer", color: "#333", fontSize: 30 }}
-            onClick={() => window.location.reload()}
+            onClick={() => {
+              const { property } = this.state;
+              fetch(`/api/properties/${property.id}/refetch`, { method: "POST", headers: { "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content } })
+                .then((r) => r.json())
+                .then((response) => console.log(response));
+            }}
           />
           <SaveButton
             justSaved={justSaved}

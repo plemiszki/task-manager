@@ -57,7 +57,9 @@ Rails.application.routes.draw do
     delete '/active_list/:id' => '/api/active_list#remove'
     delete '/active_list' => '/api/active_list#clear'
     post '/reset_tasks_early' => '/api/actions#reset_tasks_early'
-    resources :properties, only: [:index, :show, :create, :update]
+    resources :properties, only: [:index, :show, :create, :update] do
+      post :refetch, on: :member
+    end
   end
 
 end
