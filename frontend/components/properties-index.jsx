@@ -70,10 +70,8 @@ export default function PropertiesIndex() {
                 {properties.map((property) => {
                   const { id, label, neighborhood, dateAdded } = property;
                   return (
-                    <tr key={id}>
-                      <td>
-                        <a href={`/properties/${id}`}>{label}</a>
-                      </td>
+                    <tr key={id} style={{ cursor: "pointer" }} onClick={() => window.location.href = `/properties/${id}`}>
+                      <td>{label}</td>
                       <td>{neighborhood}</td>
                       <td>{Moment(dateAdded).format("l")}</td>
                     </tr>
