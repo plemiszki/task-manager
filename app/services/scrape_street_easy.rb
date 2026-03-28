@@ -31,8 +31,6 @@ class ScrapeStreetEasy
     schema = extract_schema(payload)
     raise 'Could not find listing data on page' unless schema
 
-    Rails.logger.info "ScrapeStreetEasy: schema: #{schema.inspect}"
-
     build_attributes(schema, payload)
   end
 
@@ -111,8 +109,7 @@ class ScrapeStreetEasy
                 extract_field(payload, 'baths')
     area      = extract_field(payload, 'squareFeet') ||
                 extract_field(payload, 'size')
-    taxes     = extract_field(payload, 'taxes') ||
-                extract_field(payload, 'annualTax')
+    taxes     = extract_field(payload, 'monthlyTaxes')
     hoa_fees  = extract_field(payload, 'maintenanceFee') ||
                 extract_field(payload, 'commonCharges')
 
