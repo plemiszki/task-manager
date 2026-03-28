@@ -11,6 +11,15 @@ class Api::PropertiesController < ActionController::Base
     @property = Property.find(params[:id])
   end
 
+  def update
+    @property = Property.find(params[:id])
+    if @property.update(property_params)
+      render 'show'
+    else
+      render_errors(@property)
+    end
+  end
+
   def create
     clean_url = params[:property][:url].split('?').first
     attributes = ScrapeStreetEasy.new(clean_url).call
@@ -22,6 +31,17 @@ class Api::PropertiesController < ActionController::Base
     end
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity
+  end
+
+  private
+
+  def property_params
+    params.require(:property).permit(
+      :label, :street_address, :apt_number, :neighborhood, :status,
+      :price, :bedrooms, :bathrooms, :property_type, :area,
+      :school_district, :school_zone, :taxes, :insurance, :hoa_fees,
+      :date_added, :url
+    )
   end
 
 end

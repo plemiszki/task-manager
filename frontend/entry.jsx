@@ -16,6 +16,7 @@ import RecurringTaskDetails from "./components/recurring-task-details.jsx";
 import RecurringTasksIndex from "./components/recurring-tasks-index.jsx";
 import Schedule from "./components/schedule.jsx";
 import PropertiesIndex from "./components/properties-index.jsx";
+import PropertyDetails from "./components/property-details.jsx";
 import TasksIndex from "./components/tasks-index.jsx";
 
 const renderFullIndex = (id, props = {}, args = {}) => {
@@ -87,6 +88,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const propertiesIndexNode = document.getElementById("properties-index");
   if (propertiesIndexNode) {
     createRoot(propertiesIndexNode).render(<PropertiesIndex />);
+  }
+
+  const propertyDetailsNode = document.getElementById("property-details");
+  if (propertyDetailsNode) {
+    createRoot(propertyDetailsNode).render(
+      <div className="container widened-container">
+        <PropertyDetails />
+      </div>
+    );
   }
 
   renderFullIndex(
