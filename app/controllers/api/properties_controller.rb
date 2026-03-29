@@ -20,9 +20,14 @@ class Api::PropertiesController < ActionController::Base
     end
   end
 
+  def destroy
+    Property.find(params[:id]).destroy
+    render json: {}, status: :ok
+  end
+
   def refetch
     property = Property.find(params[:id])
-    attributes = ScrapeStreetEasy.new(property.url).call
+    attributes = ScrapeStreetEasy.new(property.url).call.except(:image_url)
     render json: { property: attributes.transform_keys { |k| k.to_s.camelize(:lower) } }
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity
@@ -46,7 +51,7 @@ class Api::PropertiesController < ActionController::Base
   def property_params
     params.require(:property).permit(
       :label, :street_address, :apt_number, :neighborhood, :status,
-      :price, :bedrooms, :bathrooms, :property_type, :area,
+      :price, :bedrooms, :full_bathrooms, :half_bathrooms, :property_type, :area,
       :school_district, :school_zone, :taxes, :insurance, :hoa_fees,
       :date_added, :url
     )

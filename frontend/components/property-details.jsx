@@ -1,6 +1,8 @@
 import React from "react";
 import Modal from "react-modal";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ConfirmModal from "./confirm-modal.jsx";
 import {
   Details,
   deepCopy,
@@ -55,6 +57,7 @@ export default class PropertyDetails extends React.Component {
       justSaved: false,
       refreshModalOpen: false,
       refreshedData: null,
+      deleteModalOpen: false,
     };
   }
 
@@ -182,7 +185,14 @@ export default class PropertyDetails extends React.Component {
             {Details.renderField.bind(this)({
               columnWidth: 2,
               entity: "property",
-              property: "bathrooms",
+              property: "fullBathrooms",
+              columnHeader: "Full Baths",
+            })}
+            {Details.renderField.bind(this)({
+              columnWidth: 2,
+              entity: "property",
+              property: "halfBathrooms",
+              columnHeader: "Half Baths",
             })}
           </div>
           <div className="row">
@@ -243,7 +253,7 @@ export default class PropertyDetails extends React.Component {
             style={{
               position: "absolute",
               bottom: 26,
-              right: 26,
+              right: 66,
               cursor: "pointer",
               color: "#333",
               fontSize: 30,
@@ -269,6 +279,17 @@ export default class PropertyDetails extends React.Component {
                   });
               });
             }}
+          />
+          <DeleteIcon
+            style={{
+              position: "absolute",
+              bottom: 26,
+              right: 26,
+              cursor: "pointer",
+              color: "#333",
+              fontSize: 30,
+            }}
+            onClick={() => this.setState({ deleteModalOpen: true })}
           />
           <Modal
             isOpen={this.state.refreshModalOpen}
@@ -296,7 +317,8 @@ export default class PropertyDetails extends React.Component {
                       "streetAddress",
                       "aptNumber",
                       "bedrooms",
-                      "bathrooms",
+                      "fullBathrooms",
+                      "halfBathrooms",
                       "taxes",
                       "insurance",
                       "hoaFees",
@@ -330,7 +352,11 @@ export default class PropertyDetails extends React.Component {
                           .replace(/^./, (c) => c.toUpperCase());
                       const normalize = (v) =>
                         CURRENCY_FIELDS.includes(key)
-                          ? String(parseFloat(String(v ?? "").replace(/[$,]/g, "")) || 0)
+                          ? String(
+                              parseFloat(
+                                String(v ?? "").replace(/[$,]/g, ""),
+                              ) || 0,
+                            )
                           : String(v ?? "");
                       const changed =
                         propertySaved[key] != null &&
@@ -372,60 +398,71 @@ export default class PropertyDetails extends React.Component {
               </tbody>
             </table>
             {(() => {
-                const { refreshedData, propertySaved } = this.state;
-                const CURRENCY_FIELDS = ["price", "taxes", "hoaFees"];
-                const normalize = (key, v) =>
-                  CURRENCY_FIELDS.includes(key)
-                    ? String(parseFloat(String(v ?? "").replace(/[$,]/g, "")) || 0)
-                    : String(v ?? "");
-                const hasChanges = refreshedData && Object.entries(refreshedData).some(
-                  ([key, value]) => normalize(key, propertySaved[key]) !== normalize(key, value),
+              const { refreshedData, propertySaved } = this.state;
+              const CURRENCY_FIELDS = ["price", "taxes", "hoaFees"];
+              const normalize = (key, v) =>
+                CURRENCY_FIELDS.includes(key)
+                  ? String(
+                      parseFloat(String(v ?? "").replace(/[$,]/g, "")) || 0,
+                    )
+                  : String(v ?? "");
+              const hasChanges =
+                refreshedData &&
+                Object.entries(refreshedData).some(
+                  ([key, value]) =>
+                    normalize(key, propertySaved[key]) !==
+                    normalize(key, value),
                 );
-                return (
-            <div style={{ textAlign: "center", marginTop: 12 }}>
-              <a
-                className="btn"
-                style={{ background: "#333", color: "white", opacity: hasChanges ? 1 : 0.4, pointerEvents: hasChanges ? "auto" : "none" }}
-                onClick={() => {
-                  const { refreshedData, propertySaved } = this.state;
-                  const changedFields = Object.fromEntries(
-                    Object.entries(refreshedData).filter(
-                      ([key, value]) =>
-                        normalize(key, propertySaved[key]) !==
-                        normalize(key, value),
-                    ),
-                  );
-                  this.setState(
-                    { refreshModalOpen: false, spinner: true },
-                    () => {
-                      updateEntity({
-                        entityName: "property",
-                        entity: { ...changedFields },
-                      }).then(
-                        (response) => {
-                          this.setState({
-                            spinner: false,
-                            property: response.property,
-                            propertySaved: deepCopy(response.property),
-                            changesToSave: false,
-                          });
-                        },
-                        (response) => {
-                          this.setState({
-                            spinner: false,
-                            errors: response.errors,
-                          });
+              return (
+                <div style={{ textAlign: "center", marginTop: 12 }}>
+                  <a
+                    className="btn"
+                    style={{
+                      background: "#333",
+                      color: "white",
+                      opacity: hasChanges ? 1 : 0.4,
+                      pointerEvents: hasChanges ? "auto" : "none",
+                    }}
+                    onClick={() => {
+                      const { refreshedData, propertySaved } = this.state;
+                      const changedFields = Object.fromEntries(
+                        Object.entries(refreshedData).filter(
+                          ([key, value]) =>
+                            normalize(key, propertySaved[key]) !==
+                            normalize(key, value),
+                        ),
+                      );
+                      this.setState(
+                        { refreshModalOpen: false, spinner: true },
+                        () => {
+                          updateEntity({
+                            entityName: "property",
+                            entity: { ...changedFields },
+                          }).then(
+                            (response) => {
+                              this.setState({
+                                spinner: false,
+                                property: response.property,
+                                propertySaved: deepCopy(response.property),
+                                changesToSave: false,
+                              });
+                            },
+                            (response) => {
+                              this.setState({
+                                spinner: false,
+                                errors: response.errors,
+                              });
+                            },
+                          );
                         },
                       );
-                    },
-                  );
-                }}
-              >
-                Update
-              </a>
-            </div>
-                );
-              })()}
+                    }}
+                  >
+                    Update
+                  </a>
+                </div>
+              );
+            })()}
           </Modal>
           <SaveButton
             justSaved={justSaved}
@@ -435,6 +472,27 @@ export default class PropertyDetails extends React.Component {
           />
           <GrayedOut visible={spinner} />
           <Spinner visible={spinner} />
+          <ConfirmModal
+            isOpen={this.state.deleteModalOpen}
+            header="Delete this property?"
+            confirmText="Delete"
+            onConfirm={() => {
+              const { property } = this.state;
+              this.setState({ deleteModalOpen: false, spinner: true }, () => {
+                fetch(`/api/properties/${property.id}`, {
+                  method: "DELETE",
+                  headers: {
+                    "X-CSRF-Token": document.querySelector(
+                      'meta[name="csrf-token"]',
+                    )?.content,
+                  },
+                }).then(() => {
+                  window.location.href = "/properties";
+                });
+              });
+            }}
+            onClose={() => this.setState({ deleteModalOpen: false })}
+          />
         </div>
       </div>
     );

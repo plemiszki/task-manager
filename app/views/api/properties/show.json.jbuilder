@@ -7,7 +7,8 @@ json.property do
   json.status @property.status
   json.price "$#{number_with_delimiter(@property.price)}"
   json.bedrooms @property.bedrooms
-  json.bathrooms @property.bathrooms
+  json.fullBathrooms @property.full_bathrooms
+  json.halfBathrooms @property.half_bathrooms
   json.propertyType @property.property_type
   json.area @property.area || ''
   json.schoolDistrict @property.school_district || ''

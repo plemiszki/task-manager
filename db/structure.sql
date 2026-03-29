@@ -412,7 +412,6 @@ CREATE TABLE public.properties (
     status character varying DEFAULT 'available'::character varying NOT NULL,
     price integer NOT NULL,
     bedrooms integer NOT NULL,
-    bathrooms double precision NOT NULL,
     property_type character varying NOT NULL,
     area integer,
     school_district integer,
@@ -423,7 +422,11 @@ CREATE TABLE public.properties (
     date_added timestamp(6) without time zone NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    url character varying DEFAULT ''::character varying NOT NULL
+    url character varying DEFAULT ''::character varying NOT NULL,
+    image_url character varying,
+    full_bathrooms integer DEFAULT 0 NOT NULL,
+    half_bathrooms integer DEFAULT 0 NOT NULL,
+    date_seen timestamp(6) without time zone
 );
 
 
@@ -1241,6 +1244,8 @@ ALTER TABLE ONLY public.schedule_blocks
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260329000002'),
+('20260329000001'),
 ('20260327000002'),
 ('20260327000001'),
 ('20260222000001'),

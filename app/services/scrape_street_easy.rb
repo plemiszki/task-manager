@@ -114,8 +114,10 @@ class ScrapeStreetEasy
     price     = extract_field(payload, 'price') ||
                 extract_field(payload, 'askingPrice')
     bedrooms  = extract_bedrooms_from_doc(doc)
-    bathrooms = extract_field(payload, 'bathrooms') ||
-                extract_field(payload, 'baths')
+    full_bathrooms = extract_field(payload, 'fullBaths') ||
+                     extract_field(payload, 'fullBathrooms')
+    half_bathrooms = extract_field(payload, 'halfBaths') ||
+                     extract_field(payload, 'halfBathrooms')
     area      = extract_field(payload, 'squareFeet') ||
                 extract_field(payload, 'size')
     taxes     = extract_field(payload, 'monthlyTaxes')
@@ -123,6 +125,7 @@ class ScrapeStreetEasy
                 extract_field(payload, 'commonCharges')
 
     property_type = extract_type_from_doc(doc)
+    image_url     = doc.at_css('[class*="MediaCarousel_mediaCarouselSlide"] img')&.attr('src')
 
     {
       label:          label,
@@ -132,8 +135,10 @@ class ScrapeStreetEasy
       status:         'available',
       price:          price.to_i,
       bedrooms:       bedrooms,
-      bathrooms:      bathrooms.to_f,
+      full_bathrooms: full_bathrooms.to_i,
+      half_bathrooms: half_bathrooms.to_i,
       property_type:  property_type,
+      image_url:      image_url,
       area:           area&.to_i,
       taxes:          taxes&.to_f,
       hoa_fees:       hoa_fees&.to_f,
