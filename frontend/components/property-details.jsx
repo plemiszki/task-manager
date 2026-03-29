@@ -71,6 +71,17 @@ export default class PropertyDetails extends React.Component {
         },
       );
     });
+    this.handleKeyDown = (e) => {
+      if (e.metaKey && e.key === "s") {
+        e.preventDefault();
+        this.clickSave();
+      }
+    };
+    document.addEventListener("keydown", this.handleKeyDown);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.handleKeyDown);
   }
 
   checkForChanges() {
@@ -89,6 +100,7 @@ export default class PropertyDetails extends React.Component {
       const property = {
         ...this.state.property,
         price: this.state.property.price.toString().replace(/[$,]/g, ""),
+        taxes: this.state.property.taxes.toString().replace(/[$,]/g, ""),
       };
       updateEntity({
         entityName: "property",
@@ -318,7 +330,7 @@ export default class PropertyDetails extends React.Component {
                           .replace(/^./, (c) => c.toUpperCase());
                       const normalize = (v) =>
                         CURRENCY_FIELDS.includes(key)
-                          ? String(v ?? "").replace(/[$,]/g, "")
+                          ? String(parseFloat(String(v ?? "").replace(/[$,]/g, "")) || 0)
                           : String(v ?? "");
                       const changed =
                         propertySaved[key] != null &&
@@ -364,7 +376,7 @@ export default class PropertyDetails extends React.Component {
                 const CURRENCY_FIELDS = ["price", "taxes", "hoaFees"];
                 const normalize = (key, v) =>
                   CURRENCY_FIELDS.includes(key)
-                    ? String(v ?? "").replace(/[$,]/g, "")
+                    ? String(parseFloat(String(v ?? "").replace(/[$,]/g, "")) || 0)
                     : String(v ?? "");
                 const hasChanges = refreshedData && Object.entries(refreshedData).some(
                   ([key, value]) => normalize(key, propertySaved[key]) !== normalize(key, value),

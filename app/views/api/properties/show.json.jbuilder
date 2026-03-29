@@ -12,7 +12,7 @@ json.property do
   json.area @property.area || ''
   json.schoolDistrict @property.school_district || ''
   json.schoolZone @property.school_zone || ''
-  json.taxes @property.taxes || ''
+  json.taxes @property.taxes ? number_to_currency(@property.taxes) : ''
   json.insurance @property.insurance || ''
   json.hoaFees @property.hoa_fees || ''
   json.dateAdded @property.date_added&.strftime('%-m/%-d')
