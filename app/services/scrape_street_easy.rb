@@ -31,7 +31,7 @@ class ScrapeStreetEasy
     schema = extract_schema(payload)
     raise 'Could not find listing data on page' unless schema
 
-    build_attributes(schema, payload)
+    build_attributes(schema, payload, doc)
   end
 
   private
@@ -87,7 +87,7 @@ class ScrapeStreetEasy
     nil
   end
 
-  def build_attributes(schema, payload)
+  def build_attributes(schema, payload, doc)
     # address is a plain string in the schema
     street = schema['address'].to_s.strip
 
@@ -103,8 +103,7 @@ class ScrapeStreetEasy
 
     price     = extract_field(payload, 'price') ||
                 extract_field(payload, 'askingPrice')
-    bedrooms  = extract_field(payload, 'bedrooms') ||
-                extract_field(payload, 'beds')
+    bedrooms  = extract_bedrooms_from_doc(doc)
     bathrooms = extract_field(payload, 'bathrooms') ||
                 extract_field(payload, 'baths')
     area      = extract_field(payload, 'squareFeet') ||
@@ -122,7 +121,7 @@ class ScrapeStreetEasy
       neighborhood:   neighborhood,
       status:         'available',
       price:          price.to_i,
-      bedrooms:       bedrooms.to_i,
+      bedrooms:       bedrooms,
       bathrooms:      bathrooms.to_f,
       property_type:  property_type || 'condo',
       area:           area&.to_i,
@@ -130,6 +129,14 @@ class ScrapeStreetEasy
       hoa_fees:       hoa_fees&.to_f,
       url:            @url,
     }
+  end
+
+  def extract_bedrooms_from_doc(doc)
+    doc.css('p').each do |p|
+      match = p.text.strip.match(/^(\d+)\s+beds?$/i)
+      return match[1].to_i if match
+    end
+    nil
   end
 
   def extract_field(payload, field)
