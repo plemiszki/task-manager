@@ -38,9 +38,9 @@ const PROPERTY_TYPES = [
   { value: "townhouse", text: "Townhouse" },
   { value: "condo", text: "Condo" },
   { value: "co-op", text: "Co-op" },
-  { value: "single-family", text: "Single-Family" },
-  { value: "double-family", text: "Double-Family" },
-  { value: "multi-family", text: "Multi-Family" },
+  { value: "single-family-house", text: "Single-Family House" },
+  { value: "double-family-house", text: "Double-Family House" },
+  { value: "multi-family-house", text: "Multi-Family House" },
 ];
 
 export default class PropertyDetails extends React.Component {

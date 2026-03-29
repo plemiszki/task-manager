@@ -4,6 +4,15 @@ import Modal from "react-modal";
 import Moment from "moment";
 import PropertyNew from "./property-new.jsx";
 
+const PROPERTY_TYPE_LABELS = {
+  "townhouse":           "Townhouse",
+  "condo":               "Condo",
+  "co-op":               "Co-op",
+  "single-family-house": "Single-Family House",
+  "double-family-house": "Double-Family House",
+  "multi-family-house":  "Multi-Family House",
+};
+
 const ModalStyles = {
   overlay: {
     background: "rgba(0, 0, 0, 0.50)",
@@ -57,6 +66,8 @@ export default function PropertiesIndex() {
               <thead>
                 <tr>
                   <th>Label</th>
+                  <th>Price</th>
+                  <th>Type</th>
                   <th>Neighborhood</th>
                   <th>Date Added</th>
                 </tr>
@@ -66,12 +77,16 @@ export default function PropertiesIndex() {
                   <td></td>
                   <td></td>
                   <td></td>
+                  <td></td>
+                  <td></td>
                 </tr>
                 {properties.map((property) => {
-                  const { id, label, neighborhood, dateAdded } = property;
+                  const { id, label, neighborhood, price, propertyType, dateAdded } = property;
                   return (
                     <tr key={id} style={{ cursor: "pointer" }} onClick={() => window.location.href = `/properties/${id}`}>
                       <td>{label}</td>
+                      <td>${Number(price).toLocaleString()}</td>
+                      <td>{PROPERTY_TYPE_LABELS[propertyType]}</td>
                       <td>{neighborhood}</td>
                       <td>{Moment(dateAdded).format("l")}</td>
                     </tr>

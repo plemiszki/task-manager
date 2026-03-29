@@ -1,17 +1,28 @@
 class ScrapeStreetEasy
 
   PROPERTY_TYPE_MAP = {
-    'condo'         => 'condo',
-    'co-op'         => 'co-op',
-    'coop'          => 'co-op',
-    'townhouse'     => 'townhouse',
-    'single family' => 'single-family',
-    'single-family' => 'single-family',
-    'multi family'  => 'multi-family',
-    'multi-family'  => 'multi-family',
-    'multifamily'   => 'multi-family',
-    'double family' => 'double-family',
-    'singlefamily'  => 'single-family',
+    'condo'                => 'condo',
+    'co-op'                => 'co-op',
+    'coop'                 => 'co-op',
+    'townhouse'            => 'townhouse',
+    'single family house'  => 'single-family-house',
+    'single-family house'  => 'single-family-house',
+    'single family'        => 'single-family-house',
+    'single-family'        => 'single-family-house',
+    'singlefamily'         => 'single-family-house',
+    'multi family house'   => 'multi-family-house',
+    'multi-family house'   => 'multi-family-house',
+    'multi family'         => 'multi-family-house',
+    'multi-family'         => 'multi-family-house',
+    'multifamily'          => 'multi-family-house',
+    'two family house'     => 'double-family-house',
+    'two-family house'     => 'double-family-house',
+    'two family'           => 'double-family-house',
+    'two-family'           => 'double-family-house',
+    'double family house'  => 'double-family-house',
+    'double-family house'  => 'double-family-house',
+    'double family'        => 'double-family-house',
+    'double-family'        => 'double-family-house',
   }.freeze
 
   def initialize(url)
@@ -98,8 +109,7 @@ class ScrapeStreetEasy
     label = street_address
     label = "#{label}, #{apt_number}" if apt_number
 
-    neighborhood  = extract_string_field(payload, 'neighborhood') ||
-                    extract_string_field(payload, 'areaName')
+    neighborhood  = extract_neighborhood_from_doc(doc)
 
     price     = extract_field(payload, 'price') ||
                 extract_field(payload, 'askingPrice')
@@ -112,7 +122,7 @@ class ScrapeStreetEasy
     hoa_fees  = extract_field(payload, 'maintenanceFee') ||
                 extract_field(payload, 'commonCharges')
 
-    property_type = extract_type_from_payload(payload)
+    property_type = extract_type_from_doc(doc)
 
     {
       label:          label,
@@ -123,7 +133,7 @@ class ScrapeStreetEasy
       price:          price.to_i,
       bedrooms:       bedrooms,
       bathrooms:      bathrooms.to_f,
-      property_type:  property_type || 'condo',
+      property_type:  property_type,
       area:           area&.to_i,
       taxes:          taxes&.to_f,
       hoa_fees:       hoa_fees&.to_f,
@@ -149,9 +159,23 @@ class ScrapeStreetEasy
     match&.[](1)&.strip&.presence
   end
 
-  def extract_type_from_payload(payload)
-    match = payload.match(/"(?:buildingType|propertyType|listingType|homeType)"\s*:\s*"([^"]+)"/)
-    raw = match&.[](1).to_s.downcase.strip
+  def extract_neighborhood_from_doc(doc)
+    info_item = doc.at_css('[class*="AboutBuildingSection_infoItem"]')
+    return nil unless info_item
+
+    spans = info_item.css('span')
+    # Second span contains "&nbsp; Neighborhood Name"
+    spans[1]&.text&.gsub(/[[:space:]]/, ' ')&.strip&.presence
+  end
+
+  def extract_type_from_doc(doc)
+    info_item = doc.at_css('[class*="AboutBuildingSection_infoItem"]')
+    return nil unless info_item
+
+    # First span: "Single-family house in"
+    raw = info_item.css('span').first&.text&.gsub(/\s+in\s*$/i, '')&.strip&.downcase
+    return nil unless raw
+
     PROPERTY_TYPE_MAP[raw] || PROPERTY_TYPE_MAP[raw.gsub(/\s+/, '')]
   end
 
