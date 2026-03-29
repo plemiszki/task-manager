@@ -128,7 +128,6 @@ class ScrapeStreetEasy
       area:           area&.to_i,
       taxes:          taxes&.to_f,
       hoa_fees:       hoa_fees&.to_f,
-      date_added:     Time.current,
       url:            @url,
     }
   end

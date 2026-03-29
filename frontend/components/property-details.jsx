@@ -1,4 +1,5 @@
 import React from "react";
+import Modal from "react-modal";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import {
   Details,
@@ -11,6 +12,22 @@ import {
   Spinner,
   GrayedOut,
 } from "handy-components";
+
+const REFRESH_MODAL_STYLES = {
+  overlay: {
+    background: "rgba(0, 0, 0, 0.50)",
+    zIndex: 3,
+  },
+  content: {
+    background: "white",
+    margin: "auto",
+    width: 400,
+    height: "fit-content",
+    border: "solid 1px black",
+    borderRadius: "6px",
+    color: "black",
+  },
+};
 
 const STATUSES = [
   { value: "available", text: "Available" },
@@ -36,6 +53,8 @@ export default class PropertyDetails extends React.Component {
       errors: {},
       changesToSave: false,
       justSaved: false,
+      refreshModalOpen: false,
+      refreshedData: null,
     };
   }
 
@@ -45,7 +64,10 @@ export default class PropertyDetails extends React.Component {
       this.setState(
         { spinner: false, property, propertySaved: deepCopy(property) },
         () => {
-          setUpNiceSelect({ selector: "select", func: Details.changeDropdownField.bind(this) });
+          setUpNiceSelect({
+            selector: "select",
+            func: Details.changeDropdownField.bind(this),
+          });
         },
       );
     });
@@ -66,7 +88,7 @@ export default class PropertyDetails extends React.Component {
     this.setState({ spinner: true, justSaved: true }, () => {
       const property = {
         ...this.state.property,
-        price: this.state.property.price.toString().replace(/[$,]/g, ''),
+        price: this.state.property.price.toString().replace(/[$,]/g, ""),
       };
       updateEntity({
         entityName: "property",
@@ -94,9 +116,21 @@ export default class PropertyDetails extends React.Component {
       <div className="handy-component">
         <div className="white-box">
           <div className="row">
-            {Details.renderField.bind(this)({ columnWidth: 3, entity: "property", property: "label" })}
-            {Details.renderField.bind(this)({ columnWidth: 2, entity: "property", property: "price" })}
-            {Details.renderField.bind(this)({ columnWidth: 2, entity: "property", property: "neighborhood" })}
+            {Details.renderField.bind(this)({
+              columnWidth: 3,
+              entity: "property",
+              property: "label",
+            })}
+            {Details.renderField.bind(this)({
+              columnWidth: 2,
+              entity: "property",
+              property: "price",
+            })}
+            {Details.renderField.bind(this)({
+              columnWidth: 2,
+              entity: "property",
+              property: "neighborhood",
+            })}
             {Details.renderDropDown.bind(this)({
               columnWidth: 3,
               entity: "property",
@@ -116,32 +150,271 @@ export default class PropertyDetails extends React.Component {
             })}
           </div>
           <div className="row">
-            {Details.renderField.bind(this)({ columnWidth: 6, entity: "property", property: "streetAddress", columnHeader: "Street Address" })}
-            {Details.renderField.bind(this)({ columnWidth: 2, entity: "property", property: "aptNumber", columnHeader: "Apt #" })}
-            {Details.renderField.bind(this)({ columnWidth: 2, entity: "property", property: "bedrooms" })}
-            {Details.renderField.bind(this)({ columnWidth: 2, entity: "property", property: "bathrooms" })}
+            {Details.renderField.bind(this)({
+              columnWidth: 6,
+              entity: "property",
+              property: "streetAddress",
+              columnHeader: "Street Address",
+            })}
+            {Details.renderField.bind(this)({
+              columnWidth: 2,
+              entity: "property",
+              property: "aptNumber",
+              columnHeader: "Apt #",
+            })}
+            {Details.renderField.bind(this)({
+              columnWidth: 2,
+              entity: "property",
+              property: "bedrooms",
+            })}
+            {Details.renderField.bind(this)({
+              columnWidth: 2,
+              entity: "property",
+              property: "bathrooms",
+            })}
           </div>
           <div className="row">
-            {Details.renderField.bind(this)({ columnWidth: 2, entity: "property", property: "taxes" })}
-            {Details.renderField.bind(this)({ columnWidth: 2, entity: "property", property: "insurance" })}
-            {Details.renderField.bind(this)({ columnWidth: 2, entity: "property", property: "hoaFees", columnHeader: "HOA Fees" })}
-            {Details.renderField.bind(this)({ columnWidth: 2, entity: "property", property: "area" })}
-            {Details.renderField.bind(this)({ columnWidth: 2, entity: "property", property: "schoolDistrict", columnHeader: "District" })}
-            {Details.renderField.bind(this)({ columnWidth: 2, entity: "property", property: "schoolZone", columnHeader: "Zone" })}
+            {Details.renderField.bind(this)({
+              columnWidth: 2,
+              entity: "property",
+              property: "taxes",
+            })}
+            {Details.renderField.bind(this)({
+              columnWidth: 2,
+              entity: "property",
+              property: "insurance",
+            })}
+            {Details.renderField.bind(this)({
+              columnWidth: 2,
+              entity: "property",
+              property: "hoaFees",
+              columnHeader: "HOA Fees",
+            })}
+            {Details.renderField.bind(this)({
+              columnWidth: 2,
+              entity: "property",
+              property: "area",
+            })}
+            {Details.renderField.bind(this)({
+              columnWidth: 2,
+              entity: "property",
+              property: "schoolDistrict",
+              columnHeader: "District",
+            })}
+            {Details.renderField.bind(this)({
+              columnWidth: 2,
+              entity: "property",
+              property: "schoolZone",
+              columnHeader: "Zone",
+            })}
           </div>
           <div className="row">
-            {Details.renderField.bind(this)({ columnWidth: 9, entity: "property", property: "url", columnHeader: "URL", readOnly: true, linkText: "Visit Link", linkUrl: this.state.property.url, linkNewWindow: true })}
-            {Details.renderField.bind(this)({ columnWidth: 3, entity: "property", property: "dateAdded", columnHeader: "Date Added", readOnly: true })}
+            {Details.renderField.bind(this)({
+              columnWidth: 9,
+              entity: "property",
+              property: "url",
+              columnHeader: "URL",
+              readOnly: true,
+              linkText: "Visit Link",
+              linkUrl: this.state.property.url,
+              linkNewWindow: true,
+            })}
+            {Details.renderField.bind(this)({
+              columnWidth: 3,
+              entity: "property",
+              property: "dateAdded",
+              columnHeader: "Date Added",
+              readOnly: true,
+            })}
           </div>
           <RefreshIcon
-            style={{ position: "absolute", bottom: 26, right: 26, cursor: "pointer", color: "#333", fontSize: 30 }}
+            style={{
+              position: "absolute",
+              bottom: 26,
+              right: 26,
+              cursor: "pointer",
+              color: "#333",
+              fontSize: 30,
+            }}
             onClick={() => {
               const { property } = this.state;
-              fetch(`/api/properties/${property.id}/refetch`, { method: "POST", headers: { "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content } })
-                .then((r) => r.json())
-                .then((response) => console.log(response));
+              this.setState({ spinner: true }, () => {
+                fetch(`/api/properties/${property.id}/refetch`, {
+                  method: "POST",
+                  headers: {
+                    "X-CSRF-Token": document.querySelector(
+                      'meta[name="csrf-token"]',
+                    )?.content,
+                  },
+                })
+                  .then((r) => r.json())
+                  .then((response) => {
+                    this.setState({
+                      spinner: false,
+                      refreshedData: response.property,
+                      refreshModalOpen: true,
+                    });
+                  });
+              });
             }}
           />
+          <Modal
+            isOpen={this.state.refreshModalOpen}
+            onRequestClose={() => this.setState({ refreshModalOpen: false })}
+            contentLabel="Refreshed Data"
+            style={REFRESH_MODAL_STYLES}
+          >
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontFamily: "Helvetica Neue",
+                fontSize: 14,
+              }}
+            >
+              <tbody>
+                {this.state.refreshedData &&
+                  (() => {
+                    const FIELD_ORDER = [
+                      "label",
+                      "price",
+                      "neighborhood",
+                      "propertyType",
+                      "status",
+                      "streetAddress",
+                      "aptNumber",
+                      "bedrooms",
+                      "bathrooms",
+                      "taxes",
+                      "insurance",
+                      "hoaFees",
+                      "area",
+                      "schoolDistrict",
+                      "schoolZone",
+                    ];
+                    const LABEL_OVERRIDES = { hoaFees: "HOA Fees" };
+                    const CURRENCY_FIELDS = ["price", "taxes", "hoaFees"];
+                    const CAPITALIZE_FIELDS = ["status", "propertyType"];
+                    const { refreshedData, propertySaved } = this.state;
+                    const formatValue = (key, value) => {
+                      if (value == null || value === "") return "-";
+                      if (CURRENCY_FIELDS.includes(key))
+                        return `$${Number(value).toLocaleString()}`;
+                      if (CAPITALIZE_FIELDS.includes(key))
+                        return value
+                          .replace(/_/g, " ")
+                          .replace(/\b\w/g, (c) => c.toUpperCase());
+                      return value;
+                    };
+                    const rows = FIELD_ORDER.filter(
+                      (key) => key in refreshedData,
+                    );
+                    return rows.map((key, index) => {
+                      const value = refreshedData[key];
+                      const label =
+                        LABEL_OVERRIDES[key] ||
+                        key
+                          .replace(/([A-Z])/g, " $1")
+                          .replace(/^./, (c) => c.toUpperCase());
+                      const normalize = (v) =>
+                        CURRENCY_FIELDS.includes(key)
+                          ? String(v ?? "").replace(/[$,]/g, "")
+                          : String(v ?? "");
+                      const changed =
+                        propertySaved[key] != null &&
+                        normalize(propertySaved[key]) !== normalize(value);
+                      const isLast = index === rows.length - 1;
+                      const displayValue = changed ? (
+                        <span>
+                          {formatValue(key, propertySaved[key])} →{" "}
+                          {formatValue(key, value)}
+                        </span>
+                      ) : (
+                        formatValue(key, value)
+                      );
+                      return (
+                        <tr
+                          key={key}
+                          style={{
+                            borderBottom: isLast ? "none" : "1px solid #eee",
+                            background: changed ? "#fffde7" : "transparent",
+                          }}
+                        >
+                          <td
+                            style={{
+                              padding: "6px 10px",
+                              fontWeight: 600,
+                              color: "#555",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {label}
+                          </td>
+                          <td style={{ padding: "6px 10px" }}>
+                            {displayValue}
+                          </td>
+                        </tr>
+                      );
+                    });
+                  })()}
+              </tbody>
+            </table>
+            {(() => {
+                const { refreshedData, propertySaved } = this.state;
+                const CURRENCY_FIELDS = ["price", "taxes", "hoaFees"];
+                const normalize = (key, v) =>
+                  CURRENCY_FIELDS.includes(key)
+                    ? String(v ?? "").replace(/[$,]/g, "")
+                    : String(v ?? "");
+                const hasChanges = refreshedData && Object.entries(refreshedData).some(
+                  ([key, value]) => normalize(key, propertySaved[key]) !== normalize(key, value),
+                );
+                return (
+            <div style={{ textAlign: "center", marginTop: 12 }}>
+              <a
+                className="btn"
+                style={{ background: "#333", color: "white", opacity: hasChanges ? 1 : 0.4, pointerEvents: hasChanges ? "auto" : "none" }}
+                onClick={() => {
+                  const { refreshedData, propertySaved } = this.state;
+                  const changedFields = Object.fromEntries(
+                    Object.entries(refreshedData).filter(
+                      ([key, value]) =>
+                        normalize(key, propertySaved[key]) !==
+                        normalize(key, value),
+                    ),
+                  );
+                  this.setState(
+                    { refreshModalOpen: false, spinner: true },
+                    () => {
+                      updateEntity({
+                        entityName: "property",
+                        entity: { ...changedFields },
+                      }).then(
+                        (response) => {
+                          this.setState({
+                            spinner: false,
+                            property: response.property,
+                            propertySaved: deepCopy(response.property),
+                            changesToSave: false,
+                          });
+                        },
+                        (response) => {
+                          this.setState({
+                            spinner: false,
+                            errors: response.errors,
+                          });
+                        },
+                      );
+                    },
+                  );
+                }}
+              >
+                Update
+              </a>
+            </div>
+                );
+              })()}
+          </Modal>
           <SaveButton
             justSaved={justSaved}
             changesToSave={changesToSave}

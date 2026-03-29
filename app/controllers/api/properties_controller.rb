@@ -31,7 +31,7 @@ class Api::PropertiesController < ActionController::Base
   def create
     clean_url = params[:property][:url].split('?').first
     attributes = ScrapeStreetEasy.new(clean_url).call
-    @property = Property.new(attributes)
+    @property = Property.new(attributes.merge(date_added: Time.current))
     if @property.save
       render json: {}, status: :ok
     else
