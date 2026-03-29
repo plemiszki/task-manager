@@ -130,105 +130,123 @@ export default class PropertyDetails extends React.Component {
     return (
       <div className="handy-component">
         <div className="white-box">
-          <div className="row">
-            {Details.renderField.bind(this)({
-              columnWidth: 3,
-              entity: "property",
-              property: "label",
-            })}
-            {Details.renderField.bind(this)({
-              columnWidth: 2,
-              entity: "property",
-              property: "price",
-            })}
-            {Details.renderField.bind(this)({
-              columnWidth: 2,
-              entity: "property",
-              property: "neighborhood",
-            })}
-            {Details.renderDropDown.bind(this)({
-              columnWidth: 3,
-              entity: "property",
-              columnHeader: "Type",
-              property: "propertyType",
-              type: "dropdown",
-              options: PROPERTY_TYPES,
-              optionDisplayProperty: "text",
-            })}
-            {Details.renderDropDown.bind(this)({
-              columnWidth: 2,
-              entity: "property",
-              property: "status",
-              type: "dropdown",
-              options: STATUSES,
-              optionDisplayProperty: "text",
-            })}
-          </div>
-          <div className="row">
-            {Details.renderField.bind(this)({
-              columnWidth: 6,
-              entity: "property",
-              property: "streetAddress",
-              columnHeader: "Street Address",
-            })}
-            {Details.renderField.bind(this)({
-              columnWidth: 2,
-              entity: "property",
-              property: "aptNumber",
-              columnHeader: "Apt #",
-            })}
-            {Details.renderField.bind(this)({
-              columnWidth: 2,
-              entity: "property",
-              property: "bedrooms",
-            })}
-            {Details.renderField.bind(this)({
-              columnWidth: 2,
-              entity: "property",
-              property: "fullBathrooms",
-              columnHeader: "Full Baths",
-            })}
-            {Details.renderField.bind(this)({
-              columnWidth: 2,
-              entity: "property",
-              property: "halfBathrooms",
-              columnHeader: "Half Baths",
-            })}
-          </div>
-          <div className="row">
-            {Details.renderField.bind(this)({
-              columnWidth: 2,
-              entity: "property",
-              property: "taxes",
-            })}
-            {Details.renderField.bind(this)({
-              columnWidth: 2,
-              entity: "property",
-              property: "insurance",
-            })}
-            {Details.renderField.bind(this)({
-              columnWidth: 2,
-              entity: "property",
-              property: "hoaFees",
-              columnHeader: "HOA Fees",
-            })}
-            {Details.renderField.bind(this)({
-              columnWidth: 2,
-              entity: "property",
-              property: "area",
-            })}
-            {Details.renderField.bind(this)({
-              columnWidth: 2,
-              entity: "property",
-              property: "schoolDistrict",
-              columnHeader: "District",
-            })}
-            {Details.renderField.bind(this)({
-              columnWidth: 2,
-              entity: "property",
-              property: "schoolZone",
-              columnHeader: "Zone",
-            })}
+          <div style={{ display: "flex", gap: 20, marginBottom: 20 }}>
+            {this.state.property.imageUrl && (
+              <div
+                style={{
+                  width: "30%",
+                  flexShrink: 0,
+                  backgroundImage: `url(${this.state.property.imageUrl})`,
+                  backgroundSize: "cover",
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "center",
+                }}
+              />
+            )}
+            <div style={{ flex: 1 }}>
+              <div className="row">
+                {Details.renderField.bind(this)({
+                  columnWidth: 3,
+                  entity: "property",
+                  property: "label",
+                })}
+                {Details.renderField.bind(this)({
+                  columnWidth: 3,
+                  entity: "property",
+                  property: "price",
+                })}
+                {Details.renderDropDown.bind(this)({
+                  columnWidth: 3,
+                  entity: "property",
+                  columnHeader: "Type",
+                  property: "propertyType",
+                  type: "dropdown",
+                  options: PROPERTY_TYPES,
+                  optionDisplayProperty: "text",
+                })}
+                {Details.renderField.bind(this)({
+                  columnWidth: 3,
+                  entity: "property",
+                  property: "neighborhood",
+                })}
+              </div>
+              <div className="row">
+                {Details.renderDropDown.bind(this)({
+                  columnWidth: 3,
+                  entity: "property",
+                  property: "status",
+                  type: "dropdown",
+                  options: STATUSES,
+                  optionDisplayProperty: "text",
+                })}
+                {Details.renderField.bind(this)({
+                  columnWidth: 2,
+                  entity: "property",
+                  property: "bedrooms",
+                })}
+                {Details.renderField.bind(this)({
+                  columnWidth: 2,
+                  entity: "property",
+                  property: "fullBathrooms",
+                  columnHeader: "Full Baths",
+                })}
+                {Details.renderField.bind(this)({
+                  columnWidth: 2,
+                  entity: "property",
+                  property: "halfBathrooms",
+                  columnHeader: "Half Baths",
+                })}
+              </div>
+              <div className="row">
+                {Details.renderField.bind(this)({
+                  columnWidth: 6,
+                  entity: "property",
+                  property: "streetAddress",
+                  columnHeader: "Street Address",
+                })}
+                {Details.renderField.bind(this)({
+                  columnWidth: 2,
+                  entity: "property",
+                  property: "aptNumber",
+                  columnHeader: "Apt #",
+                })}
+                {Details.renderField.bind(this)({
+                  columnWidth: 2,
+                  entity: "property",
+                  property: "schoolZone",
+                  columnHeader: "Zone",
+                })}
+                {Details.renderField.bind(this)({
+                  columnWidth: 2,
+                  entity: "property",
+                  property: "schoolDistrict",
+                  columnHeader: "District",
+                })}
+              </div>
+              <div className="row">
+                {Details.renderField.bind(this)({
+                  columnWidth: 3,
+                  entity: "property",
+                  property: "taxes",
+                })}
+                {Details.renderField.bind(this)({
+                  columnWidth: 3,
+                  entity: "property",
+                  property: "insurance",
+                })}
+                {Details.renderField.bind(this)({
+                  columnWidth: 3,
+                  entity: "property",
+                  property: "hoaFees",
+                  columnHeader: "HOA Fees",
+                })}
+                {Details.renderField.bind(this)({
+                  columnWidth: 3,
+                  entity: "property",
+                  property: "area",
+                })}
+              </div>
+            </div>
           </div>
           <div className="row">
             {Details.renderField.bind(this)({
