@@ -5,12 +5,12 @@ import Moment from "moment";
 import PropertyNew from "./property-new.jsx";
 
 const PROPERTY_TYPE_LABELS = {
-  "townhouse":           "Townhouse",
-  "condo":               "Condo",
-  "co-op":               "Co-op",
+  townhouse: "Townhouse",
+  condo: "Condo",
+  "co-op": "Co-op",
   "single-family-house": "Single-Family House",
   "double-family-house": "Double-Family House",
-  "multi-family-house":  "Multi-Family House",
+  "multi-family-house": "Multi-Family House",
 };
 
 const ModalStyles = {
@@ -21,8 +21,8 @@ const ModalStyles = {
     background: "#F5F6F7",
     padding: 0,
     margin: "auto",
-    maxWidth: 500,
-    height: 224,
+    maxWidth: 700,
+    height: 462,
   },
 };
 
@@ -81,9 +81,22 @@ export default function PropertiesIndex() {
                   <td></td>
                 </tr>
                 {properties.map((property) => {
-                  const { id, label, neighborhood, price, propertyType, dateAdded } = property;
+                  const {
+                    id,
+                    label,
+                    neighborhood,
+                    price,
+                    propertyType,
+                    dateAdded,
+                  } = property;
                   return (
-                    <tr key={id} style={{ cursor: "pointer" }} onClick={() => window.location.href = `/properties/${id}`}>
+                    <tr
+                      key={id}
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        (window.location.href = `/properties/${id}`)
+                      }
+                    >
                       <td>{label}</td>
                       <td>${Number(price).toLocaleString()}</td>
                       <td>{PROPERTY_TYPE_LABELS[propertyType]}</td>

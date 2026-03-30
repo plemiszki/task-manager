@@ -34,8 +34,14 @@ class Api::PropertiesController < ActionController::Base
   end
 
   def create
+    errors = {}
+    errors[:url]  = ["URL can't be blank"] if params[:property][:url].blank?
+    errors[:html] = ["HTML can't be blank"] if params[:property][:html].blank?
+    return render json: { errors: errors }, status: :unprocessable_entity if errors.any?
+
     clean_url = params[:property][:url].split('?').first
-    attributes = ScrapeStreetEasy.new(clean_url).call
+    html      = params[:property][:html]
+    attributes = ExtractPropertyFromHtml.new(html, clean_url).call
     @property = Property.new(attributes.merge(date_added: Time.current))
     if @property.save
       render json: {}, status: :ok

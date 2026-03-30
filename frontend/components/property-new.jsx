@@ -9,6 +9,7 @@ export default class PropertyNew extends DetailsComponent {
       fetching: false,
       property: {
         url: "",
+        html: "",
       },
       errors: {},
     };
@@ -32,11 +33,9 @@ export default class PropertyNew extends DetailsComponent {
         this.props.afterCreate(response);
       },
       (response) => {
-        const message =
-          response.errors?.label?.[0] || "Failed to process property";
         this.setState({
           spinner: false,
-          errors: { url: [message] },
+          errors: response.errors || { url: ["Failed to process property"] },
         });
       },
     );
@@ -56,6 +55,16 @@ export default class PropertyNew extends DetailsComponent {
               entity: "property",
               property: "url",
               columnHeader: "URL",
+            })}
+          </div>
+          <div className="row">
+            {Details.renderField.bind(this)({
+              columnWidth: 12,
+              entity: "property",
+              property: "html",
+              columnHeader: "HTML",
+              type: "textbox",
+              rows: 8,
             })}
           </div>
           <div className="row">
