@@ -1,5 +1,5 @@
 import React from "react";
-import { Details, createEntity } from "handy-components";
+import { Details, createEntity, Spinner, GrayedOut } from "handy-components";
 import DetailsComponent from "./_details.jsx";
 
 export default class PropertyNew extends DetailsComponent {
@@ -48,7 +48,7 @@ export default class PropertyNew extends DetailsComponent {
         className="handy-component admin-modal"
         onKeyDown={(e) => e.key === "Enter" && this.clickSave()}
       >
-        <div className="white-box">
+        <div className="white-box" style={{ position: "relative" }}>
           <div className="row">
             {Details.renderField.bind(this)({
               columnWidth: 12,
@@ -78,6 +78,8 @@ export default class PropertyNew extends DetailsComponent {
               </div>
             </div>
           </div>
+          <GrayedOut visible={this.state.spinner} />
+          <Spinner visible={this.state.spinner} />
         </div>
       </div>
     );
