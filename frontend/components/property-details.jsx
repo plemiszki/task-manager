@@ -102,9 +102,10 @@ export default class PropertyDetails extends React.Component {
     this.setState({ spinner: true, justSaved: true }, () => {
       const property = {
         ...this.state.property,
-        price: this.state.property.price.toString().replace(/[$,]/g, ""),
-        taxes: this.state.property.taxes.toString().replace(/[$,]/g, ""),
-        area:  this.state.property.area.toString().replace(/,/g, ""),
+        price:   this.state.property.price.toString().replace(/[$,]/g, ""),
+        taxes:   this.state.property.taxes.toString().replace(/[$,]/g, ""),
+        hoaFees: this.state.property.hoaFees.toString().replace(/[$,]/g, ""),
+        area:    this.state.property.area.toString().replace(/,/g, ""),
       };
       updateEntity({
         entityName: "property",

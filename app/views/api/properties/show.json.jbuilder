@@ -15,7 +15,7 @@ json.property do
   json.schoolZone @property.school_zone || ''
   json.taxes @property.taxes ? number_to_currency(@property.taxes) : ''
   json.insurance @property.insurance || ''
-  json.hoaFees @property.hoa_fees || ''
+  json.hoaFees @property.hoa_fees ? number_to_currency(@property.hoa_fees) : ''
   json.imageUrl @property.image_url
   json.dateAdded @property.date_added&.strftime('%-m/%-d')
   json.url @property.url
