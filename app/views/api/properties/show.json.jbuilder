@@ -10,7 +10,7 @@ json.property do
   json.fullBathrooms @property.full_bathrooms
   json.halfBathrooms @property.half_bathrooms
   json.propertyType @property.property_type
-  json.area @property.area || ''
+  json.area @property.area ? number_with_delimiter(@property.area) : ''
   json.schoolDistrict @property.school_district || ''
   json.schoolZone @property.school_zone || ''
   json.taxes @property.taxes ? number_to_currency(@property.taxes) : ''

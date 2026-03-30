@@ -104,6 +104,7 @@ export default class PropertyDetails extends React.Component {
         ...this.state.property,
         price: this.state.property.price.toString().replace(/[$,]/g, ""),
         taxes: this.state.property.taxes.toString().replace(/[$,]/g, ""),
+        area:  this.state.property.area.toString().replace(/,/g, ""),
       };
       updateEntity({
         entityName: "property",
