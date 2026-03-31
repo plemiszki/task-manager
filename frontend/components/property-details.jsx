@@ -50,14 +50,14 @@ const STATUSES = [
   { value: "not_available", text: "Not Available" },
 ];
 
-const PROPERTY_TYPES = [
-  { value: "townhouse", text: "Townhouse" },
-  { value: "condo", text: "Condo" },
-  { value: "co-op", text: "Co-op" },
-  { value: "single-family-house", text: "Single-Family House" },
-  { value: "double-family-house", text: "Double-Family House" },
-  { value: "multi-family-house", text: "Multi-Family House" },
-];
+const PROPERTY_TYPE_LABELS = {
+  townhouse: "Townhouse",
+  condo: "Condo",
+  "co-op": "Co-op",
+  "single-family-house": "Single-Family House",
+  "double-family-house": "Double-Family House",
+  "multi-family-house": "Multi-Family House",
+};
 
 export default class PropertyDetails extends React.Component {
   constructor(props) {
@@ -120,7 +120,8 @@ export default class PropertyDetails extends React.Component {
       fetch(`/api/properties/${property.id}`, {
         method: "DELETE",
         headers: {
-          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content,
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')
+            ?.content,
         },
       }).then(() => {
         window.location.href = "/properties";
@@ -166,8 +167,8 @@ export default class PropertyDetails extends React.Component {
             {this.state.property.imageUrl && (
               <div
                 style={{
-                  width: "30%",
-                  flexShrink: 0,
+                  flex: 1,
+                  minHeight: 450,
                   backgroundImage: `url(${this.state.property.imageUrl})`,
                   backgroundSize: "cover",
                   backgroundRepeat: "no-repeat",
@@ -175,36 +176,54 @@ export default class PropertyDetails extends React.Component {
                 }}
               />
             )}
-            <div style={{ flex: 1 }}>
+            <div
+              style={{
+                flex: 1,
+                minWidth: 0,
+                fontFamily: "Helvetica Neue",
+                fontSize: 14,
+              }}
+            >
+              {[
+                ["Street Address", this.state.property.streetAddress],
+                ["Apt #", this.state.property.aptNumber],
+                [
+                  "Type",
+                  PROPERTY_TYPE_LABELS[this.state.property.propertyType],
+                ],
+                ["Neighborhood", this.state.property.neighborhood],
+                ["Area", this.state.property.area],
+                ["Bedrooms", this.state.property.bedrooms],
+                ["Full Baths", this.state.property.fullBathrooms],
+                ["Half Baths", this.state.property.halfBathrooms],
+                ["Price", this.state.property.price],
+                ["Taxes", this.state.property.taxes],
+                ["Insurance", this.state.property.insurance],
+                ["HOA Fees", this.state.property.hoaFees],
+              ].map(([label, value]) =>
+                value ? (
+                  <div key={label} style={{ marginBottom: 6 }}>
+                    <strong>{label}:</strong> {value}
+                  </div>
+                ) : null,
+              )}
+              {this.state.property.dateAdded && (
+                <div style={{ marginBottom: 6 }}>
+                  <strong>Date Added:</strong> {this.state.property.dateAdded}
+                </div>
+              )}
+              {this.state.property.url && (
+                <div style={{ marginBottom: 6 }}>
+                  <a href={this.state.property.url} target="_blank" rel="noreferrer" style={{ textDecoration: "underline" }}>
+                    Visit Link
+                  </a>
+                </div>
+              )}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div className="row">
-                {Details.renderField.bind(this)({
-                  columnWidth: 3,
-                  entity: "property",
-                  property: "label",
-                })}
-                {Details.renderField.bind(this)({
-                  columnWidth: 3,
-                  entity: "property",
-                  property: "price",
-                })}
                 {Details.renderDropDown.bind(this)({
-                  columnWidth: 3,
-                  entity: "property",
-                  columnHeader: "Type",
-                  property: "propertyType",
-                  type: "dropdown",
-                  options: PROPERTY_TYPES,
-                  optionDisplayProperty: "text",
-                })}
-                {Details.renderField.bind(this)({
-                  columnWidth: 3,
-                  entity: "property",
-                  property: "neighborhood",
-                })}
-              </div>
-              <div className="row">
-                {Details.renderDropDown.bind(this)({
-                  columnWidth: 3,
+                  columnWidth: 6,
                   entity: "property",
                   property: "status",
                   type: "dropdown",
@@ -212,44 +231,13 @@ export default class PropertyDetails extends React.Component {
                   optionDisplayProperty: "text",
                 })}
                 {Details.renderField.bind(this)({
-                  columnWidth: 2,
-                  entity: "property",
-                  property: "bedrooms",
-                })}
-                {Details.renderField.bind(this)({
-                  columnWidth: 2,
-                  entity: "property",
-                  property: "fullBathrooms",
-                  columnHeader: "Full Baths",
-                })}
-                {Details.renderField.bind(this)({
-                  columnWidth: 2,
-                  entity: "property",
-                  property: "halfBathrooms",
-                  columnHeader: "Half Baths",
-                })}
-              </div>
-              <div className="row">
-                {Details.renderField.bind(this)({
-                  columnWidth: 6,
-                  entity: "property",
-                  property: "streetAddress",
-                  columnHeader: "Street Address",
-                })}
-                {Details.renderField.bind(this)({
-                  columnWidth: 2,
-                  entity: "property",
-                  property: "aptNumber",
-                  columnHeader: "Apt #",
-                })}
-                {Details.renderField.bind(this)({
-                  columnWidth: 2,
+                  columnWidth: 3,
                   entity: "property",
                   property: "schoolZone",
                   columnHeader: "Zone",
                 })}
                 {Details.renderField.bind(this)({
-                  columnWidth: 2,
+                  columnWidth: 3,
                   entity: "property",
                   property: "schoolDistrict",
                   columnHeader: "District",
@@ -257,57 +245,15 @@ export default class PropertyDetails extends React.Component {
               </div>
               <div className="row">
                 {Details.renderField.bind(this)({
-                  columnWidth: 3,
+                  columnWidth: 12,
                   entity: "property",
-                  property: "taxes",
-                })}
-                {Details.renderField.bind(this)({
-                  columnWidth: 3,
-                  entity: "property",
-                  property: "insurance",
-                })}
-                {Details.renderField.bind(this)({
-                  columnWidth: 3,
-                  entity: "property",
-                  property: "hoaFees",
-                  columnHeader: "HOA Fees",
-                })}
-                {Details.renderField.bind(this)({
-                  columnWidth: 3,
-                  entity: "property",
-                  property: "area",
+                  property: "notes",
+                  columnHeader: "Notes",
+                  type: "textbox",
+                  rows: 4,
                 })}
               </div>
             </div>
-          </div>
-          <div className="row">
-            {Details.renderField.bind(this)({
-              columnWidth: 12,
-              entity: "property",
-              property: "notes",
-              columnHeader: "Notes",
-              type: "textbox",
-              rows: 4,
-            })}
-          </div>
-          <div className="row">
-            {Details.renderField.bind(this)({
-              columnWidth: 9,
-              entity: "property",
-              property: "url",
-              columnHeader: "URL",
-              readOnly: true,
-              linkText: "Visit Link",
-              linkUrl: this.state.property.url,
-              linkNewWindow: true,
-            })}
-            {Details.renderField.bind(this)({
-              columnWidth: 3,
-              entity: "property",
-              property: "dateAdded",
-              columnHeader: "Date Added",
-              readOnly: true,
-            })}
           </div>
           <RefreshIcon
             style={{
@@ -404,8 +350,8 @@ export default class PropertyDetails extends React.Component {
                               ) || 0,
                             )
                           : key === "area"
-                          ? String(v ?? "").replace(/,/g, "")
-                          : String(v ?? "");
+                            ? String(v ?? "").replace(/,/g, "")
+                            : String(v ?? "");
                       const changed =
                         propertySaved[key] != null &&
                         normalize(propertySaved[key]) !== normalize(value);
@@ -454,8 +400,8 @@ export default class PropertyDetails extends React.Component {
                       parseFloat(String(v ?? "").replace(/[$,]/g, "")) || 0,
                     )
                   : key === "area"
-                  ? String(v ?? "").replace(/,/g, "")
-                  : String(v ?? "");
+                    ? String(v ?? "").replace(/,/g, "")
+                    : String(v ?? "");
               const hasChanges =
                 refreshedData &&
                 Object.entries(refreshedData).some(
