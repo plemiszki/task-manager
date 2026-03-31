@@ -42,7 +42,7 @@ class Api::PropertiesController < ActionController::Base
     clean_url = params[:property][:url].split('?').first
     html      = params[:property][:html]
     attributes = ExtractPropertyFromHtml.new(html, clean_url).call
-    @property = Property.new(attributes.merge(date_added: Time.current))
+    @property = Property.new(attributes.merge(date_added: Time.current, html: html))
     if @property.save
       render json: {}, status: :ok
     else
@@ -59,7 +59,7 @@ class Api::PropertiesController < ActionController::Base
       :label, :street_address, :apt_number, :neighborhood, :status,
       :price, :bedrooms, :full_bathrooms, :half_bathrooms, :property_type, :area,
       :school_district, :school_zone, :taxes, :insurance, :hoa_fees,
-      :date_added, :url
+      :date_added, :url, :notes
     )
   end
 

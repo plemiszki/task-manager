@@ -426,7 +426,9 @@ CREATE TABLE public.properties (
     image_url character varying,
     full_bathrooms integer DEFAULT 0 NOT NULL,
     half_bathrooms integer DEFAULT 0 NOT NULL,
-    date_seen timestamp(6) without time zone
+    date_seen timestamp(6) without time zone,
+    html text,
+    notes text
 );
 
 
@@ -1244,6 +1246,7 @@ ALTER TABLE ONLY public.schedule_blocks
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260331000001'),
 ('20260329000002'),
 ('20260329000001'),
 ('20260327000002'),

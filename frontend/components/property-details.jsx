@@ -252,6 +252,16 @@ export default class PropertyDetails extends React.Component {
           </div>
           <div className="row">
             {Details.renderField.bind(this)({
+              columnWidth: 12,
+              entity: "property",
+              property: "notes",
+              columnHeader: "Notes",
+              type: "textbox",
+              rows: 4,
+            })}
+          </div>
+          <div className="row">
+            {Details.renderField.bind(this)({
               columnWidth: 9,
               entity: "property",
               property: "url",
