@@ -25,9 +25,10 @@ class Api::PropertiesController < ActionController::Base
     render json: {}, status: :ok
   end
 
-  def refetch
+  def reextract
     property = Property.find(params[:id])
-    attributes = ScrapeStreetEasy.new(property.url).call.except(:image_url)
+    html = params[:html].presence || property.html
+    attributes = ExtractPropertyFromHtml.new(html, property.url).call.except(:image_url)
     render json: { property: attributes.transform_keys { |k| k.to_s.camelize(:lower) } }
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity

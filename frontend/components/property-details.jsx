@@ -15,6 +15,20 @@ import {
   GrayedOut,
 } from "handy-components";
 
+const HTML_MODAL_STYLES = {
+  overlay: {
+    background: "rgba(0, 0, 0, 0.50)",
+    zIndex: 3,
+  },
+  content: {
+    background: "#F5F6F7",
+    padding: 0,
+    margin: "auto",
+    maxWidth: 700,
+    height: "fit-content",
+  },
+};
+
 const REFRESH_MODAL_STYLES = {
   overlay: {
     background: "rgba(0, 0, 0, 0.50)",
@@ -58,6 +72,8 @@ export default class PropertyDetails extends React.Component {
       refreshModalOpen: false,
       refreshedData: null,
       deleteModalOpen: false,
+      htmlModalOpen: false,
+      htmlForm: { html: "" },
     };
   }
 
@@ -98,14 +114,28 @@ export default class PropertyDetails extends React.Component {
     };
   }
 
+  confirmDelete() {
+    const { property } = this.state;
+    this.setState({ deleteModalOpen: false, spinner: true }, () => {
+      fetch(`/api/properties/${property.id}`, {
+        method: "DELETE",
+        headers: {
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content,
+        },
+      }).then(() => {
+        window.location.href = "/properties";
+      });
+    });
+  }
+
   clickSave() {
     this.setState({ spinner: true, justSaved: true }, () => {
       const property = {
         ...this.state.property,
-        price:   this.state.property.price.toString().replace(/[$,]/g, ""),
-        taxes:   this.state.property.taxes.toString().replace(/[$,]/g, ""),
+        price: this.state.property.price.toString().replace(/[$,]/g, ""),
+        taxes: this.state.property.taxes.toString().replace(/[$,]/g, ""),
         hoaFees: this.state.property.hoaFees.toString().replace(/[$,]/g, ""),
-        area:    this.state.property.area.toString().replace(/,/g, ""),
+        area: this.state.property.area.toString().replace(/,/g, ""),
       };
       updateEntity({
         entityName: "property",
@@ -290,23 +320,9 @@ export default class PropertyDetails extends React.Component {
             }}
             onClick={() => {
               const { property } = this.state;
-              this.setState({ spinner: true }, () => {
-                fetch(`/api/properties/${property.id}/refetch`, {
-                  method: "POST",
-                  headers: {
-                    "X-CSRF-Token": document.querySelector(
-                      'meta[name="csrf-token"]',
-                    )?.content,
-                  },
-                })
-                  .then((r) => r.json())
-                  .then((response) => {
-                    this.setState({
-                      spinner: false,
-                      refreshedData: response.property,
-                      refreshModalOpen: true,
-                    });
-                  });
+              this.setState({
+                htmlModalOpen: true,
+                htmlForm: { html: property.html || "" },
               });
             }}
           />
@@ -387,6 +403,8 @@ export default class PropertyDetails extends React.Component {
                                 String(v ?? "").replace(/[$,]/g, ""),
                               ) || 0,
                             )
+                          : key === "area"
+                          ? String(v ?? "").replace(/,/g, "")
                           : String(v ?? "");
                       const changed =
                         propertySaved[key] != null &&
@@ -435,6 +453,8 @@ export default class PropertyDetails extends React.Component {
                   ? String(
                       parseFloat(String(v ?? "").replace(/[$,]/g, "")) || 0,
                     )
+                  : key === "area"
+                  ? String(v ?? "").replace(/,/g, "")
                   : String(v ?? "");
               const hasChanges =
                 refreshedData &&
@@ -494,6 +514,63 @@ export default class PropertyDetails extends React.Component {
               );
             })()}
           </Modal>
+          <Modal
+            isOpen={this.state.htmlModalOpen}
+            onRequestClose={() => this.setState({ htmlModalOpen: false })}
+            contentLabel="Re-extract Property"
+            style={HTML_MODAL_STYLES}
+          >
+            <div className="handy-component admin-modal">
+              <div className="white-box" style={{ position: "relative" }}>
+                <div className="row">
+                  {Details.renderField.bind(this)({
+                    columnWidth: 12,
+                    entity: "htmlForm",
+                    property: "html",
+                    columnHeader: "HTML",
+                    type: "textbox",
+                    rows: 8,
+                  })}
+                </div>
+                <div className="row">
+                  <div className="col-xs-12">
+                    <div
+                      className="btn"
+                      style={{ backgroundColor: "#6f42c1", color: "white" }}
+                      onClick={() => {
+                        const { property, htmlForm } = this.state;
+                        this.setState(
+                          { htmlModalOpen: false, spinner: true },
+                          () => {
+                            fetch(`/api/properties/${property.id}/reextract`, {
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-Token": document.querySelector(
+                                  'meta[name="csrf-token"]',
+                                )?.content,
+                              },
+                              body: JSON.stringify({ html: htmlForm.html }),
+                            })
+                              .then((r) => r.json())
+                              .then((response) => {
+                                this.setState({
+                                  spinner: false,
+                                  refreshedData: response.property,
+                                  refreshModalOpen: true,
+                                });
+                              });
+                          },
+                        );
+                      }}
+                    >
+                      Update
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Modal>
           <SaveButton
             justSaved={justSaved}
             changesToSave={changesToSave}
@@ -506,21 +583,7 @@ export default class PropertyDetails extends React.Component {
             isOpen={this.state.deleteModalOpen}
             header="Delete this property?"
             confirmText="Delete"
-            onConfirm={() => {
-              const { property } = this.state;
-              this.setState({ deleteModalOpen: false, spinner: true }, () => {
-                fetch(`/api/properties/${property.id}`, {
-                  method: "DELETE",
-                  headers: {
-                    "X-CSRF-Token": document.querySelector(
-                      'meta[name="csrf-token"]',
-                    )?.content,
-                  },
-                }).then(() => {
-                  window.location.href = "/properties";
-                });
-              });
-            }}
+            onConfirm={() => this.confirmDelete()}
             onClose={() => this.setState({ deleteModalOpen: false })}
           />
         </div>

@@ -17,6 +17,7 @@ json.property do
   json.insurance @property.insurance || ''
   json.hoaFees @property.hoa_fees ? number_to_currency(@property.hoa_fees) : ''
   json.imageUrl @property.image_url
+  json.html @property.html || ''
   json.notes @property.notes || ''
   json.dateAdded @property.date_added&.strftime('%-m/%-d')
   json.url @property.url
