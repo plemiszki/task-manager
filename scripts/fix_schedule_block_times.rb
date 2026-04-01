@@ -5,56 +5,57 @@
 # Problem: Rails stores `time without time zone` columns in UTC and converts to
 # the app timezone on read. When the app was UTC, storing "09:00" meant 9 AM.
 # Now that config.time_zone = 'Eastern Time (US & Canada)', Rails shifts those
-# UTC values by -4/-5 hours, so 9 AM UTC displays as 4 AM (or 5 AM) Eastern.
+# UTC values by 5 hours (EST), so 9 AM UTC displays as 4 AM Eastern.
 #
-# Fix: shift every stored UTC time forward by the Eastern offset so that after
-# the UTC→Eastern conversion the original intended time is restored.
+# Important: for `time without time zone` columns (no date component), Rails
+# always uses a reference date in January to resolve the offset, which means it
+# always applies the standard-time offset (EST = UTC-5), never the DST offset.
+# Using eastern.now.utc_offset would be wrong during Daylight Saving Time.
 #
 # Usage:
-#   rails runner scripts/fix_schedule_block_times.rb            # dry run (default)
-#   rails runner scripts/fix_schedule_block_times.rb --commit   # write to DB
+#   rails runner scripts/fix_schedule_block_times.rb              # dry run (default)
+#   rails runner scripts/fix_schedule_block_times.rb --commit     # write to DB
+#   rails runner scripts/fix_schedule_block_times.rb --correction # +1h correction only (if full shift already applied)
+#   rails runner scripts/fix_schedule_block_times.rb --correction --commit
 
-dry_run = !ARGV.include?('--commit')
+dry_run    = !ARGV.include?('--commit')
+correction = ARGV.include?('--correction')
 
 eastern = ActiveSupport::TimeZone['Eastern Time (US & Canada)']
 
-# Use today to determine whether we're currently in EST (-5h) or EDT (-4h).
-# Since ScheduleBlock holds repeating weekly times (no date), there is an
-# inherent ambiguity around DST transitions.  The offset used here is the
-# one active on the day you run this script, so run it when standard/daylight
-# time matches what you want going forward, or adjust OFFSET_HOURS manually.
-offset_seconds = eastern.now.utc_offset   # e.g. -18000 (EST) or -14400 (EDT)
-offset_hours   = offset_seconds / 3600    # e.g. -5 or -4
+# Use a January date to always get the standard-time (EST) offset regardless of
+# when this script is run. This matches how Rails resolves time-only values.
+est_offset_seconds = eastern.parse('2000-01-15 00:00:00').utc_offset  # -18000 (EST = -5h)
+
+# If the full shift (+5h) was already partially applied (+4h was applied instead),
+# only add the remaining 1h correction.
+shift_seconds = correction ? 3600 : -est_offset_seconds
 
 total = ScheduleBlock.count
 
-puts "Eastern UTC offset : #{offset_hours}h (#{offset_hours == -5 ? 'EST' : 'EDT'})"
-puts "Shift applied      : +#{-offset_hours}h to each stored time"
+puts "Mode               : #{correction ? 'CORRECTION (+1h only)' : 'FULL SHIFT (+5h)'}"
+puts "Shift applied      : +#{shift_seconds / 3600}h to each stored time"
 puts "Records to update  : #{total}"
-puts dry_run ? "Mode               : DRY RUN (pass --commit to write)" : "Mode               : COMMIT"
+puts dry_run ? "Commit             : DRY RUN (pass --commit to write)" : "Commit             : YES"
 puts "-" * 50
 
 errors = []
 
 ScheduleBlock.find_each do |block|
-  # block.start_time / block.end_time are already converted to Eastern by Rails.
-  # Calling .utc gives us back the raw value stored in the DB (the original UTC time,
-  # which was the intended local time when the app timezone was UTC).
+  # block.start_time / .end_time are already converted to Eastern by Rails.
+  # .utc gives us back the raw UTC value stored in the DB.
   original_start = block.start_time.utc
   original_end   = block.end_time.utc
 
-  # Subtract the (negative) offset to shift the stored time forward so that
-  # after Rails applies the UTC→Eastern conversion the result equals original.
-  # e.g. offset_seconds = -18000  →  new = original - (-18000) = original + 5h
-  new_start = original_start - offset_seconds
-  new_end   = original_end   - offset_seconds
+  new_start = original_start + shift_seconds
+  new_end   = original_end   + shift_seconds
 
   new_start_str = new_start.strftime('%H:%M:%S')
   new_end_str   = new_end.strftime('%H:%M:%S')
 
   puts "Block ##{block.id} (weekday #{block.weekday}): " \
-       "start #{original_start.strftime('%H:%M')} UTC → #{new_start_str} UTC, " \
-       "end #{original_end.strftime('%H:%M')} UTC → #{new_end_str} UTC"
+       "start #{original_start.strftime('%H:%M')} → #{new_start_str}, " \
+       "end #{original_end.strftime('%H:%M')} → #{new_end_str}"
 
   unless dry_run
     # update_columns skips validations/callbacks (intentional for a data migration)
