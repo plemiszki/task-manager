@@ -17,7 +17,7 @@ json.property do
   json.taxes @property.taxes || 0
   json.taxesFormatted @property.taxes ? number_to_currency(@property.taxes, precision: @property.taxes.to_f % 1 == 0 ? 0 : 2) : ''
   json.insurance @property.insurance || ''
-  json.hoaFees @property.hoa_fees
+  json.hoaFees @property.hoa_fees || 0
   json.hoaFeesFormatted @property.hoa_fees ? number_to_currency(@property.hoa_fees, precision: @property.hoa_fees.to_f % 1 == 0 ? 0 : 2) : ''
   json.imageUrl @property.image_url
   json.html @property.html || ''
