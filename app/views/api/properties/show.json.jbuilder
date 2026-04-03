@@ -5,7 +5,8 @@ json.property do
   json.aptNumber @property.apt_number || ''
   json.neighborhood @property.neighborhood || ''
   json.status @property.status
-  json.price "$#{number_with_delimiter(@property.price)}"
+  json.price @property.price
+  json.priceFormatted @property.price ? number_to_currency(@property.price, precision: @property.price.to_f % 1 == 0 ? 0 : 2) : ''
   json.bedrooms @property.bedrooms
   json.fullBathrooms @property.full_bathrooms
   json.halfBathrooms @property.half_bathrooms
@@ -13,9 +14,11 @@ json.property do
   json.area @property.area ? number_with_delimiter(@property.area) : ''
   json.schoolDistrict @property.school_district || ''
   json.schoolZone @property.school_zone || ''
-  json.taxes @property.taxes ? number_to_currency(@property.taxes) : ''
+  json.taxes @property.taxes
+  json.taxesFormatted @property.taxes ? number_to_currency(@property.taxes, precision: @property.taxes.to_f % 1 == 0 ? 0 : 2) : ''
   json.insurance @property.insurance || ''
-  json.hoaFees @property.hoa_fees ? number_to_currency(@property.hoa_fees) : ''
+  json.hoaFees @property.hoa_fees
+  json.hoaFeesFormatted @property.hoa_fees ? number_to_currency(@property.hoa_fees, precision: @property.hoa_fees.to_f % 1 == 0 ? 0 : 2) : ''
   json.imageUrl @property.image_url
   json.html @property.html || ''
   json.notes @property.notes || ''

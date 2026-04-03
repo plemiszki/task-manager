@@ -15,6 +15,11 @@ import {
   GrayedOut,
 } from "handy-components";
 
+const AMOUNT_SAVED = 360000;
+const MONTHLY_PAYMENT = 10000;
+const INTEREST_RATE = 0.0699;
+const LOAN_TERM_MONTHS = 360;
+
 const HTML_MODAL_STYLES = {
   overlay: {
     background: "rgba(0, 0, 0, 0.50)",
@@ -133,9 +138,9 @@ export default class PropertyDetails extends React.Component {
     this.setState({ spinner: true, justSaved: true }, () => {
       const property = {
         ...this.state.property,
-        price: this.state.property.price.toString().replace(/[$,]/g, ""),
-        taxes: this.state.property.taxes.toString().replace(/[$,]/g, ""),
-        hoaFees: this.state.property.hoaFees.toString().replace(/[$,]/g, ""),
+        price: this.state.property.price,
+        taxes: this.state.property.taxes,
+        hoaFees: this.state.property.hoaFees,
         area: this.state.property.area.toString().replace(/,/g, ""),
       };
       updateEntity({
@@ -159,17 +164,26 @@ export default class PropertyDetails extends React.Component {
   }
 
   render() {
-    const { spinner, justSaved, changesToSave } = this.state;
+    const { spinner, justSaved, changesToSave, property } = this.state;
+    const monthlyRate = INTEREST_RATE / 12;
+    const monthlyTax = property.taxes || 0;
+    const monthlyHoa = property.hoaFees || 0;
+    const loanAmount = Math.round(
+      ((MONTHLY_PAYMENT - monthlyTax - monthlyHoa) *
+        (Math.pow(1 + monthlyRate, LOAN_TERM_MONTHS) - 1)) /
+        (monthlyRate * Math.pow(1 + monthlyRate, LOAN_TERM_MONTHS)),
+    );
+    const canAfford = property.price && AMOUNT_SAVED >= property.price - loanAmount;
     return (
       <div className="handy-component">
         <div className="white-box">
           <div style={{ display: "flex", gap: 20, marginBottom: 20 }}>
-            {this.state.property.imageUrl && (
+            {property.imageUrl && (
               <div
                 style={{
-                  flex: 1,
+                  flex: 0.85,
                   minHeight: 450,
-                  backgroundImage: `url(${this.state.property.imageUrl})`,
+                  backgroundImage: `url(${property.imageUrl})`,
                   backgroundSize: "cover",
                   backgroundRepeat: "no-repeat",
                   backgroundPosition: "center",
@@ -178,49 +192,132 @@ export default class PropertyDetails extends React.Component {
             )}
             <div
               style={{
-                flex: 1,
+                flex: 0.85,
                 minWidth: 0,
                 fontFamily: "Helvetica Neue",
                 fontSize: 14,
               }}
             >
-              {[
-                ["Street Address", this.state.property.streetAddress],
-                ["Apt #", this.state.property.aptNumber],
-                [
-                  "Type",
-                  PROPERTY_TYPE_LABELS[this.state.property.propertyType],
-                ],
-                ["Neighborhood", this.state.property.neighborhood],
-                ["Area", this.state.property.area],
-                ["Bedrooms", this.state.property.bedrooms],
-                ["Full Baths", this.state.property.fullBathrooms],
-                ["Half Baths", this.state.property.halfBathrooms],
-                ["Price", this.state.property.price],
-                ["Taxes", this.state.property.taxes],
-                ["Insurance", this.state.property.insurance],
-                ["HOA Fees", this.state.property.hoaFees],
-              ].map(([label, value]) =>
-                value ? (
-                  <div key={label} style={{ marginBottom: 6 }}>
-                    <strong>{label}:</strong> {value}
+              <div
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: 8,
+                  padding: "12px 16px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  background: "#fffde7",
+                  marginBottom: 8,
+                }}
+              >
+                <div style={{ marginBottom: 6, textDecoration: canAfford ? "line-through" : "none" }}>
+                  <strong>Monthly Payment:</strong> $
+                  {MONTHLY_PAYMENT.toLocaleString()}
+                </div>
+                <div style={{ marginBottom: 6 }}>
+                  <strong>Interest Rate:</strong>{" "}
+                  {(INTEREST_RATE * 100).toFixed(2)}%
+                </div>
+              </div>
+              <div
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: 8,
+                  padding: "12px 16px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  background: "#e8f4fd",
+                  marginBottom: 8,
+                }}
+              >
+                <div style={{ marginBottom: 6 }}>
+                  <strong>Adjusted Monthly Payment:</strong> $
+                  {Math.round(MONTHLY_PAYMENT - monthlyTax - monthlyHoa).toLocaleString()}
+                </div>
+                <div style={{ marginBottom: 6 }}>
+                  <strong>Max Loan:</strong> ${loanAmount.toLocaleString()}
+                </div>
+                <div style={{ marginBottom: 6 }}>
+                  <strong>Price:</strong> {property.priceFormatted}
+                </div>
+                {property.price - loanAmount > 0 && (
+                  <div style={{ marginBottom: 6 }}>
+                    <strong>Required Deposit:</strong> $
+                    {(property.price - loanAmount).toLocaleString()}
                   </div>
-                ) : null,
-              )}
-              {this.state.property.dateAdded && (
+                )}
                 <div style={{ marginBottom: 6 }}>
-                  <strong>Date Added:</strong> {this.state.property.dateAdded}
+                  <strong>Amount Saved:</strong> $
+                  {AMOUNT_SAVED.toLocaleString()}
                 </div>
-              )}
-              {this.state.property.url && (
-                <div style={{ marginBottom: 6 }}>
-                  <a href={this.state.property.url} target="_blank" rel="noreferrer" style={{ textDecoration: "underline" }}>
-                    Visit Link
-                  </a>
-                </div>
-              )}
+                {property.price - loanAmount - AMOUNT_SAVED > 0 && (
+                  <div style={{ marginBottom: 6, color: "red" }}>
+                    <strong>Amount Needed:</strong> $
+                    {(property.price - loanAmount - AMOUNT_SAVED).toLocaleString()}
+                  </div>
+                )}
+                {canAfford && (() => {
+                  const actualLoan = property.price - AMOUNT_SAVED;
+                  const actualMonthlyPayment = Math.round(
+                    (actualLoan * monthlyRate * Math.pow(1 + monthlyRate, LOAN_TERM_MONTHS)) /
+                      (Math.pow(1 + monthlyRate, LOAN_TERM_MONTHS) - 1),
+                  );
+                  return (
+                    <>
+                      <div style={{ marginBottom: 6 }}>
+                        <strong>Loan Amount:</strong> ${actualLoan.toLocaleString()}
+                      </div>
+                      <div style={{ marginBottom: 6, color: "green" }}>
+                        <strong>Monthly Payment:</strong> ${actualMonthlyPayment.toLocaleString()}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+              <div
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: 8,
+                  padding: "12px 16px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                }}
+              >
+                {[
+                  ["Street Address", property.streetAddress],
+                  ["Apt #", property.aptNumber],
+                  ["Type", PROPERTY_TYPE_LABELS[property.propertyType]],
+                  ["Neighborhood", property.neighborhood],
+                  ["Area", property.area],
+                  ["Bedrooms", property.bedrooms],
+                  ["Full Baths", property.fullBathrooms],
+                  ["Half Baths", property.halfBathrooms],
+                  ["Taxes", property.taxesFormatted],
+                  ["Insurance", property.insurance],
+                  ["HOA Fees", property.hoaFeesFormatted],
+                ].map(([label, value]) =>
+                  value ? (
+                    <div key={label} style={{ marginBottom: 6 }}>
+                      <strong>{label}:</strong> {value}
+                    </div>
+                  ) : null,
+                )}
+                {property.dateAdded && (
+                  <div style={{ marginBottom: 6 }}>
+                    <strong>Date Added:</strong> {property.dateAdded}
+                  </div>
+                )}
+                {property.url && (
+                  <div style={{ marginBottom: 6 }}>
+                    <a
+                      href={property.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ textDecoration: "underline" }}
+                    >
+                      Visit Link
+                    </a>
+                  </div>
+                )}
+              </div>
             </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ flex: 1.3, minWidth: 0 }}>
               <div className="row">
                 {Details.renderDropDown.bind(this)({
                   columnWidth: 6,
@@ -250,7 +347,7 @@ export default class PropertyDetails extends React.Component {
                   property: "notes",
                   columnHeader: "Notes",
                   type: "textbox",
-                  rows: 4,
+                  rows: 18,
                 })}
               </div>
             </div>
