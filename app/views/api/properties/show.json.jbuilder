@@ -14,7 +14,7 @@ json.property do
   json.area @property.area ? number_with_delimiter(@property.area) : ''
   json.schoolDistrict @property.school_district || ''
   json.schoolZone @property.school_zone || ''
-  json.taxes @property.taxes
+  json.taxes @property.taxes || 0
   json.taxesFormatted @property.taxes ? number_to_currency(@property.taxes, precision: @property.taxes.to_f % 1 == 0 ? 0 : 2) : ''
   json.insurance @property.insurance || ''
   json.hoaFees @property.hoa_fees
