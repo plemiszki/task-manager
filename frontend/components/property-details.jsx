@@ -173,7 +173,8 @@ export default class PropertyDetails extends React.Component {
         (Math.pow(1 + monthlyRate, LOAN_TERM_MONTHS) - 1)) /
         (monthlyRate * Math.pow(1 + monthlyRate, LOAN_TERM_MONTHS)),
     );
-    const canAfford = property.price && AMOUNT_SAVED >= property.price - loanAmount;
+    const canAfford =
+      property.price && AMOUNT_SAVED >= property.price - loanAmount;
     return (
       <div className="handy-component">
         <div className="white-box">
@@ -206,13 +207,20 @@ export default class PropertyDetails extends React.Component {
                   boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
                   background: "#fffde7",
                   marginBottom: 8,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 6,
                 }}
               >
-                <div style={{ marginBottom: 6, textDecoration: canAfford ? "line-through" : "none" }}>
+                <div
+                  style={{
+                    textDecoration: canAfford ? "line-through" : "none",
+                  }}
+                >
                   <strong>Monthly Payment:</strong> $
                   {MONTHLY_PAYMENT.toLocaleString()}
                 </div>
-                <div style={{ marginBottom: 6 }}>
+                <div>
                   <strong>Interest Rate:</strong>{" "}
                   {(INTEREST_RATE * 100).toFixed(2)}%
                 </div>
@@ -223,53 +231,23 @@ export default class PropertyDetails extends React.Component {
                   borderRadius: 8,
                   padding: "12px 16px",
                   boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                  background: "#e8f4fd",
+                  background: "white",
                   marginBottom: 8,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 6,
                 }}
               >
-                <div style={{ marginBottom: 6 }}>
-                  <strong>Adjusted Monthly Payment:</strong> $
-                  {Math.round(MONTHLY_PAYMENT - monthlyTax - monthlyHoa).toLocaleString()}
-                </div>
-                <div style={{ marginBottom: 6 }}>
-                  <strong>Max Loan:</strong> ${loanAmount.toLocaleString()}
-                </div>
-                <div style={{ marginBottom: 6 }}>
-                  <strong>Price:</strong> {property.priceFormatted}
-                </div>
-                {property.price - loanAmount > 0 && (
-                  <div style={{ marginBottom: 6 }}>
-                    <strong>Required Deposit:</strong> $
-                    {(property.price - loanAmount).toLocaleString()}
+                {!!property.taxes && (
+                  <div>
+                    <strong>Taxes:</strong> {property.taxesFormatted}
                   </div>
                 )}
-                <div style={{ marginBottom: 6 }}>
-                  <strong>Amount Saved:</strong> $
-                  {AMOUNT_SAVED.toLocaleString()}
-                </div>
-                {property.price - loanAmount - AMOUNT_SAVED > 0 && (
-                  <div style={{ marginBottom: 6, color: "red" }}>
-                    <strong>Amount Needed:</strong> $
-                    {(property.price - loanAmount - AMOUNT_SAVED).toLocaleString()}
+                {!!property.hoaFees && (
+                  <div>
+                    <strong>HOA Fees:</strong> {property.hoaFeesFormatted}
                   </div>
                 )}
-                {canAfford && (() => {
-                  const actualLoan = property.price - AMOUNT_SAVED;
-                  const actualMonthlyPayment = Math.round(
-                    (actualLoan * monthlyRate * Math.pow(1 + monthlyRate, LOAN_TERM_MONTHS)) /
-                      (Math.pow(1 + monthlyRate, LOAN_TERM_MONTHS) - 1),
-                  );
-                  return (
-                    <>
-                      <div style={{ marginBottom: 6 }}>
-                        <strong>Loan Amount:</strong> ${actualLoan.toLocaleString()}
-                      </div>
-                      <div style={{ marginBottom: 6, color: "green" }}>
-                        <strong>Monthly Payment:</strong> ${actualMonthlyPayment.toLocaleString()}
-                      </div>
-                    </>
-                  );
-                })()}
               </div>
               <div
                 style={{
@@ -277,6 +255,77 @@ export default class PropertyDetails extends React.Component {
                   borderRadius: 8,
                   padding: "12px 16px",
                   boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  background: "#e8f4fd",
+                  marginBottom: 8,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 6,
+                }}
+              >
+                <div>
+                  <strong>Adjusted Monthly Payment:</strong> $
+                  {Math.round(
+                    MONTHLY_PAYMENT - monthlyTax - monthlyHoa,
+                  ).toLocaleString()}
+                </div>
+                <div>
+                  <strong>Max Loan:</strong> ${loanAmount.toLocaleString()}
+                </div>
+                <div>
+                  <strong>Price:</strong> {property.priceFormatted}
+                </div>
+                {property.price - loanAmount > 0 && (
+                  <div>
+                    <strong>Required Deposit:</strong> $
+                    {(property.price - loanAmount).toLocaleString()}
+                  </div>
+                )}
+                <div>
+                  <strong>Amount Saved:</strong> $
+                  {AMOUNT_SAVED.toLocaleString()}
+                </div>
+                {property.price - loanAmount - AMOUNT_SAVED > 0 && (
+                  <div style={{ color: "red" }}>
+                    <strong>Amount Needed:</strong> $
+                    {(
+                      property.price -
+                      loanAmount -
+                      AMOUNT_SAVED
+                    ).toLocaleString()}
+                  </div>
+                )}
+                {canAfford &&
+                  (() => {
+                    const actualLoan = property.price - AMOUNT_SAVED;
+                    const actualMonthlyPayment = Math.round(
+                      (actualLoan *
+                        monthlyRate *
+                        Math.pow(1 + monthlyRate, LOAN_TERM_MONTHS)) /
+                        (Math.pow(1 + monthlyRate, LOAN_TERM_MONTHS) - 1),
+                    );
+                    return (
+                      <>
+                        <div>
+                          <strong>Loan Amount:</strong> $
+                          {actualLoan.toLocaleString()}
+                        </div>
+                        <div style={{ color: "green" }}>
+                          <strong>Monthly Payment:</strong> $
+                          {actualMonthlyPayment.toLocaleString()}
+                        </div>
+                      </>
+                    );
+                  })()}
+              </div>
+              <div
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: 8,
+                  padding: "12px 16px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 6,
                 }}
               >
                 {[
@@ -288,23 +337,21 @@ export default class PropertyDetails extends React.Component {
                   ["Bedrooms", property.bedrooms],
                   ["Full Baths", property.fullBathrooms],
                   ["Half Baths", property.halfBathrooms],
-                  ["Taxes", property.taxesFormatted],
                   ["Insurance", property.insurance],
-                  ["HOA Fees", property.hoaFees ? property.hoaFeesFormatted : null],
                 ].map(([label, value]) =>
                   value ? (
-                    <div key={label} style={{ marginBottom: 6 }}>
+                    <div key={label}>
                       <strong>{label}:</strong> {value}
                     </div>
                   ) : null,
                 )}
                 {property.dateAdded && (
-                  <div style={{ marginBottom: 6 }}>
+                  <div>
                     <strong>Date Added:</strong> {property.dateAdded}
                   </div>
                 )}
                 {property.url && (
-                  <div style={{ marginBottom: 6 }}>
+                  <div>
                     <a
                       href={property.url}
                       target="_blank"
