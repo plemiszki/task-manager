@@ -226,18 +226,6 @@ class Task < ActiveRecord::Base
 
   def self.convert_future_tasks(tasks_array:, user:, timeframe:, position:, date:)
     future_tasks = FutureTask.where(user_id: user.id, date: date, timeframe: timeframe, add_to_end: position == 'end')
-
-    Sentry.capture_message(
-      "Convert Future Tasks",
-      extra: {
-        user: user.email,
-        timeframe: timeframe,
-        position: position,
-        date: date,
-        future_tasks: future_tasks.map(&:attributes)
-      }
-    )
-
     future_tasks.each do |task|
       tasks_array << Task.create(user_id: user.id, timeframe: timeframe.downcase, text: task.text,
                                  color: task.color.gsub(/[rgb()]/, ''))
