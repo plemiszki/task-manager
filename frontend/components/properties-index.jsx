@@ -49,20 +49,7 @@ export default function PropertiesIndex() {
       <div className="row">
         <div className="col-xs-12">
           <div className="white-box">
-            <div
-              className="btn"
-              style={{
-                position: "absolute",
-                right: 26,
-                top: 26,
-                backgroundColor: "#6f42c1",
-                color: "white",
-              }}
-              onClick={() => setModalOpen(true)}
-            >
-              Add New
-            </div>
-            <table style={{ marginTop: 20 }}>
+            <table>
               <thead>
                 <tr>
                   <th>Label</th>
@@ -107,6 +94,16 @@ export default function PropertiesIndex() {
                 })}
               </tbody>
             </table>
+            <div
+              className="btn"
+              style={{
+                backgroundColor: "#6f42c1",
+                color: "white",
+              }}
+              onClick={() => setModalOpen(true)}
+            >
+              Add New
+            </div>
             <GrayedOut visible={spinner} />
             <Spinner visible={spinner} />
           </div>

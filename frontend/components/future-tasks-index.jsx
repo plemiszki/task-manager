@@ -49,14 +49,7 @@ export default function FutureTasksIndex() {
       <div className="row">
         <div className="col-xs-12">
           <div className="white-box">
-            <div
-              className="btn btn-info"
-              style={{ position: "absolute", right: 26, top: 26 }}
-              onClick={() => setModalOpen(true)}
-            >
-              Add New
-            </div>
-            <table style={{ marginTop: 20 }}>
+            <table>
               <thead>
                 <tr>
                   <th>Date</th>
@@ -100,6 +93,9 @@ export default function FutureTasksIndex() {
                 })}
               </tbody>
             </table>
+            <div className="btn btn-info" onClick={() => setModalOpen(true)}>
+              Add New
+            </div>
             <GrayedOut visible={spinner} />
             <Spinner visible={spinner} />
           </div>
