@@ -164,7 +164,14 @@ export default class PropertyDetails extends React.Component {
 
   render() {
     const { spinner, justSaved, changesToSave, property } = this.state;
-    const { adjustedMonthlyPayment, maxLoan, amountNeeded, canAfford, actualLoan, actualMonthlyPayment } = property;
+    const {
+      adjustedMonthlyPayment,
+      maxLoan,
+      amountNeeded,
+      canAfford,
+      actualLoan,
+      actualMonthlyPayment,
+    } = property;
     return (
       <div className="handy-component">
         <div className="white-box">
@@ -351,14 +358,14 @@ export default class PropertyDetails extends React.Component {
                 {Details.renderField.bind(this)({
                   columnWidth: 3,
                   entity: "property",
-                  property: "schoolZone",
-                  columnHeader: "Zone",
+                  property: "schoolDistrict",
+                  columnHeader: "District",
                 })}
                 {Details.renderField.bind(this)({
                   columnWidth: 3,
                   entity: "property",
-                  property: "schoolDistrict",
-                  columnHeader: "District",
+                  property: "zonedPrimarySchool",
+                  columnHeader: "Zoned School",
                 })}
               </div>
               <div className="row">
@@ -434,7 +441,7 @@ export default class PropertyDetails extends React.Component {
                       "hoaFees",
                       "area",
                       "schoolDistrict",
-                      "schoolZone",
+                      "zonedPrimarySchool",
                     ];
                     const LABEL_OVERRIDES = { hoaFees: "HOA Fees" };
                     const CURRENCY_FIELDS = ["price", "taxes", "hoaFees"];

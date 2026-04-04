@@ -59,7 +59,7 @@ class Api::PropertiesController < ActionController::Base
     params.require(:property).permit(
       :label, :street_address, :apt_number, :neighborhood, :status,
       :price, :bedrooms, :full_bathrooms, :half_bathrooms, :property_type, :area,
-      :school_district, :school_zone, :taxes, :insurance, :hoa_fees,
+      :school_district, :zoned_primary_school, :taxes, :insurance, :hoa_fees,
       :date_added, :url, :notes
     )
   end

@@ -415,7 +415,7 @@ CREATE TABLE public.properties (
     property_type character varying NOT NULL,
     area integer,
     school_district integer,
-    school_zone integer,
+    zoned_primary_school integer,
     taxes double precision,
     insurance double precision,
     hoa_fees double precision,
@@ -1246,6 +1246,7 @@ ALTER TABLE ONLY public.schedule_blocks
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260404000001'),
 ('20260331000001'),
 ('20260329000002'),
 ('20260329000001'),
