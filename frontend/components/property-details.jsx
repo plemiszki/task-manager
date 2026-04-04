@@ -15,10 +15,9 @@ import {
   GrayedOut,
 } from "handy-components";
 
-const AMOUNT_SAVED = 360000;
 const MONTHLY_PAYMENT = 10000;
 const INTEREST_RATE = 0.0699;
-const LOAN_TERM_MONTHS = 360;
+const AMOUNT_SAVED = 360000;
 
 const HTML_MODAL_STYLES = {
   overlay: {
@@ -165,16 +164,7 @@ export default class PropertyDetails extends React.Component {
 
   render() {
     const { spinner, justSaved, changesToSave, property } = this.state;
-    const monthlyRate = INTEREST_RATE / 12;
-    const monthlyTax = property.taxes || 0;
-    const monthlyHoa = property.hoaFees || 0;
-    const loanAmount = Math.round(
-      ((MONTHLY_PAYMENT - monthlyTax - monthlyHoa) *
-        (Math.pow(1 + monthlyRate, LOAN_TERM_MONTHS) - 1)) /
-        (monthlyRate * Math.pow(1 + monthlyRate, LOAN_TERM_MONTHS)),
-    );
-    const canAfford =
-      property.price && AMOUNT_SAVED >= property.price - loanAmount;
+    const { adjustedMonthlyPayment, maxLoan, canAfford, actualLoan, actualMonthlyPayment } = property;
     return (
       <div className="handy-component">
         <div className="white-box">
@@ -264,58 +254,42 @@ export default class PropertyDetails extends React.Component {
               >
                 <div>
                   <strong>Adjusted Monthly Payment:</strong> $
-                  {Math.round(
-                    MONTHLY_PAYMENT - monthlyTax - monthlyHoa,
-                  ).toLocaleString()}
+                  {adjustedMonthlyPayment?.toLocaleString()}
                 </div>
                 <div>
-                  <strong>Max Loan:</strong> ${loanAmount.toLocaleString()}
+                  <strong>Max Loan:</strong> ${maxLoan?.toLocaleString()}
                 </div>
                 <div>
                   <strong>Price:</strong> {property.priceFormatted}
                 </div>
-                {property.price - loanAmount > 0 && (
+                {property.price - maxLoan > 0 && (
                   <div>
                     <strong>Required Deposit:</strong> $
-                    {(property.price - loanAmount).toLocaleString()}
+                    {(property.price - maxLoan).toLocaleString()}
                   </div>
                 )}
                 <div>
                   <strong>Amount Saved:</strong> $
                   {AMOUNT_SAVED.toLocaleString()}
                 </div>
-                {property.price - loanAmount - AMOUNT_SAVED > 0 && (
+                {property.price - maxLoan - AMOUNT_SAVED > 0 && (
                   <div style={{ color: "red" }}>
                     <strong>Amount Needed:</strong> $
-                    {(
-                      property.price -
-                      loanAmount -
-                      AMOUNT_SAVED
-                    ).toLocaleString()}
+                    {(property.price - maxLoan - AMOUNT_SAVED).toLocaleString()}
                   </div>
                 )}
-                {canAfford &&
-                  (() => {
-                    const actualLoan = property.price - AMOUNT_SAVED;
-                    const actualMonthlyPayment = Math.round(
-                      (actualLoan *
-                        monthlyRate *
-                        Math.pow(1 + monthlyRate, LOAN_TERM_MONTHS)) /
-                        (Math.pow(1 + monthlyRate, LOAN_TERM_MONTHS) - 1),
-                    );
-                    return (
-                      <>
-                        <div>
-                          <strong>Loan Amount:</strong> $
-                          {actualLoan.toLocaleString()}
-                        </div>
-                        <div style={{ color: "green" }}>
-                          <strong>Monthly Payment:</strong> $
-                          {actualMonthlyPayment.toLocaleString()}
-                        </div>
-                      </>
-                    );
-                  })()}
+                {canAfford && (
+                  <>
+                    <div>
+                      <strong>Loan Amount:</strong> $
+                      {actualLoan?.toLocaleString()}
+                    </div>
+                    <div style={{ color: "green" }}>
+                      <strong>Monthly Payment:</strong> $
+                      {actualMonthlyPayment?.toLocaleString()}
+                    </div>
+                  </>
+                )}
               </div>
               <div
                 style={{
