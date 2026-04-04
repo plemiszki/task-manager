@@ -290,7 +290,7 @@ export default class PropertyDetails extends React.Component {
                   ["Half Baths", property.halfBathrooms],
                   ["Taxes", property.taxesFormatted],
                   ["Insurance", property.insurance],
-                  ["HOA Fees", property.hoaFeesFormatted],
+                  ["HOA Fees", property.hoaFees ? property.hoaFeesFormatted : null],
                 ].map(([label, value]) =>
                   value ? (
                     <div key={label} style={{ marginBottom: 6 }}>
