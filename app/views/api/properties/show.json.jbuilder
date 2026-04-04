@@ -21,6 +21,7 @@ json.property do
   json.hoaFeesFormatted @property.hoa_fees ? number_to_currency(@property.hoa_fees, precision: @property.hoa_fees.to_f % 1 == 0 ? 0 : 2) : ''
   json.adjustedMonthlyPayment @property.adjusted_monthly_payment
   json.maxLoan @property.max_loan
+  json.amountNeeded @property.amount_needed
   json.canAfford @property.can_afford?
   if @property.can_afford?
     json.actualLoan @property.actual_loan

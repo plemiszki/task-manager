@@ -164,7 +164,7 @@ export default class PropertyDetails extends React.Component {
 
   render() {
     const { spinner, justSaved, changesToSave, property } = this.state;
-    const { adjustedMonthlyPayment, maxLoan, canAfford, actualLoan, actualMonthlyPayment } = property;
+    const { adjustedMonthlyPayment, maxLoan, amountNeeded, canAfford, actualLoan, actualMonthlyPayment } = property;
     return (
       <div className="handy-component">
         <div className="white-box">
@@ -272,10 +272,10 @@ export default class PropertyDetails extends React.Component {
                   <strong>Amount Saved:</strong> $
                   {AMOUNT_SAVED.toLocaleString()}
                 </div>
-                {property.price - maxLoan - AMOUNT_SAVED > 0 && (
+                {amountNeeded > 0 && (
                   <div style={{ color: "red" }}>
                     <strong>Amount Needed:</strong> $
-                    {(property.price - maxLoan - AMOUNT_SAVED).toLocaleString()}
+                    {amountNeeded.toLocaleString()}
                   </div>
                 )}
                 {canAfford && (

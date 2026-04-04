@@ -31,8 +31,13 @@ class Property < ActiveRecord::Base
     price - AMOUNT_SAVED
   end
 
+  def amount_needed
+    return nil unless price.present?
+    price - max_loan - AMOUNT_SAVED
+  end
+
   def actual_monthly_payment
-    return nil unless can_afford?
+    return MONTHLY_PAYMENT unless can_afford?
     monthly_rate = INTEREST_RATE / 12
     (actual_loan * monthly_rate * ((1 + monthly_rate)**LOAN_TERM_MONTHS) /
       (((1 + monthly_rate)**LOAN_TERM_MONTHS) - 1)).round

@@ -53,14 +53,16 @@ export default function PropertiesIndex() {
               <thead>
                 <tr>
                   <th>Label</th>
-                  <th>Price</th>
-                  <th>Type</th>
                   <th>Neighborhood</th>
+                  <th>Type</th>
+                  <th>Monthly Payment</th>
+                  <th>Amount Needed</th>
                   <th>Date Added</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="below-header">
+                  <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
@@ -72,7 +74,8 @@ export default function PropertiesIndex() {
                     id,
                     label,
                     neighborhood,
-                    price,
+                    amountNeeded,
+                    monthlyPayment,
                     propertyType,
                     dateAdded,
                   } = property;
@@ -85,9 +88,10 @@ export default function PropertiesIndex() {
                       }
                     >
                       <td>{label}</td>
-                      <td>${Number(price).toLocaleString()}</td>
-                      <td>{PROPERTY_TYPE_LABELS[propertyType]}</td>
                       <td>{neighborhood}</td>
+                      <td>{PROPERTY_TYPE_LABELS[propertyType]}</td>
+                      <td>{monthlyPayment != null ? `$${Number(monthlyPayment).toLocaleString()}` : ""}</td>
+                      <td style={{ color: amountNeeded > 0 ? "red" : undefined }}>{amountNeeded == null ? "" : amountNeeded <= 0 ? "-" : `$${Number(amountNeeded).toLocaleString()}`}</td>
                       <td>{Moment(dateAdded).format("l")}</td>
                     </tr>
                   );
