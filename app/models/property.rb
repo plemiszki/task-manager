@@ -11,19 +11,23 @@ class Property < ActiveRecord::Base
   REDIS_URL = Rails.env == 'development' ? 'redis://localhost:6379' : ENV['REDIS_URL']
 
   def self.amount_saved
-    redis.get('property:amount_saved')&.to_i || DEFAULT_AMOUNT_SAVED
+    @amount_saved ||= redis.get('property:amount_saved')&.to_i || DEFAULT_AMOUNT_SAVED
   end
 
   def self.monthly_payment
-    redis.get('property:monthly_payment')&.to_i || DEFAULT_MONTHLY_PAYMENT
+    @monthly_payment ||= redis.get('property:monthly_payment')&.to_i || DEFAULT_MONTHLY_PAYMENT
   end
 
   def self.interest_rate
-    redis.get('property:interest_rate')&.to_f || DEFAULT_INTEREST_RATE
+    @interest_rate ||= redis.get('property:interest_rate')&.to_f || DEFAULT_INTEREST_RATE
+  end
+
+  def self.reload_config!
+    @amount_saved = @monthly_payment = @interest_rate = nil
   end
 
   def self.redis
-    Redis.new(url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
+    @redis ||= Redis.new(url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
   end
 
   validates :label, :street_address, :status, :price, :bedrooms, :full_bathrooms, :half_bathrooms, :property_type, :date_added, :url, presence: true

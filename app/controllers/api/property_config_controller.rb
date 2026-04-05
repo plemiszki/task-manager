@@ -15,6 +15,7 @@ class Api::PropertyConfigController < ActionController::Base
     return render json: { error: 'Invalid field' }, status: :unprocessable_entity unless redis_key
 
     redis.set(redis_key, params[:value].to_s)
+    Property.reload_config!
     render json: {}, status: :ok
   end
 
