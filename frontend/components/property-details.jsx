@@ -2,6 +2,7 @@ import React from "react";
 import Modal from "react-modal";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import ConfirmModal from "./confirm-modal.jsx";
 import {
   Details,
@@ -15,11 +16,10 @@ import {
   GrayedOut,
 } from "handy-components";
 
+const MODAL_OVERLAY = { background: "rgba(0, 0, 0, 0.50)", zIndex: 3 };
+
 const HTML_MODAL_STYLES = {
-  overlay: {
-    background: "rgba(0, 0, 0, 0.50)",
-    zIndex: 3,
-  },
+  overlay: MODAL_OVERLAY,
   content: {
     background: "#F5F6F7",
     padding: 0,
@@ -30,10 +30,7 @@ const HTML_MODAL_STYLES = {
 };
 
 const REFRESH_MODAL_STYLES = {
-  overlay: {
-    background: "rgba(0, 0, 0, 0.50)",
-    zIndex: 3,
-  },
+  overlay: MODAL_OVERLAY,
   content: {
     background: "white",
     margin: "auto",
@@ -59,6 +56,45 @@ const PROPERTY_TYPE_LABELS = {
   "multi-family-house": "Multi-Family House",
 };
 
+const CURRENCY_FIELDS = ["price", "taxes", "hoaFees"];
+
+function normalizeFieldValue(key, v) {
+  if (CURRENCY_FIELDS.includes(key))
+    return String(parseFloat(String(v ?? "").replace(/[$,]/g, "")) || 0);
+  if (key === "area")
+    return String(v ?? "").replace(/,/g, "");
+  return String(v ?? "");
+}
+
+function cardStyle(background, marginBottom = 8) {
+  return {
+    border: "1px solid #ddd",
+    borderRadius: 8,
+    padding: "12px 16px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    display: "flex",
+    flexDirection: "column",
+    gap: 6,
+    ...(marginBottom != null && { marginBottom }),
+    ...(background != null && { background }),
+  };
+}
+
+function HoverableField({ fieldKey, hoveredField, onHover, style, children }) {
+  return (
+    <div
+      style={{ display: "flex", alignItems: "center", gap: 6, ...style }}
+      onMouseEnter={() => onHover(fieldKey)}
+      onMouseLeave={() => onHover(null)}
+    >
+      {children}
+      {hoveredField === fieldKey && (
+        <EditIcon style={{ fontSize: 14, cursor: "pointer", color: "#555" }} />
+      )}
+    </div>
+  );
+}
+
 export default class PropertyDetails extends React.Component {
   constructor(props) {
     super(props);
@@ -74,6 +110,7 @@ export default class PropertyDetails extends React.Component {
       deleteModalOpen: false,
       htmlModalOpen: false,
       htmlForm: { html: "" },
+      hoveredField: null,
     };
   }
 
@@ -142,15 +179,7 @@ export default class PropertyDetails extends React.Component {
         entityName: "property",
         entity: property,
       }).then(
-        (response) => {
-          const { property } = response;
-          this.setState({
-            spinner: false,
-            property,
-            propertySaved: deepCopy(property),
-            changesToSave: false,
-          });
-        },
+        (response) => this.handleSaveSuccess(response),
         (response) => {
           this.setState({ spinner: false, errors: response.errors });
         },
@@ -158,8 +187,17 @@ export default class PropertyDetails extends React.Component {
     });
   }
 
+  handleSaveSuccess(response) {
+    this.setState({
+      spinner: false,
+      property: response.property,
+      propertySaved: deepCopy(response.property),
+      changesToSave: false,
+    });
+  }
+
   render() {
-    const { spinner, justSaved, changesToSave, property } = this.state;
+    const { spinner, justSaved, changesToSave, property, hoveredField } = this.state;
     const {
       adjustedMonthlyPayment,
       maxLoan,
@@ -171,6 +209,7 @@ export default class PropertyDetails extends React.Component {
       monthlyPayment,
       interestRate,
     } = property;
+    const setHovered = (field) => this.setState({ hoveredField: field });
     return (
       <div className="handy-component">
         <div className="white-box">
@@ -195,45 +234,26 @@ export default class PropertyDetails extends React.Component {
                 fontSize: 14,
               }}
             >
-              <div
-                style={{
-                  border: "1px solid #ddd",
-                  borderRadius: 8,
-                  padding: "12px 16px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                  background: "#fffde7",
-                  marginBottom: 8,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 6,
-                }}
-              >
-                <div
-                  style={{
-                    textDecoration: canAfford ? "line-through" : "none",
-                  }}
+              <div style={cardStyle("#fffde7")}>
+                <HoverableField
+                  fieldKey="monthlyPayment"
+                  hoveredField={hoveredField}
+                  onHover={setHovered}
+                  style={{ textDecoration: canAfford ? "line-through" : "none" }}
                 >
                   <strong>Monthly Payment:</strong> $
                   {monthlyPayment?.toLocaleString()}
-                </div>
-                <div>
+                </HoverableField>
+                <HoverableField
+                  fieldKey="interestRate"
+                  hoveredField={hoveredField}
+                  onHover={setHovered}
+                >
                   <strong>Interest Rate:</strong>{" "}
-                  {interestRate ? (interestRate * 100).toFixed(2) : ''}%
-                </div>
+                  {interestRate ? (interestRate * 100).toFixed(2) : ""}%
+                </HoverableField>
               </div>
-              <div
-                style={{
-                  border: "1px solid #ddd",
-                  borderRadius: 8,
-                  padding: "12px 16px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                  background: "white",
-                  marginBottom: 8,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 6,
-                }}
-              >
+              <div style={cardStyle("white")}>
                 {!!property.taxes && (
                   <div>
                     <strong>Taxes:</strong> {property.taxesFormatted}
@@ -245,19 +265,7 @@ export default class PropertyDetails extends React.Component {
                   </div>
                 )}
               </div>
-              <div
-                style={{
-                  border: "1px solid #ddd",
-                  borderRadius: 8,
-                  padding: "12px 16px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                  background: "#e8f4fd",
-                  marginBottom: 8,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 6,
-                }}
-              >
+              <div style={cardStyle("#e8f4fd")}>
                 <div>
                   <strong>Adjusted Monthly Payment:</strong> $
                   {adjustedMonthlyPayment?.toLocaleString()}
@@ -274,10 +282,14 @@ export default class PropertyDetails extends React.Component {
                     {(property.price - maxLoan).toLocaleString()}
                   </div>
                 )}
-                <div>
+                <HoverableField
+                  fieldKey="amountSaved"
+                  hoveredField={hoveredField}
+                  onHover={setHovered}
+                >
                   <strong>Amount Saved:</strong> $
                   {amountSaved?.toLocaleString()}
-                </div>
+                </HoverableField>
                 {amountNeeded > 0 && (
                   <div style={{ color: "red" }}>
                     <strong>Amount Needed:</strong> $
@@ -297,17 +309,7 @@ export default class PropertyDetails extends React.Component {
                   </>
                 )}
               </div>
-              <div
-                style={{
-                  border: "1px solid #ddd",
-                  borderRadius: 8,
-                  padding: "12px 16px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 6,
-                }}
-              >
+              <div style={cardStyle(undefined, null)}>
                 {[
                   ["Street Address", property.streetAddress],
                   ["Apt #", property.aptNumber],
@@ -443,7 +445,6 @@ export default class PropertyDetails extends React.Component {
                       "zonedPrimarySchool",
                     ];
                     const LABEL_OVERRIDES = { hoaFees: "HOA Fees" };
-                    const CURRENCY_FIELDS = ["price", "taxes", "hoaFees"];
                     const CAPITALIZE_FIELDS = ["status", "propertyType"];
                     const { refreshedData, propertySaved } = this.state;
                     const formatValue = (key, value) => {
@@ -466,19 +467,9 @@ export default class PropertyDetails extends React.Component {
                         key
                           .replace(/([A-Z])/g, " $1")
                           .replace(/^./, (c) => c.toUpperCase());
-                      const normalize = (v) =>
-                        CURRENCY_FIELDS.includes(key)
-                          ? String(
-                              parseFloat(
-                                String(v ?? "").replace(/[$,]/g, ""),
-                              ) || 0,
-                            )
-                          : key === "area"
-                            ? String(v ?? "").replace(/,/g, "")
-                            : String(v ?? "");
                       const changed =
                         propertySaved[key] != null &&
-                        normalize(propertySaved[key]) !== normalize(value);
+                        normalizeFieldValue(key, propertySaved[key]) !== normalizeFieldValue(key, value);
                       const isLast = index === rows.length - 1;
                       const displayValue = changed ? (
                         <span>
@@ -517,21 +508,12 @@ export default class PropertyDetails extends React.Component {
             </table>
             {(() => {
               const { refreshedData, propertySaved } = this.state;
-              const CURRENCY_FIELDS = ["price", "taxes", "hoaFees"];
-              const normalize = (key, v) =>
-                CURRENCY_FIELDS.includes(key)
-                  ? String(
-                      parseFloat(String(v ?? "").replace(/[$,]/g, "")) || 0,
-                    )
-                  : key === "area"
-                    ? String(v ?? "").replace(/,/g, "")
-                    : String(v ?? "");
               const hasChanges =
                 refreshedData &&
                 Object.entries(refreshedData).some(
                   ([key, value]) =>
-                    normalize(key, propertySaved[key]) !==
-                    normalize(key, value),
+                    normalizeFieldValue(key, propertySaved[key]) !==
+                    normalizeFieldValue(key, value),
                 );
               return (
                 <div style={{ textAlign: "center", marginTop: 12 }}>
@@ -548,8 +530,8 @@ export default class PropertyDetails extends React.Component {
                       const changedFields = Object.fromEntries(
                         Object.entries(refreshedData).filter(
                           ([key, value]) =>
-                            normalize(key, propertySaved[key]) !==
-                            normalize(key, value),
+                            normalizeFieldValue(key, propertySaved[key]) !==
+                            normalizeFieldValue(key, value),
                         ),
                       );
                       this.setState(
@@ -559,14 +541,7 @@ export default class PropertyDetails extends React.Component {
                             entityName: "property",
                             entity: { ...changedFields },
                           }).then(
-                            (response) => {
-                              this.setState({
-                                spinner: false,
-                                property: response.property,
-                                propertySaved: deepCopy(response.property),
-                                changesToSave: false,
-                              });
-                            },
+                            (response) => this.handleSaveSuccess(response),
                             (response) => {
                               this.setState({
                                 spinner: false,
