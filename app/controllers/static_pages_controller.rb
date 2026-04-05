@@ -16,7 +16,7 @@ class StaticPagesController < ApplicationController
 
   def grocery_list
     grocery_stores = GroceryStore.all.includes(grocery_sections: [:grocery_items]).order(:name)
-    redis = Redis.new(url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
+    redis = Redis.new(url: REDIS_URL)
     item_ids = redis.smembers(REDIS_KEY).map(&:to_i)
 
     all_item_ids_in_stores = grocery_stores.reduce([]) { |accum, store| accum += store.all_item_ids }

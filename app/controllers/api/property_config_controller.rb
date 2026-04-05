@@ -21,7 +21,7 @@ class Api::PropertyConfigController < ActionController::Base
   private
 
   def redis
-    Redis.new(url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
+    Redis.new(url: REDIS_URL)
   end
 
 end
