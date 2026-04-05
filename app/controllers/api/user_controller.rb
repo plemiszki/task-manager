@@ -5,7 +5,7 @@ class Api::UserController < ActionController::Base
   include Clearance::Controller
 
   def show
-    redis = Redis.new(url: REDIS_URL)
+    redis = Redis.new(url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
     render json: { user: current_user, resetEarly: redis.smembers("daily-reset-early").include?(current_user.id.to_s) }
   end
 

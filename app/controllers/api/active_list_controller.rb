@@ -49,7 +49,7 @@ class Api::ActiveListController < ActionController::Base
   private
 
   def create_redis_instance
-    Redis.new(url: REDIS_URL)
+    Redis.new(url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
   end
 
 end

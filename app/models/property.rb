@@ -23,7 +23,7 @@ class Property < ActiveRecord::Base
   end
 
   def self.redis
-    Redis.new(url: REDIS_URL)
+    Redis.new(url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
   end
 
   validates :label, :street_address, :status, :price, :bedrooms, :full_bathrooms, :half_bathrooms, :property_type, :date_added, :url, presence: true
