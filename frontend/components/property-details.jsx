@@ -15,10 +15,6 @@ import {
   GrayedOut,
 } from "handy-components";
 
-const MONTHLY_PAYMENT = 10000;
-const INTEREST_RATE = 0.0699;
-const AMOUNT_SAVED = 360000;
-
 const HTML_MODAL_STYLES = {
   overlay: {
     background: "rgba(0, 0, 0, 0.50)",
@@ -171,6 +167,9 @@ export default class PropertyDetails extends React.Component {
       canAfford,
       actualLoan,
       actualMonthlyPayment,
+      amountSaved,
+      monthlyPayment,
+      interestRate,
     } = property;
     return (
       <div className="handy-component">
@@ -215,11 +214,11 @@ export default class PropertyDetails extends React.Component {
                   }}
                 >
                   <strong>Monthly Payment:</strong> $
-                  {MONTHLY_PAYMENT.toLocaleString()}
+                  {monthlyPayment?.toLocaleString()}
                 </div>
                 <div>
                   <strong>Interest Rate:</strong>{" "}
-                  {(INTEREST_RATE * 100).toFixed(2)}%
+                  {interestRate ? (interestRate * 100).toFixed(2) : ''}%
                 </div>
               </div>
               <div
@@ -277,7 +276,7 @@ export default class PropertyDetails extends React.Component {
                 )}
                 <div>
                   <strong>Amount Saved:</strong> $
-                  {AMOUNT_SAVED.toLocaleString()}
+                  {amountSaved?.toLocaleString()}
                 </div>
                 {amountNeeded > 0 && (
                   <div style={{ color: "red" }}>
