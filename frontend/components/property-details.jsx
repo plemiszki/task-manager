@@ -56,6 +56,26 @@ const PROPERTY_TYPE_LABELS = {
   "multi-family-house": "Multi-Family House",
 };
 
+const EDIT_MODAL_STYLES = {
+  overlay: MODAL_OVERLAY,
+  content: {
+    background: "white",
+    margin: "auto",
+    width: 300,
+    height: "fit-content",
+    border: "solid 1px #ddd",
+    borderRadius: "8px",
+    padding: "20px 24px",
+    color: "black",
+  },
+};
+
+const CONFIG_FIELD_LABELS = {
+  monthlyPayment: "Monthly Payment",
+  interestRate: "Interest Rate",
+  amountSaved: "Amount Saved",
+};
+
 const CURRENCY_FIELDS = ["price", "taxes", "hoaFees"];
 
 function normalizeFieldValue(key, v) {
@@ -80,7 +100,7 @@ function cardStyle(background, marginBottom = 8) {
   };
 }
 
-function HoverableField({ fieldKey, hoveredField, onHover, style, children }) {
+function HoverableField({ fieldKey, hoveredField, onHover, onEdit, style, children }) {
   return (
     <div
       style={{ display: "flex", alignItems: "center", gap: 6, ...style }}
@@ -89,7 +109,10 @@ function HoverableField({ fieldKey, hoveredField, onHover, style, children }) {
     >
       {children}
       {hoveredField === fieldKey && (
-        <EditIcon style={{ fontSize: 14, cursor: "pointer", color: "#555" }} />
+        <EditIcon
+          style={{ fontSize: 14, cursor: "pointer", color: "#555" }}
+          onClick={onEdit}
+        />
       )}
     </div>
   );
@@ -111,6 +134,9 @@ export default class PropertyDetails extends React.Component {
       htmlModalOpen: false,
       htmlForm: { html: "" },
       hoveredField: null,
+      editModalOpen: false,
+      editField: null,
+      editValue: "",
     };
   }
 
@@ -187,6 +213,36 @@ export default class PropertyDetails extends React.Component {
     });
   }
 
+  openEditModal(fieldKey) {
+    const { property } = this.state;
+    const editValue = fieldKey === "interestRate"
+      ? (property.interestRate * 100).toFixed(2)
+      : String(property[fieldKey] ?? "");
+    this.setState({ editModalOpen: true, editField: fieldKey, editValue });
+  }
+
+  submitConfigEdit() {
+    const { editField, editValue } = this.state;
+    const value = editField === "interestRate"
+      ? parseFloat(editValue) / 100
+      : parseFloat(editValue);
+    fetch("/api/property_config", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content,
+      },
+      body: JSON.stringify({ field: editField, value }),
+    }).then(() => {
+      this.setState({ editModalOpen: false }, () => {
+        fetchEntity().then((response) => {
+          const { property } = response;
+          this.setState({ property, propertySaved: deepCopy(property) });
+        });
+      });
+    });
+  }
+
   handleSaveSuccess(response) {
     this.setState({
       spinner: false,
@@ -239,6 +295,7 @@ export default class PropertyDetails extends React.Component {
                   fieldKey="monthlyPayment"
                   hoveredField={hoveredField}
                   onHover={setHovered}
+                  onEdit={() => this.openEditModal("monthlyPayment")}
                   style={{ textDecoration: canAfford ? "line-through" : "none" }}
                 >
                   <strong>Monthly Payment:</strong> $
@@ -248,6 +305,7 @@ export default class PropertyDetails extends React.Component {
                   fieldKey="interestRate"
                   hoveredField={hoveredField}
                   onHover={setHovered}
+                  onEdit={() => this.openEditModal("interestRate")}
                 >
                   <strong>Interest Rate:</strong>{" "}
                   {interestRate ? (interestRate * 100).toFixed(2) : ""}%
@@ -286,6 +344,7 @@ export default class PropertyDetails extends React.Component {
                   fieldKey="amountSaved"
                   hoveredField={hoveredField}
                   onHover={setHovered}
+                  onEdit={() => this.openEditModal("amountSaved")}
                 >
                   <strong>Amount Saved:</strong> $
                   {amountSaved?.toLocaleString()}
@@ -613,6 +672,42 @@ export default class PropertyDetails extends React.Component {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </Modal>
+          <Modal
+            isOpen={this.state.editModalOpen}
+            onRequestClose={() => this.setState({ editModalOpen: false })}
+            style={EDIT_MODAL_STYLES}
+          >
+            <div style={{ fontFamily: "Helvetica Neue", fontSize: 14 }}>
+              <div style={{ fontWeight: 600, marginBottom: 12 }}>
+                Edit {CONFIG_FIELD_LABELS[this.state.editField]}
+              </div>
+              <input
+                type="number"
+                value={this.state.editValue}
+                onChange={(e) => this.setState({ editValue: e.target.value })}
+                onKeyDown={(e) => e.key === "Enter" && this.submitConfigEdit()}
+                autoFocus
+                style={{
+                  width: "100%",
+                  padding: "6px 8px",
+                  fontSize: 14,
+                  border: "1px solid #ccc",
+                  borderRadius: 4,
+                  boxSizing: "border-box",
+                  marginBottom: 12,
+                }}
+              />
+              <div style={{ textAlign: "right" }}>
+                <a
+                  className="btn"
+                  style={{ background: "#333", color: "white" }}
+                  onClick={() => this.submitConfigEdit()}
+                >
+                  Update
+                </a>
               </div>
             </div>
           </Modal>

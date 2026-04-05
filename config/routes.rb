@@ -60,6 +60,7 @@ Rails.application.routes.draw do
     resources :properties, only: [:index, :show, :create, :update, :destroy] do
       post :reextract, on: :member
     end
+    patch '/property_config' => '/api/property_config#update'
   end
 
 end
