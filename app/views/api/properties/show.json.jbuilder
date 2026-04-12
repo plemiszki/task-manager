@@ -30,7 +30,7 @@ json.property do
     json.actualLoan @property.actual_loan
     json.actualMonthlyPayment @property.actual_monthly_payment
   end
-  json.imageUrl @property.image_url
+  json.imageUrl @property.image_url || ''
   json.html @property.html || ''
   json.notes @property.notes || ''
   json.dateAdded @property.date_added&.strftime('%-m/%-d')

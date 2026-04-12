@@ -270,18 +270,30 @@ export default class PropertyDetails extends React.Component {
       <div className="handy-component">
         <div className="white-box">
           <div style={{ display: "flex", gap: 20, marginBottom: 20 }}>
-            {property.imageUrl && (
-              <div
-                style={{
-                  flex: 0.85,
-                  minHeight: 450,
-                  backgroundImage: `url(${property.imageUrl})`,
-                  backgroundSize: "cover",
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "center",
-                }}
-              />
-            )}
+            <div
+              style={{
+                flex: 0.85,
+                minHeight: 450,
+                ...(property.imageUrl
+                  ? {
+                      backgroundImage: `url(${property.imageUrl})`,
+                      backgroundSize: "cover",
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "center",
+                    }
+                  : {
+                      background: "#e0e0e0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#888",
+                      fontSize: 16,
+                      fontFamily: "Helvetica Neue",
+                    }),
+              }}
+            >
+              {!property.imageUrl && "Image Missing"}
+            </div>
             <div
               style={{
                 flex: 0.85,
