@@ -11,6 +11,9 @@ export default class TaskIndexItem extends React.Component {
     this.inputRef = React.createRef();
     this.state = {
       editing: false,
+      editingText: null,
+      saving: false,
+      savedText: null,
       task: this.props.task,
       subtasks: this.props.task.subtasks || [],
       showColorPicker: false,
@@ -26,9 +29,20 @@ export default class TaskIndexItem extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState(
-      {
-        task: nextProps.task,
-        subtasks: nextProps.task.subtasks || [],
+      (prevState) => {
+        if (prevState.saving) {
+          const confirmed = nextProps.task.text === prevState.savedText;
+          return {
+            task: confirmed ? nextProps.task : { ...nextProps.task, text: prevState.task.text },
+            subtasks: nextProps.task.subtasks || [],
+            saving: !confirmed,
+            savedText: confirmed ? null : prevState.savedText,
+          };
+        }
+        return {
+          task: nextProps.task,
+          subtasks: nextProps.task.subtasks || [],
+        };
       },
       () => {
         this.attachDragHandler();
@@ -81,6 +95,7 @@ export default class TaskIndexItem extends React.Component {
         this.setState(
           {
             editing: true,
+            editingText: this.state.task.text,
           },
           () => {
             this.inputRef.current.focus();
@@ -91,20 +106,28 @@ export default class TaskIndexItem extends React.Component {
   }
 
   changeText(e) {
-    var task = this.state.task;
-    task.text = e.target.value;
-    this.setState({
-      task,
-    });
+    this.setState({ editingText: e.target.value });
+  }
+
+  handleKeyDown(e) {
+    if (e.key === "ArrowRight" && e.shiftKey) {
+      e.preventDefault();
+      const input = e.target;
+      const { selectionStart, selectionEnd, value } = input;
+      const newText = value.slice(0, selectionStart) + "→" + value.slice(selectionEnd);
+      this.setState({ editingText: newText }, () => {
+        input.setSelectionRange(selectionStart + 1, selectionStart + 1);
+      });
+    }
   }
 
   clickEnter(e) {
     if (e.key == "Enter") {
       e.target.parentElement.children[0].classList.add("handle");
-      this.setState({
-        editing: false,
-      });
-      this.props.updateTask(this.state.task, true);
+      const text = this.state.editingText;
+      const task = { ...this.state.task, text };
+      this.setState({ editing: false, editingText: null, task, saving: true, savedText: text });
+      this.props.updateTask(task, true);
     }
   }
 
@@ -218,10 +241,10 @@ export default class TaskIndexItem extends React.Component {
 
   formatTaskText() {
     const { debug, debugPositions } = this.props;
-    const { task, subtasks, editing } = this.state;
+    const { task, subtasks, editing, editingText } = this.state;
     const { id, text, duplicateId, position } = task;
     if (editing) {
-      return text;
+      return editingText;
     }
     let alteredText = text;
     if (debug) {
@@ -432,6 +455,7 @@ export default class TaskIndexItem extends React.Component {
             <input
               value={this.formatTaskText.call(this)}
               onChange={this.changeText.bind(this)}
+              onKeyDown={this.handleKeyDown.bind(this)}
               onKeyPress={this.clickEnter.bind(this)}
               ref={this.inputRef}
             />
