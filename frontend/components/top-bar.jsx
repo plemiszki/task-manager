@@ -13,6 +13,7 @@ import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import LocalGroceryStoreIcon from "@mui/icons-material/LocalGroceryStore";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ConfirmModal from "./confirm-modal.jsx";
 import NavIconButton from "./nav-icon-button.jsx";
 
@@ -96,19 +97,23 @@ export default class TopBar extends React.Component {
     const { pathname } = window.location;
     let pageTitle = pageTitles[pathname] || "";
     let backPath = null;
+    let breadcrumbs = null;
     if (!pageTitle) {
       if (/^\/recurring_tasks\/\d+/.test(pathname)) {
-        pageTitle = "Edit Recurring Task";
-        backPath = "/recurring_tasks";
-      } else if (/^\/future_tasks\/\d+/.test(pathname)) {
-        pageTitle = "Edit Future Task";
-        backPath = "/future_tasks";
+        breadcrumbs = [
+          { label: "Recurring Tasks", href: "/recurring_tasks" },
+          { label: "Edit" },
+        ];
       } else if (/^\/recipes\/\d+/.test(pathname)) {
-        pageTitle = "Edit Recipe";
-        backPath = "/recipes";
+        breadcrumbs = [
+          { label: "Recipes", href: "/recipes" },
+          { label: "Edit" },
+        ];
       } else if (/^\/properties\/\d+/.test(pathname)) {
-        pageTitle = "Edit Property";
-        backPath = "/properties";
+        breadcrumbs = [
+          { label: "Properties", href: "/properties" },
+          { label: "Edit" },
+        ];
       }
     }
     return (
@@ -134,24 +139,73 @@ export default class TopBar extends React.Component {
                       marginRight: "auto",
                     }}
                   >
-                    {backPath && (
-                      <a href={backPath} style={{ display: "inline-flex" }}>
-                        <ArrowBackIcon
-                          style={{ fontSize: 22, color: "#2c2f33" }}
-                        />
-                      </a>
+                    {breadcrumbs ? (
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 4,
+                        }}
+                      >
+                        {breadcrumbs.map((crumb, index) => (
+                          <React.Fragment key={index}>
+                            {index > 0 && (
+                              <ChevronRightIcon
+                                style={{ fontSize: 20, color: "#2c2f33" }}
+                              />
+                            )}
+                            {crumb.href ? (
+                              <a
+                                href={crumb.href}
+                                style={{
+                                  fontFamily: "Helvetica Neue",
+                                  fontSize: 22,
+                                  color: "#2c2f33",
+                                  letterSpacing: "1.08px",
+                                  fontWeight: 500,
+                                  textDecoration: "none",
+                                }}
+                              >
+                                {crumb.label}
+                              </a>
+                            ) : (
+                              <span
+                                style={{
+                                  fontFamily: "Helvetica Neue",
+                                  fontSize: 22,
+                                  color: "#2c2f33",
+                                  letterSpacing: "1.08px",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                {crumb.label}
+                              </span>
+                            )}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    ) : (
+                      <>
+                        {backPath && (
+                          <a href={backPath} style={{ display: "inline-flex" }}>
+                            <ArrowBackIcon
+                              style={{ fontSize: 22, color: "#2c2f33" }}
+                            />
+                          </a>
+                        )}
+                        <span
+                          style={{
+                            fontFamily: "Helvetica Neue",
+                            fontSize: 22,
+                            color: "#2c2f33",
+                            letterSpacing: "1.08px",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {pageTitle}
+                        </span>
+                      </>
                     )}
-                    <span
-                      style={{
-                        fontFamily: "Helvetica Neue",
-                        fontSize: 22,
-                        color: "#2c2f33",
-                        letterSpacing: "1.08px",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {pageTitle}
-                    </span>
                   </div>
                   <NavIconButton
                     href="/"
