@@ -268,6 +268,9 @@ export default class PropertyDetails extends React.Component {
       interestRate,
       totalCarryingCosts,
       piBudget,
+      piPayment,
+      canAffordPi,
+      piRemainder,
       downPayment,
       closingCosts,
       cashToClose,
@@ -333,24 +336,38 @@ export default class PropertyDetails extends React.Component {
                 </HoverableField>
               </div>
               <div style={cardStyle("white")}>
-                {!!property.taxes && (
-                  <div>
-                    <strong>Taxes:</strong> {property.taxesFormatted}
-                  </div>
-                )}
-                {!!property.hoaFees && (
-                  <div>
-                    <strong>HOA Fees:</strong> {property.hoaFeesFormatted}
-                  </div>
-                )}
                 {(!!property.taxes || !!property.hoaFees) && (
                   <div>
                     <strong>Total Carrying Costs:</strong> ${totalCarryingCosts?.toLocaleString()}
                   </div>
                 )}
+                {!!property.taxes && (
+                  <div style={{ paddingLeft: 12, fontSize: 12 }}>
+                    <strong>Taxes:</strong> {property.taxesFormatted}
+                  </div>
+                )}
+                {!!property.hoaFees && (
+                  <div style={{ paddingLeft: 12, fontSize: 12 }}>
+                    <strong>HOA Fees:</strong> {property.hoaFeesFormatted}
+                  </div>
+                )}
                 {(!!property.taxes || !!property.hoaFees) && !!monthlyPayment && (
                   <div>
                     <strong>P&amp;I Budget:</strong> ${piBudget?.toLocaleString()}
+                  </div>
+                )}
+                {piPayment != null && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <strong>P&amp;I:</strong>&nbsp;${piPayment.toLocaleString()}
+                    {canAffordPi
+                      ? <CheckCircleIcon style={{ fontSize: 16, color: "green", marginLeft: 2 }} />
+                      : <CancelIcon style={{ fontSize: 16, color: "red", marginLeft: 2 }} />
+                    }
+                  </div>
+                )}
+                {piRemainder != null && (
+                  <div style={{ color: "green" }}>
+                    <strong>Remainder:</strong> ${piRemainder.toLocaleString()}
                   </div>
                 )}
               </div>

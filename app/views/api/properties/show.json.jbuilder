@@ -24,6 +24,9 @@ json.property do
   json.interestRate Property.interest_rate
   json.totalCarryingCosts @property.total_carrying_costs
   json.piBudget @property.pi_budget
+  json.piPayment @property.pi_payment
+  json.canAffordPi @property.can_afford_pi?
+  json.piRemainder @property.pi_remainder
   json.downPayment @property.down_payment
   json.closingCosts Property::CLOSING_COSTS
   json.cashToClose @property.cash_to_close

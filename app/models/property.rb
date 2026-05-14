@@ -71,6 +71,24 @@ class Property < ActiveRecord::Base
     cash_to_close - self.class.amount_saved
   end
 
+  def pi_payment
+    return nil unless price.present?
+    loan = price - down_payment
+    monthly_rate = self.class.interest_rate / 12
+    (loan * monthly_rate * ((1 + monthly_rate)**LOAN_TERM_MONTHS) /
+      (((1 + monthly_rate)**LOAN_TERM_MONTHS) - 1)).round
+  end
+
+  def can_afford_pi?
+    return false unless price.present?
+    pi_payment <= pi_budget
+  end
+
+  def pi_remainder
+    return nil unless can_afford_pi?
+    pi_budget - pi_payment
+  end
+
   def adjusted_monthly_payment
     (self.class.monthly_payment - total_carrying_costs).round
   end
