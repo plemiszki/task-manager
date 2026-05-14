@@ -28,7 +28,7 @@ json.property do
   json.piBudget @property.pi_budget
   json.piPayment @property.pi_payment
   json.canAffordPi @property.can_afford_pi?
-  json.piRemainder @property.pi_remainder
+  json.piRemainder @property.pi_remainder || 0
   json.downPayment @property.down_payment
   json.closingCosts @property.closing_costs
   json.closingCostsSet @property.closing_costs_set?
