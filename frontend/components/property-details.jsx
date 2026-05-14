@@ -86,8 +86,7 @@ const CURRENCY_FIELDS = ["price", "taxes", "hoaFees"];
 function normalizeFieldValue(key, v) {
   if (CURRENCY_FIELDS.includes(key))
     return String(parseFloat(String(v ?? "").replace(/[$,]/g, "")) || 0);
-  if (key === "area")
-    return String(v ?? "").replace(/,/g, "");
+  if (key === "area") return String(v ?? "").replace(/,/g, "");
   return String(v ?? "");
 }
 
@@ -105,7 +104,16 @@ function cardStyle(background, marginBottom = 8) {
   };
 }
 
-function HoverableField({ fieldKey, hoveredField, onHover, onEdit, onClear, iconSize = 14, style, children }) {
+function HoverableField({
+  fieldKey,
+  hoveredField,
+  onHover,
+  onEdit,
+  onClear,
+  iconSize = 14,
+  style,
+  children,
+}) {
   return (
     <div
       style={{ display: "flex", alignItems: "center", gap: 6, ...style }}
@@ -228,9 +236,10 @@ export default class PropertyDetails extends React.Component {
 
   openEditModal(fieldKey) {
     const { property } = this.state;
-    const editValue = fieldKey === "interestRate"
-      ? (property.interestRate * 100).toFixed(2)
-      : String(property[fieldKey] ?? "");
+    const editValue =
+      fieldKey === "interestRate"
+        ? (property.interestRate * 100).toFixed(2)
+        : String(property[fieldKey] ?? "");
     this.setState({ editModalOpen: true, editField: fieldKey, editValue });
   }
 
@@ -240,28 +249,35 @@ export default class PropertyDetails extends React.Component {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content,
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')
+          ?.content,
       },
       body: JSON.stringify({ field, property_id: property.id }),
     }).then(() => {
       fetchEntity().then((response) => {
-        this.setState({ property: response.property, propertySaved: deepCopy(response.property) });
+        this.setState({
+          property: response.property,
+          propertySaved: deepCopy(response.property),
+        });
       });
     });
   }
 
   submitConfigEdit() {
     const { editField, editValue, property } = this.state;
-    const value = editField === "interestRate"
-      ? parseFloat(editValue) / 100
-      : parseFloat(editValue);
+    const value =
+      editField === "interestRate"
+        ? parseFloat(editValue) / 100
+        : parseFloat(editValue);
     const body = { field: editField, value };
-    if (editField === "ourOffer" || editField === "closingCosts") body.property_id = property.id;
+    if (editField === "ourOffer" || editField === "closingCosts")
+      body.property_id = property.id;
     fetch("/api/property_config", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content,
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')
+          ?.content,
       },
       body: JSON.stringify(body),
     }).then(() => {
@@ -284,7 +300,8 @@ export default class PropertyDetails extends React.Component {
   }
 
   render() {
-    const { spinner, justSaved, changesToSave, property, hoveredField } = this.state;
+    const { spinner, justSaved, changesToSave, property, hoveredField } =
+      this.state;
     const {
       adjustedMonthlyPayment,
       maxLoan,
@@ -370,7 +387,8 @@ export default class PropertyDetails extends React.Component {
               <div style={cardStyle("white")}>
                 {(!!property.taxes || !!property.hoaFees) && (
                   <div>
-                    <strong>Total Carrying Costs:</strong> ${totalCarryingCosts?.toLocaleString()}
+                    <strong>Total Carrying Costs:</strong> $
+                    {totalCarryingCosts?.toLocaleString()}
                   </div>
                 )}
                 {!!property.taxes && (
@@ -383,21 +401,30 @@ export default class PropertyDetails extends React.Component {
                     <strong>HOA Fees:</strong> {property.hoaFeesFormatted}
                   </div>
                 )}
-                {(!!property.taxes || !!property.hoaFees) && !!monthlyPayment && (
-                  <div>
-                    <strong>P&amp;I Budget:</strong> ${piBudget?.toLocaleString()}
-                  </div>
-                )}
+                {(!!property.taxes || !!property.hoaFees) &&
+                  !!monthlyPayment && (
+                    <div>
+                      <strong>P&amp;I Budget:</strong> $
+                      {piBudget?.toLocaleString()}
+                    </div>
+                  )}
                 {piPayment != null && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 2 }}
+                  >
                     <strong>P&amp;I:</strong>&nbsp;${piPayment.toLocaleString()}
-                    {canAffordPi
-                      ? <CheckCircleIcon style={{ fontSize: 16, color: "green", marginLeft: 2 }} />
-                      : <CancelIcon style={{ fontSize: 16, color: "red", marginLeft: 2 }} />
-                    }
+                    {canAffordPi ? (
+                      <CheckCircleIcon
+                        style={{ fontSize: 16, color: "green", marginLeft: 2 }}
+                      />
+                    ) : (
+                      <CancelIcon
+                        style={{ fontSize: 16, color: "red", marginLeft: 2 }}
+                      />
+                    )}
                   </div>
                 )}
-                {piRemainder != null && (
+                {!!piRemainder && (
                   <div style={{ color: "green" }}>
                     <strong>Remainder:</strong> ${piRemainder.toLocaleString()}
                   </div>
@@ -412,18 +439,24 @@ export default class PropertyDetails extends React.Component {
                   hoveredField={hoveredField}
                   onHover={setHovered}
                   onEdit={() => this.openEditModal("ourOffer")}
-                  onClear={ourOfferSet ? () => this.clearPropertyField("ourOffer") : undefined}
+                  onClear={
+                    ourOfferSet
+                      ? () => this.clearPropertyField("ourOffer")
+                      : undefined
+                  }
                 >
                   <strong>Our Offer:</strong> ${ourOffer?.toLocaleString()}
                 </HoverableField>
                 {cashToClose != null && (
                   <div>
-                    <strong>Cash to Close:</strong> ${cashToClose.toLocaleString()}
+                    <strong>Cash to Close:</strong> $
+                    {cashToClose.toLocaleString()}
                   </div>
                 )}
                 {downPayment != null && (
                   <div style={{ paddingLeft: 12, fontSize: 12 }}>
-                    <strong>Down Payment:</strong> ${downPayment.toLocaleString()}
+                    <strong>Down Payment:</strong> $
+                    {downPayment.toLocaleString()}
                   </div>
                 )}
                 {closingCosts != null && (
@@ -432,11 +465,16 @@ export default class PropertyDetails extends React.Component {
                     hoveredField={hoveredField}
                     onHover={setHovered}
                     onEdit={() => this.openEditModal("closingCosts")}
-                    onClear={closingCostsSet ? () => this.clearPropertyField("closingCosts") : undefined}
+                    onClear={
+                      closingCostsSet
+                        ? () => this.clearPropertyField("closingCosts")
+                        : undefined
+                    }
                     iconSize={11}
                     style={{ paddingLeft: 12, fontSize: 12 }}
                   >
-                    <strong>Closing Costs:</strong> ${closingCosts.toLocaleString()}
+                    <strong>Closing Costs:</strong> $
+                    {closingCosts.toLocaleString()}
                   </HoverableField>
                 )}
                 <HoverableField
@@ -448,16 +486,19 @@ export default class PropertyDetails extends React.Component {
                   <strong>Amount Saved:</strong> $
                   {amountSaved?.toLocaleString()}
                   {canAffordClose && (
-                    <CheckCircleIcon style={{ fontSize: 16, color: "green", marginLeft: 2 }} />
+                    <CheckCircleIcon
+                      style={{ fontSize: 16, color: "green", marginLeft: 2 }}
+                    />
                   )}
                   {!canAffordClose && amountSaved != null && (
-                    <CancelIcon style={{ fontSize: 16, color: "red", marginLeft: 2 }} />
+                    <CancelIcon
+                      style={{ fontSize: 16, color: "red", marginLeft: 2 }}
+                    />
                   )}
                 </HoverableField>
                 {canAffordClose && remainder != null && (
                   <div style={{ color: "green" }}>
-                    <strong>Remainder:</strong> $
-                    {remainder.toLocaleString()}
+                    <strong>Remainder:</strong> ${remainder.toLocaleString()}
                   </div>
                 )}
                 {!!amountNeededForClose && (
@@ -627,7 +668,8 @@ export default class PropertyDetails extends React.Component {
                           .replace(/^./, (c) => c.toUpperCase());
                       const changed =
                         propertySaved[key] != null &&
-                        normalizeFieldValue(key, propertySaved[key]) !== normalizeFieldValue(key, value);
+                        normalizeFieldValue(key, propertySaved[key]) !==
+                          normalizeFieldValue(key, value);
                       const isLast = index === rows.length - 1;
                       const displayValue = changed ? (
                         <span>
