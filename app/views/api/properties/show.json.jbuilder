@@ -30,7 +30,8 @@ json.property do
   json.canAffordPi @property.can_afford_pi?
   json.piRemainder @property.pi_remainder
   json.downPayment @property.down_payment
-  json.closingCosts Property::CLOSING_COSTS
+  json.closingCosts @property.closing_costs
+  json.closingCostsSet @property.closing_costs_set?
   json.cashToClose @property.cash_to_close
   json.canAffordClose @property.can_afford_close?
   json.remainder @property.remainder || 0

@@ -78,6 +78,7 @@ const CONFIG_FIELD_LABELS = {
   interestRate: "Interest Rate",
   amountSaved: "Amount Saved",
   ourOffer: "Our Offer",
+  closingCosts: "Closing Costs",
 };
 
 const CURRENCY_FIELDS = ["price", "taxes", "hoaFees"];
@@ -104,7 +105,7 @@ function cardStyle(background, marginBottom = 8) {
   };
 }
 
-function HoverableField({ fieldKey, hoveredField, onHover, onEdit, onClear, style, children }) {
+function HoverableField({ fieldKey, hoveredField, onHover, onEdit, onClear, iconSize = 14, style, children }) {
   return (
     <div
       style={{ display: "flex", alignItems: "center", gap: 6, ...style }}
@@ -115,12 +116,12 @@ function HoverableField({ fieldKey, hoveredField, onHover, onEdit, onClear, styl
       {hoveredField === fieldKey && (
         <>
           <EditIcon
-            style={{ fontSize: 14, cursor: "pointer", color: "#555" }}
+            style={{ fontSize: iconSize, cursor: "pointer", color: "#555" }}
             onClick={onEdit}
           />
           {onClear && (
             <CloseIcon
-              style={{ fontSize: 14, cursor: "pointer", color: "#555" }}
+              style={{ fontSize: iconSize, cursor: "pointer", color: "#555" }}
               onClick={onClear}
             />
           )}
@@ -233,7 +234,7 @@ export default class PropertyDetails extends React.Component {
     this.setState({ editModalOpen: true, editField: fieldKey, editValue });
   }
 
-  clearOurOffer() {
+  clearPropertyField(field) {
     const { property } = this.state;
     fetch("/api/property_config", {
       method: "DELETE",
@@ -241,7 +242,7 @@ export default class PropertyDetails extends React.Component {
         "Content-Type": "application/json",
         "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content,
       },
-      body: JSON.stringify({ field: "ourOffer", property_id: property.id }),
+      body: JSON.stringify({ field, property_id: property.id }),
     }).then(() => {
       fetchEntity().then((response) => {
         this.setState({ property: response.property, propertySaved: deepCopy(response.property) });
@@ -255,7 +256,7 @@ export default class PropertyDetails extends React.Component {
       ? parseFloat(editValue) / 100
       : parseFloat(editValue);
     const body = { field: editField, value };
-    if (editField === "ourOffer") body.property_id = property.id;
+    if (editField === "ourOffer" || editField === "closingCosts") body.property_id = property.id;
     fetch("/api/property_config", {
       method: "PATCH",
       headers: {
@@ -296,6 +297,7 @@ export default class PropertyDetails extends React.Component {
       interestRate,
       ourOffer,
       ourOfferSet,
+      closingCostsSet,
       totalCarryingCosts,
       piBudget,
       piPayment,
@@ -410,7 +412,7 @@ export default class PropertyDetails extends React.Component {
                   hoveredField={hoveredField}
                   onHover={setHovered}
                   onEdit={() => this.openEditModal("ourOffer")}
-                  onClear={ourOfferSet ? () => this.clearOurOffer() : undefined}
+                  onClear={ourOfferSet ? () => this.clearPropertyField("ourOffer") : undefined}
                 >
                   <strong>Our Offer:</strong> ${ourOffer?.toLocaleString()}
                 </HoverableField>
@@ -425,9 +427,17 @@ export default class PropertyDetails extends React.Component {
                   </div>
                 )}
                 {closingCosts != null && (
-                  <div style={{ paddingLeft: 12, fontSize: 12 }}>
+                  <HoverableField
+                    fieldKey="closingCosts"
+                    hoveredField={hoveredField}
+                    onHover={setHovered}
+                    onEdit={() => this.openEditModal("closingCosts")}
+                    onClear={closingCostsSet ? () => this.clearPropertyField("closingCosts") : undefined}
+                    iconSize={11}
+                    style={{ paddingLeft: 12, fontSize: 12 }}
+                  >
                     <strong>Closing Costs:</strong> ${closingCosts.toLocaleString()}
-                  </div>
+                  </HoverableField>
                 )}
                 <HoverableField
                   fieldKey="amountSaved"

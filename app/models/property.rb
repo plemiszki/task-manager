@@ -35,7 +35,7 @@ class Property < ActiveRecord::Base
   validates :status, inclusion: { in: STATUSES }
   validates :property_type, inclusion: { in: PROPERTY_TYPES }
 
-  CLOSING_COSTS = 100_000
+  DEFAULT_CLOSING_COSTS = 100_000
   DOWN_PAYMENT_RATE = 0.20
 
   def our_offer
@@ -44,6 +44,14 @@ class Property < ActiveRecord::Base
 
   def our_offer_set?
     self.class.redis.exists?("property:#{id}:our_offer")
+  end
+
+  def closing_costs
+    self.class.redis.get("property:#{id}:closing_costs")&.to_i || DEFAULT_CLOSING_COSTS
+  end
+
+  def closing_costs_set?
+    self.class.redis.exists?("property:#{id}:closing_costs")
   end
 
   def total_carrying_costs
@@ -61,7 +69,7 @@ class Property < ActiveRecord::Base
 
   def cash_to_close
     return nil unless price.present?
-    down_payment + CLOSING_COSTS
+    down_payment + closing_costs
   end
 
   def can_afford_close?

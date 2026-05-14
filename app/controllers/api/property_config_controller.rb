@@ -11,7 +11,8 @@ class Api::PropertyConfigController < ActionController::Base
   }.freeze
 
   PROPERTY_FIELD_KEYS = {
-    'ourOffer' => ->(id) { "property:#{id}:our_offer" },
+    'ourOffer'     => ->(id) { "property:#{id}:our_offer" },
+    'closingCosts' => ->(id) { "property:#{id}:closing_costs" },
   }.freeze
 
   def destroy
