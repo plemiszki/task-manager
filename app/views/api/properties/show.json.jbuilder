@@ -22,14 +22,14 @@ json.property do
   json.amountSaved Property.amount_saved
   json.monthlyPayment Property.monthly_payment
   json.interestRate Property.interest_rate
-  json.adjustedMonthlyPayment @property.adjusted_monthly_payment
-  json.maxLoan @property.max_loan
-  json.amountNeeded @property.amount_needed
-  json.canAfford @property.can_afford?
-  if @property.can_afford?
-    json.actualLoan @property.actual_loan
-    json.actualMonthlyPayment @property.actual_monthly_payment
-  end
+  json.totalCarryingCosts @property.total_carrying_costs
+  json.piBudget @property.pi_budget
+  json.downPayment @property.down_payment
+  json.closingCosts Property::CLOSING_COSTS
+  json.cashToClose @property.cash_to_close
+  json.canAffordClose @property.can_afford_close?
+  json.remainder @property.remainder || 0
+  json.amountNeededForClose @property.amount_needed_for_close
   json.imageUrl @property.image_url || ''
   json.html @property.html || ''
   json.notes @property.notes || ''

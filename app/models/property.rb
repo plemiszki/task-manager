@@ -35,8 +35,44 @@ class Property < ActiveRecord::Base
   validates :status, inclusion: { in: STATUSES }
   validates :property_type, inclusion: { in: PROPERTY_TYPES }
 
+  CLOSING_COSTS = 100_000
+  DOWN_PAYMENT_RATE = 0.20
+
+  def total_carrying_costs
+    (taxes || 0) + (hoa_fees || 0)
+  end
+
+  def pi_budget
+    self.class.monthly_payment - total_carrying_costs
+  end
+
+  def down_payment
+    return nil unless price.present?
+    (price * DOWN_PAYMENT_RATE).round
+  end
+
+  def cash_to_close
+    return nil unless price.present?
+    down_payment + CLOSING_COSTS
+  end
+
+  def can_afford_close?
+    return false unless price.present?
+    self.class.amount_saved >= cash_to_close
+  end
+
+  def remainder
+    return nil unless can_afford_close?
+    self.class.amount_saved - cash_to_close
+  end
+
+  def amount_needed_for_close
+    return nil if !price.present? || can_afford_close?
+    cash_to_close - self.class.amount_saved
+  end
+
   def adjusted_monthly_payment
-    (self.class.monthly_payment - (taxes || 0) - (hoa_fees || 0)).round
+    (self.class.monthly_payment - total_carrying_costs).round
   end
 
   def max_loan

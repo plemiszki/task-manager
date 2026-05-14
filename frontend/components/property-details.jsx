@@ -3,6 +3,8 @@ import Modal from "react-modal";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 import ConfirmModal from "./confirm-modal.jsx";
 import {
   Details,
@@ -71,7 +73,7 @@ const EDIT_MODAL_STYLES = {
 };
 
 const CONFIG_FIELD_LABELS = {
-  monthlyPayment: "Monthly Payment",
+  monthlyPayment: "Monthly Budget",
   interestRate: "Interest Rate",
   amountSaved: "Amount Saved",
 };
@@ -264,6 +266,14 @@ export default class PropertyDetails extends React.Component {
       amountSaved,
       monthlyPayment,
       interestRate,
+      totalCarryingCosts,
+      piBudget,
+      downPayment,
+      closingCosts,
+      cashToClose,
+      canAffordClose,
+      remainder,
+      amountNeededForClose,
     } = property;
     const setHovered = (field) => this.setState({ hoveredField: field });
     return (
@@ -308,9 +318,8 @@ export default class PropertyDetails extends React.Component {
                   hoveredField={hoveredField}
                   onHover={setHovered}
                   onEdit={() => this.openEditModal("monthlyPayment")}
-                  style={{ textDecoration: canAfford ? "line-through" : "none" }}
                 >
-                  <strong>Monthly Payment:</strong> $
+                  <strong>Monthly Budget:</strong> $
                   {monthlyPayment?.toLocaleString()}
                 </HoverableField>
                 <HoverableField
@@ -334,22 +343,34 @@ export default class PropertyDetails extends React.Component {
                     <strong>HOA Fees:</strong> {property.hoaFeesFormatted}
                   </div>
                 )}
+                {(!!property.taxes || !!property.hoaFees) && (
+                  <div>
+                    <strong>Total Carrying Costs:</strong> ${totalCarryingCosts?.toLocaleString()}
+                  </div>
+                )}
+                {(!!property.taxes || !!property.hoaFees) && !!monthlyPayment && (
+                  <div>
+                    <strong>P&amp;I Budget:</strong> ${piBudget?.toLocaleString()}
+                  </div>
+                )}
               </div>
               <div style={cardStyle("#e8f4fd")}>
                 <div>
-                  <strong>Adjusted Monthly Payment:</strong> $
-                  {adjustedMonthlyPayment?.toLocaleString()}
+                  <strong>Listed Price:</strong> {property.priceFormatted}
                 </div>
-                <div>
-                  <strong>Max Loan:</strong> ${maxLoan?.toLocaleString()}
-                </div>
-                <div>
-                  <strong>Price:</strong> {property.priceFormatted}
-                </div>
-                {property.price - maxLoan > 0 && (
+                {cashToClose != null && (
                   <div>
-                    <strong>Required Deposit:</strong> $
-                    {(property.price - maxLoan).toLocaleString()}
+                    <strong>Cash to Close:</strong> ${cashToClose.toLocaleString()}
+                  </div>
+                )}
+                {downPayment != null && (
+                  <div style={{ paddingLeft: 12, fontSize: 12 }}>
+                    <strong>Down Payment:</strong> ${downPayment.toLocaleString()}
+                  </div>
+                )}
+                {closingCosts != null && (
+                  <div style={{ paddingLeft: 12, fontSize: 12 }}>
+                    <strong>Closing Costs:</strong> ${closingCosts.toLocaleString()}
                   </div>
                 )}
                 <HoverableField
@@ -360,24 +381,24 @@ export default class PropertyDetails extends React.Component {
                 >
                   <strong>Amount Saved:</strong> $
                   {amountSaved?.toLocaleString()}
+                  {canAffordClose && (
+                    <CheckCircleIcon style={{ fontSize: 16, color: "green", marginLeft: 2 }} />
+                  )}
+                  {!canAffordClose && amountSaved != null && (
+                    <CancelIcon style={{ fontSize: 16, color: "red", marginLeft: 2 }} />
+                  )}
                 </HoverableField>
-                {amountNeeded > 0 && (
-                  <div style={{ color: "red" }}>
-                    <strong>Amount Needed:</strong> $
-                    {amountNeeded.toLocaleString()}
+                {canAffordClose && remainder != null && (
+                  <div style={{ color: "green" }}>
+                    <strong>Remainder:</strong> $
+                    {remainder.toLocaleString()}
                   </div>
                 )}
-                {canAfford && (
-                  <>
-                    <div>
-                      <strong>Loan Amount:</strong> $
-                      {actualLoan?.toLocaleString()}
-                    </div>
-                    <div style={{ color: "green" }}>
-                      <strong>Monthly Payment:</strong> $
-                      {actualMonthlyPayment?.toLocaleString()}
-                    </div>
-                  </>
+                {amountNeededForClose != null && (
+                  <div style={{ color: "red" }}>
+                    <strong>Amount Needed:</strong> $
+                    {amountNeededForClose.toLocaleString()}
+                  </div>
                 )}
               </div>
               <div style={cardStyle(undefined, null)}>
