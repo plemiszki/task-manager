@@ -35,14 +35,53 @@ const fetchProperties = (setProperties, setSpinner) => {
     });
 };
 
+const DEFAULT_SORT_DIR = {
+  dateAdded: "desc",
+};
+
 export default function PropertiesIndex() {
   const [spinner, setSpinner] = useState(true);
   const [properties, setProperties] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [sortColumn, setSortColumn] = useState("dateAdded");
+  const [sortDirection, setSortDirection] = useState("desc");
 
   useEffect(() => {
     fetchProperties(setProperties, setSpinner);
   }, []);
+
+  const handleSort = (column) => {
+    if (column === sortColumn) {
+      setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortColumn(column);
+      setSortDirection(DEFAULT_SORT_DIR[column] || "asc");
+    }
+  };
+
+  const sortedProperties = [...properties].sort((a, b) => {
+    let aVal = a[sortColumn];
+    let bVal = b[sortColumn];
+    if (aVal == null && bVal == null) return 0;
+    if (aVal == null) return 1;
+    if (bVal == null) return -1;
+    if (sortColumn === "dateAdded") {
+      aVal = new Date(aVal);
+      bVal = new Date(bVal);
+    } else if (sortColumn === "monthlyPayment" || sortColumn === "amountNeeded") {
+      aVal = Number(aVal);
+      bVal = Number(bVal);
+    } else {
+      aVal = String(aVal).toLowerCase();
+      bVal = String(bVal).toLowerCase();
+    }
+    if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+    if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  const thStyle = (column) =>
+    ({ cursor: "pointer", userSelect: "none", color: sortColumn === column ? "#6f42c1" : undefined });
 
   return (
     <div className="handy-component container widened-container index-component">
@@ -52,13 +91,13 @@ export default function PropertiesIndex() {
             <table>
               <thead>
                 <tr>
-                  <th>Label</th>
-                  <th>Neighborhood</th>
-                  <th>Type</th>
-                  <th>Zoned School</th>
-                  <th>Monthly Payment</th>
-                  <th>Amount Needed</th>
-                  <th>Date Added</th>
+                  <th style={thStyle("label")} onClick={() => handleSort("label")}>Label</th>
+                  <th style={thStyle("neighborhood")} onClick={() => handleSort("neighborhood")}>Neighborhood</th>
+                  <th style={thStyle("propertyType")} onClick={() => handleSort("propertyType")}>Type</th>
+                  <th style={thStyle("zonedPrimarySchool")} onClick={() => handleSort("zonedPrimarySchool")}>Zoned School</th>
+                  <th style={thStyle("monthlyPayment")} onClick={() => handleSort("monthlyPayment")}>Monthly Payment</th>
+                  <th style={thStyle("amountNeeded")} onClick={() => handleSort("amountNeeded")}>Amount Needed</th>
+                  <th style={thStyle("dateAdded")} onClick={() => handleSort("dateAdded")}>Date Added</th>
                 </tr>
               </thead>
               <tbody>
@@ -71,7 +110,7 @@ export default function PropertiesIndex() {
                   <td></td>
                   <td></td>
                 </tr>
-                {properties.map((property) => {
+                {sortedProperties.map((property) => {
                   const {
                     id,
                     label,
