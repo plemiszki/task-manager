@@ -61,6 +61,7 @@ Rails.application.routes.draw do
       post :reextract, on: :member
     end
     patch '/property_config' => '/api/property_config#update'
+    delete '/property_config' => '/api/property_config#destroy'
   end
 
 end

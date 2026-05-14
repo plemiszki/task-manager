@@ -38,6 +38,14 @@ class Property < ActiveRecord::Base
   CLOSING_COSTS = 100_000
   DOWN_PAYMENT_RATE = 0.20
 
+  def our_offer
+    self.class.redis.get("property:#{id}:our_offer")&.to_i || price
+  end
+
+  def our_offer_set?
+    self.class.redis.exists?("property:#{id}:our_offer")
+  end
+
   def total_carrying_costs
     (taxes || 0) + (hoa_fees || 0)
   end
@@ -48,7 +56,7 @@ class Property < ActiveRecord::Base
 
   def down_payment
     return nil unless price.present?
-    (price * DOWN_PAYMENT_RATE).round
+    (our_offer * DOWN_PAYMENT_RATE).round
   end
 
   def cash_to_close
@@ -73,7 +81,7 @@ class Property < ActiveRecord::Base
 
   def pi_payment
     return nil unless price.present?
-    loan = price - down_payment
+    loan = our_offer - down_payment
     monthly_rate = self.class.interest_rate / 12
     (loan * monthly_rate * ((1 + monthly_rate)**LOAN_TERM_MONTHS) /
       (((1 + monthly_rate)**LOAN_TERM_MONTHS) - 1)).round

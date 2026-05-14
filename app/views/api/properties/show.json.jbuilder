@@ -22,6 +22,8 @@ json.property do
   json.amountSaved Property.amount_saved
   json.monthlyPayment Property.monthly_payment
   json.interestRate Property.interest_rate
+  json.ourOffer @property.our_offer
+  json.ourOfferSet @property.our_offer_set?
   json.totalCarryingCosts @property.total_carrying_costs
   json.piBudget @property.pi_budget
   json.piPayment @property.pi_payment
@@ -32,7 +34,7 @@ json.property do
   json.cashToClose @property.cash_to_close
   json.canAffordClose @property.can_afford_close?
   json.remainder @property.remainder || 0
-  json.amountNeededForClose @property.amount_needed_for_close
+  json.amountNeededForClose @property.amount_needed_for_close || 0
   json.imageUrl @property.image_url || ''
   json.html @property.html || ''
   json.notes @property.notes || ''

@@ -10,7 +10,26 @@ class Api::PropertyConfigController < ActionController::Base
     'amountSaved'    => 'property:amount_saved',
   }.freeze
 
+  PROPERTY_FIELD_KEYS = {
+    'ourOffer' => ->(id) { "property:#{id}:our_offer" },
+  }.freeze
+
+  def destroy
+    key_fn = PROPERTY_FIELD_KEYS[params[:field]]
+    return render json: { error: 'Invalid field' }, status: :unprocessable_entity unless key_fn
+    return render json: { error: 'Missing property_id' }, status: :unprocessable_entity unless params[:property_id].present?
+
+    redis.del(key_fn.call(params[:property_id]))
+    render json: {}, status: :ok
+  end
+
   def update
+    if PROPERTY_FIELD_KEYS.key?(params[:field])
+      return render json: { error: 'Missing property_id' }, status: :unprocessable_entity unless params[:property_id].present?
+      redis.set(PROPERTY_FIELD_KEYS[params[:field]].call(params[:property_id]), params[:value].to_s)
+      return render json: {}, status: :ok
+    end
+
     redis_key = FIELD_KEYS[params[:field]]
     return render json: { error: 'Invalid field' }, status: :unprocessable_entity unless redis_key
 
