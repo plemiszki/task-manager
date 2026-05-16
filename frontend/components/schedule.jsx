@@ -151,7 +151,12 @@ export default class Schedule extends React.Component {
             now={now}
             selectedBlockIds={selectedBlockIds}
             onBlockShiftClick={(block) => {
-              const next = new Set(selectedBlockIds);
+              const currentWeekday = scheduleBlocks.find(
+                (b) => selectedBlockIds.has(b.id),
+              )?.weekday;
+              const next = currentWeekday !== undefined && currentWeekday !== block.weekday
+                ? new Set()
+                : new Set(selectedBlockIds);
               if (next.has(block.id)) {
                 next.delete(block.id);
               } else {
