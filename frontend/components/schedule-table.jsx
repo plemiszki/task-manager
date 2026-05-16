@@ -84,7 +84,7 @@ export default class ScheduleTable extends React.Component {
   }
 
   render() {
-    const { now, variantViewWeekday, scheduleDayVariants, activeDayVariants } =
+    const { now, variantViewWeekday, scheduleDayVariants, activeDayVariants, selectedBlockIds } =
       this.props;
     const { headerExpanded, hoveredVariantCol } = this.state;
     const currentDayIndex = getCurrentDayIndex();
@@ -304,8 +304,18 @@ export default class ScheduleTable extends React.Component {
                                   durationMinutes <= 15 ? "flex" : "block",
                                 alignItems:
                                   durationMinutes <= 15 ? "center" : undefined,
+                                border: (selectedBlockIds || new Set()).has(block.id)
+                                  ? "2px solid black"
+                                  : "none",
+                                boxSizing: "border-box",
                               }}
-                              onClick={() => this.props.onBlockClick(block)}
+                              onClick={(e) => {
+                                if (e.shiftKey) {
+                                  this.props.onBlockShiftClick(block);
+                                } else {
+                                  this.props.onBlockClick(block);
+                                }
+                              }}
                             >
                               {block.text}
                             </div>

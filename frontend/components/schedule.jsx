@@ -15,6 +15,7 @@ export default class Schedule extends React.Component {
       loading: true,
       scheduleBlocks: [],
       scheduleHeight: 0,
+      selectedBlockIds: new Set(),
       modalOpen: false,
       categoryModalOpen: false,
       dayVariantModalOpen: false,
@@ -97,6 +98,7 @@ export default class Schedule extends React.Component {
       scheduleBlocks,
       scheduleCategories,
       scheduleHeight,
+      selectedBlockIds,
       modalOpen,
       editingBlock,
       newBlockDefaults,
@@ -147,6 +149,16 @@ export default class Schedule extends React.Component {
             scheduleDayVariants={this.state.scheduleDayVariants}
             activeDayVariants={this.state.activeDayVariants}
             now={now}
+            selectedBlockIds={selectedBlockIds}
+            onBlockShiftClick={(block) => {
+              const next = new Set(selectedBlockIds);
+              if (next.has(block.id)) {
+                next.delete(block.id);
+              } else {
+                next.add(block.id);
+              }
+              this.setState({ selectedBlockIds: next });
+            }}
             onBlockClick={(block) =>
               this.setState({ modalOpen: true, editingBlock: block })
             }
