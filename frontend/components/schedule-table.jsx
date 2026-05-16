@@ -299,7 +299,7 @@ export default class ScheduleTable extends React.Component {
                                 overflow: "hidden",
                                 zIndex: 2,
                                 lineHeight: "14px",
-                                cursor: "pointer",
+                                cursor: (selectedBlockIds || new Set()).has(block.id) ? "grab" : "pointer",
                                 display:
                                   durationMinutes <= 15 ? "flex" : "block",
                                 alignItems:
@@ -309,10 +309,22 @@ export default class ScheduleTable extends React.Component {
                                   : "none",
                                 boxSizing: "border-box",
                               }}
+                              onMouseDown={() => {
+                                if ((selectedBlockIds || new Set()).has(block.id)) {
+                                  const style = document.createElement("style");
+                                  style.textContent = "* { cursor: grabbing !important; }";
+                                  document.head.appendChild(style);
+                                  const onMouseUp = () => {
+                                    style.remove();
+                                    document.removeEventListener("mouseup", onMouseUp);
+                                  };
+                                  document.addEventListener("mouseup", onMouseUp);
+                                }
+                              }}
                               onClick={(e) => {
                                 if (e.shiftKey) {
                                   this.props.onBlockShiftClick(block);
-                                } else {
+                                } else if (!(selectedBlockIds || new Set()).has(block.id)) {
                                   this.props.onBlockClick(block);
                                 }
                               }}
