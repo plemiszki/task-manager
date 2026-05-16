@@ -33,7 +33,24 @@ export default class Schedule extends React.Component {
     this.scheduleRef = React.createRef();
   }
 
+  deleteSelectedBlocks() {
+    const { selectedBlockIds, scheduleBlocks } = this.state;
+    this.setState({
+      scheduleBlocks: scheduleBlocks.filter((b) => !selectedBlockIds.has(b.id)),
+      selectedBlockIds: new Set(),
+    });
+    [...selectedBlockIds].forEach((id) =>
+      deleteEntity({ id, directory: "schedule_blocks" }),
+    );
+  }
+
   componentDidMount() {
+    this.handleKeyDown = (e) => {
+      if (e.key === "Backspace" && this.state.selectedBlockIds.size > 0) {
+        this.deleteSelectedBlocks();
+      }
+    };
+    document.addEventListener("keydown", this.handleKeyDown);
     Promise.all([
       sendRequest("/api/schedule_blocks"),
       sendRequest("/api/schedule_categories"),
@@ -63,6 +80,7 @@ export default class Schedule extends React.Component {
 
   componentWillUnmount() {
     clearInterval(this.timer);
+    document.removeEventListener("keydown", this.handleKeyDown);
   }
 
   confirmDeleteVariant() {
@@ -72,7 +90,10 @@ export default class Schedule extends React.Component {
       directory: "schedule_day_variants",
     }).then((response) => {
       const newActiveDayVariants = { ...activeDayVariants };
-      if (newActiveDayVariants[deletingDayVariant.weekday] === deletingDayVariant.id) {
+      if (
+        newActiveDayVariants[deletingDayVariant.weekday] ===
+        deletingDayVariant.id
+      ) {
         newActiveDayVariants[deletingDayVariant.weekday] = null;
       }
       this.setState({
@@ -151,12 +172,13 @@ export default class Schedule extends React.Component {
             now={now}
             selectedBlockIds={selectedBlockIds}
             onBlockShiftClick={(block) => {
-              const currentWeekday = scheduleBlocks.find(
-                (b) => selectedBlockIds.has(b.id),
+              const currentWeekday = scheduleBlocks.find((b) =>
+                selectedBlockIds.has(b.id),
               )?.weekday;
-              const next = currentWeekday !== undefined && currentWeekday !== block.weekday
-                ? new Set()
-                : new Set(selectedBlockIds);
+              const next =
+                currentWeekday !== undefined && currentWeekday !== block.weekday
+                  ? new Set()
+                  : new Set(selectedBlockIds);
               if (next.has(block.id)) {
                 next.delete(block.id);
               } else {
@@ -175,8 +197,12 @@ export default class Schedule extends React.Component {
               })
             }
             variantViewWeekday={this.state.variantViewWeekday}
-            onDayDoubleClick={(weekday) => this.setState({ variantViewWeekday: weekday })}
-            onExitVariantView={() => this.setState({ variantViewWeekday: null })}
+            onDayDoubleClick={(weekday) =>
+              this.setState({ variantViewWeekday: weekday })
+            }
+            onExitVariantView={() =>
+              this.setState({ variantViewWeekday: null })
+            }
             onAddDayVariant={(weekday) =>
               this.setState({
                 dayVariantModalOpen: true,
@@ -237,8 +263,15 @@ export default class Schedule extends React.Component {
               newBlockDefaults: null,
             })
           }
-          onAddCategory={() => this.setState({ categoryModalOpen: true, editingCategory: null })}
-          onEditCategory={(category) => this.setState({ categoryModalOpen: true, editingCategory: category })}
+          onAddCategory={() =>
+            this.setState({ categoryModalOpen: true, editingCategory: null })
+          }
+          onEditCategory={(category) =>
+            this.setState({
+              categoryModalOpen: true,
+              editingCategory: category,
+            })
+          }
         />
         <ScheduleAddBlockModal
           isOpen={modalOpen}
@@ -263,9 +296,18 @@ export default class Schedule extends React.Component {
           isOpen={this.state.dayVariantModalOpen}
           weekday={this.state.dayVariantWeekday}
           editingVariant={this.state.editingDayVariant}
-          onClose={() => this.setState({ dayVariantModalOpen: false, editingDayVariant: null })}
+          onClose={() =>
+            this.setState({
+              dayVariantModalOpen: false,
+              editingDayVariant: null,
+            })
+          }
           onSave={(scheduleDayVariants) =>
-            this.setState({ scheduleDayVariants, dayVariantModalOpen: false, editingDayVariant: null })
+            this.setState({
+              scheduleDayVariants,
+              dayVariantModalOpen: false,
+              editingDayVariant: null,
+            })
           }
         />
         <ConfirmModal
