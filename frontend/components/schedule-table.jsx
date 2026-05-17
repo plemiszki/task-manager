@@ -64,8 +64,12 @@ export default class ScheduleTable extends React.Component {
     document.head.appendChild(style);
     const onMouseUp = () => {
       style.remove();
+      const { draggingOverWeekday } = this.state;
       this.setState({ isDragging: false, draggingOverWeekday: null, draggingFromWeekday: null });
       document.removeEventListener("mouseup", onMouseUp);
+      if (draggingOverWeekday !== null && draggingOverWeekday !== weekday) {
+        this.props.onBlocksDrop(draggingOverWeekday);
+      }
     };
     document.addEventListener("mouseup", onMouseUp);
   }

@@ -32,6 +32,30 @@ class Api::ScheduleBlocksController < ActionController::Base
     render 'index'
   end
 
+  def copy
+    blocks_to_copy = ScheduleBlock.where(id: params[:ids], user_id: current_user.id)
+    target_weekday = params[:weekday]
+    failed_block = nil
+
+    ActiveRecord::Base.transaction do
+      blocks_to_copy.each do |block|
+        duplicate = block.dup
+        duplicate.weekday = target_weekday
+        unless duplicate.save
+          failed_block = duplicate
+          raise ActiveRecord::Rollback
+        end
+      end
+    end
+
+    if failed_block
+      render_errors(failed_block)
+    else
+      @schedule_blocks = ScheduleBlock.where(user_id: current_user.id).order(:weekday, :start_time)
+      render 'index'
+    end
+  end
+
   private
 
   def schedule_block_params

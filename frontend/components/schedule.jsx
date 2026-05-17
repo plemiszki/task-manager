@@ -186,6 +186,18 @@ export default class Schedule extends React.Component {
               }
               this.setState({ selectedBlockIds: next });
             }}
+            onBlocksDrop={(targetWeekday) => {
+              const { selectedBlockIds } = this.state;
+              sendRequest("/api/schedule_blocks/copy", {
+                method: "POST",
+                data: { ids: [...selectedBlockIds], weekday: targetWeekday },
+              }).then((response) => {
+                this.setState({
+                  scheduleBlocks: response.scheduleBlocks,
+                  selectedBlockIds: new Set(),
+                });
+              });
+            }}
             onBlockClick={(block) =>
               this.setState({ modalOpen: true, editingBlock: block })
             }
