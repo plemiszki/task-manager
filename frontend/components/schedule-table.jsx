@@ -54,7 +54,20 @@ const TIME_SLOTS = buildTimeSlots();
 export default class ScheduleTable extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { headerExpanded: false, hoveredVariantCol: null };
+    this.state = { headerExpanded: false, hoveredVariantCol: null, isDragging: false, draggingOverWeekday: null, draggingFromWeekday: null };
+  }
+
+  startDrag(weekday) {
+    this.setState({ isDragging: true, draggingFromWeekday: weekday });
+    const style = document.createElement("style");
+    style.textContent = "* { cursor: grabbing !important; }";
+    document.head.appendChild(style);
+    const onMouseUp = () => {
+      style.remove();
+      this.setState({ isDragging: false, draggingOverWeekday: null, draggingFromWeekday: null });
+      document.removeEventListener("mouseup", onMouseUp);
+    };
+    document.addEventListener("mouseup", onMouseUp);
   }
 
   getVariantLabel(dayIndex) {
@@ -86,7 +99,7 @@ export default class ScheduleTable extends React.Component {
   render() {
     const { now, variantViewWeekday, scheduleDayVariants, activeDayVariants, selectedBlockIds } =
       this.props;
-    const { headerExpanded, hoveredVariantCol } = this.state;
+    const { headerExpanded, hoveredVariantCol, isDragging, draggingOverWeekday, draggingFromWeekday } = this.state;
     const currentDayIndex = getCurrentDayIndex();
     const currentHour = now.getHours();
     const currentMinutes = now.getMinutes();
@@ -186,8 +199,11 @@ export default class ScheduleTable extends React.Component {
                       ...(!inVariantView && col.weekday === currentDayIndex
                         ? { color: "#d9534f", fontWeight: "bold" }
                         : {}),
+                      ...(isDragging && draggingOverWeekday === col.weekday && col.weekday !== draggingFromWeekday
+                        ? { color: "blue" }
+                        : {}),
                     }}
-                    onMouseEnter={() => this.setState({ hoveredVariantCol: col.label })}
+                    onMouseEnter={() => this.setState({ hoveredVariantCol: col.label, ...(isDragging ? { draggingOverWeekday: col.weekday } : {}) })}
                     onMouseLeave={() => this.setState({ hoveredVariantCol: null })}
                   >
                     <div
@@ -256,6 +272,9 @@ export default class ScheduleTable extends React.Component {
                     return (
                       <td
                         key={`${col.label}-${hour}-${minute}`}
+                        onMouseEnter={() => {
+                          if (isDragging) this.setState({ draggingOverWeekday: col.weekday });
+                        }}
                         style={{
                           ...styles.cell,
                           borderTopWidth: minute === 0 ? 1 : 0,
@@ -311,14 +330,7 @@ export default class ScheduleTable extends React.Component {
                               }}
                               onMouseDown={() => {
                                 if ((selectedBlockIds || new Set()).has(block.id)) {
-                                  const style = document.createElement("style");
-                                  style.textContent = "* { cursor: grabbing !important; }";
-                                  document.head.appendChild(style);
-                                  const onMouseUp = () => {
-                                    style.remove();
-                                    document.removeEventListener("mouseup", onMouseUp);
-                                  };
-                                  document.addEventListener("mouseup", onMouseUp);
+                                  this.startDrag(block.weekday);
                                 }
                               }}
                               onClick={(e) => {
