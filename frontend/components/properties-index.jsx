@@ -44,7 +44,9 @@ export default function PropertiesIndex() {
   const [spinner, setSpinner] = useState(true);
   const [properties, setProperties] = useState([]);
   const [monthlyBudget, setMonthlyBudget] = useState(null);
-  const [differenceMode, setDifferenceMode] = useState(() => localStorage.getItem("properties:differenceMode") === "true");
+  const [differenceMode, setDifferenceMode] = useState(
+    () => localStorage.getItem("properties:differenceMode") === "true",
+  );
   const [amountSaved, setAmountSaved] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [sortColumn, setSortColumn] = useState("dateAdded");
@@ -182,7 +184,9 @@ export default function PropertiesIndex() {
                   const displayMonthly = differenceMode
                     ? monthlyRemainder
                     : monthlyPayment;
-                  const displayClose = differenceMode ? closeRemainder : cashToClose;
+                  const displayClose = differenceMode
+                    ? closeRemainder
+                    : cashToClose;
                   return (
                     <tr
                       key={id}
@@ -211,7 +215,7 @@ export default function PropertiesIndex() {
                           color:
                             zonedPrimarySchool === 130
                               ? "red"
-                              : [10, 154].indexOf(zonedPrimarySchool) >= 0
+                              : [10, 39, 154].indexOf(zonedPrimarySchool) >= 0
                                 ? "green"
                                 : undefined,
                         }}
@@ -268,10 +272,15 @@ export default function PropertiesIndex() {
               Add New
             </div>
             <DifferenceIcon
-              onClick={() => setDifferenceMode((prev) => {
-                localStorage.setItem("properties:differenceMode", String(!prev));
-                return !prev;
-              })}
+              onClick={() =>
+                setDifferenceMode((prev) => {
+                  localStorage.setItem(
+                    "properties:differenceMode",
+                    String(!prev),
+                  );
+                  return !prev;
+                })
+              }
               style={{
                 position: "absolute",
                 bottom: 26,
