@@ -110,6 +110,16 @@ class Property < ActiveRecord::Base
     pi_budget - pi_payment
   end
 
+  def monthly_remainder
+    return nil unless price.present?
+    self.class.monthly_payment - total_monthly_payment
+  end
+
+  def close_remainder
+    return nil unless price.present?
+    self.class.amount_saved - cash_to_close
+  end
+
   def property_type_index_label
     property_type&.gsub(/-?house\z/i, "")&.split("-")&.map(&:capitalize)&.join("-")
   end

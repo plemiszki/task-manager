@@ -5,7 +5,7 @@ import Moment from "moment";
 import PropertyNew from "./property-new.jsx";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
-
+import DifferenceIcon from "@mui/icons-material/Difference";
 
 const ModalStyles = {
   overlay: {
@@ -20,7 +20,12 @@ const ModalStyles = {
   },
 };
 
-const fetchProperties = (setProperties, setMonthlyBudget, setAmountSaved, setSpinner) => {
+const fetchProperties = (
+  setProperties,
+  setMonthlyBudget,
+  setAmountSaved,
+  setSpinner,
+) => {
   fetch(`/api/properties`)
     .then((data) => data.json())
     .then((response) => {
@@ -39,13 +44,19 @@ export default function PropertiesIndex() {
   const [spinner, setSpinner] = useState(true);
   const [properties, setProperties] = useState([]);
   const [monthlyBudget, setMonthlyBudget] = useState(null);
+  const [differenceMode, setDifferenceMode] = useState(() => localStorage.getItem("properties:differenceMode") === "true");
   const [amountSaved, setAmountSaved] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [sortColumn, setSortColumn] = useState("dateAdded");
   const [sortDirection, setSortDirection] = useState("desc");
 
   useEffect(() => {
-    fetchProperties(setProperties, setMonthlyBudget, setAmountSaved, setSpinner);
+    fetchProperties(
+      setProperties,
+      setMonthlyBudget,
+      setAmountSaved,
+      setSpinner,
+    );
   }, []);
 
   const handleSort = (column) => {
@@ -66,7 +77,10 @@ export default function PropertiesIndex() {
     if (sortColumn === "dateAdded") {
       aVal = new Date(aVal);
       bVal = new Date(bVal);
-    } else if (sortColumn === "monthlyPayment" || sortColumn === "amountNeeded") {
+    } else if (
+      sortColumn === "monthlyPayment" ||
+      sortColumn === "amountNeeded"
+    ) {
       aVal = Number(aVal);
       bVal = Number(bVal);
     } else {
@@ -78,8 +92,11 @@ export default function PropertiesIndex() {
     return 0;
   });
 
-  const thStyle = (column) =>
-    ({ cursor: "pointer", userSelect: "none", color: sortColumn === column ? "#6f42c1" : undefined });
+  const thStyle = (column) => ({
+    cursor: "pointer",
+    userSelect: "none",
+    color: sortColumn === column ? "#6f42c1" : undefined,
+  });
 
   return (
     <div className="handy-component container widened-container index-component">
@@ -89,14 +106,52 @@ export default function PropertiesIndex() {
             <table>
               <thead>
                 <tr>
-                  <th style={thStyle("status")} onClick={() => handleSort("status")}></th>
-                  <th style={thStyle("dateAdded")} onClick={() => handleSort("dateAdded")}>Date Added</th>
-                  <th style={thStyle("label")} onClick={() => handleSort("label")}>Label</th>
-                  <th style={thStyle("neighborhood")} onClick={() => handleSort("neighborhood")}>Neighborhood</th>
-                  <th style={thStyle("propertyType")} onClick={() => handleSort("propertyType")}>Type</th>
-                  <th style={thStyle("zonedPrimarySchool")} onClick={() => handleSort("zonedPrimarySchool")}>Zoned School</th>
-                  <th style={thStyle("monthlyPayment")} onClick={() => handleSort("monthlyPayment")}>Monthly Payment</th>
-                  <th style={thStyle("cashToClose")} onClick={() => handleSort("cashToClose")}>Cash to Close</th>
+                  <th
+                    style={thStyle("status")}
+                    onClick={() => handleSort("status")}
+                  ></th>
+                  <th
+                    style={thStyle("dateAdded")}
+                    onClick={() => handleSort("dateAdded")}
+                  >
+                    Date Added
+                  </th>
+                  <th
+                    style={thStyle("label")}
+                    onClick={() => handleSort("label")}
+                  >
+                    Label
+                  </th>
+                  <th
+                    style={thStyle("neighborhood")}
+                    onClick={() => handleSort("neighborhood")}
+                  >
+                    Neighborhood
+                  </th>
+                  <th
+                    style={thStyle("propertyType")}
+                    onClick={() => handleSort("propertyType")}
+                  >
+                    Type
+                  </th>
+                  <th
+                    style={thStyle("zonedPrimarySchool")}
+                    onClick={() => handleSort("zonedPrimarySchool")}
+                  >
+                    Zoned School
+                  </th>
+                  <th
+                    style={thStyle("monthlyPayment")}
+                    onClick={() => handleSort("monthlyPayment")}
+                  >
+                    Monthly Payment
+                  </th>
+                  <th
+                    style={thStyle("cashToClose")}
+                    onClick={() => handleSort("cashToClose")}
+                  >
+                    Cash to Close
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -117,11 +172,17 @@ export default function PropertiesIndex() {
                     neighborhood,
                     cashToClose,
                     monthlyPayment,
+                    monthlyRemainder,
+                    closeRemainder,
                     zonedPrimarySchool,
                     propertyType,
                     dateAdded,
                     status,
                   } = property;
+                  const displayMonthly = differenceMode
+                    ? monthlyRemainder
+                    : monthlyPayment;
+                  const displayClose = differenceMode ? closeRemainder : cashToClose;
                   return (
                     <tr
                       key={id}
@@ -130,18 +191,67 @@ export default function PropertiesIndex() {
                     >
                       <td style={{ verticalAlign: "middle" }}>
                         <div style={{ display: "flex", alignItems: "center" }}>
-                          {status === "available"
-                            ? <CheckCircleIcon style={{ fontSize: 16, color: "green" }} />
-                            : <CancelIcon style={{ fontSize: 16, color: "red" }} />}
+                          {status === "available" ? (
+                            <CheckCircleIcon
+                              style={{ fontSize: 16, color: "green" }}
+                            />
+                          ) : (
+                            <CancelIcon
+                              style={{ fontSize: 16, color: "red" }}
+                            />
+                          )}
                         </div>
                       </td>
                       <td>{Moment(dateAdded).format("l")}</td>
                       <td>{label}</td>
                       <td>{neighborhood}</td>
                       <td>{propertyType}</td>
-                      <td style={{ color: zonedPrimarySchool === 130 ? "red" : zonedPrimarySchool === 10 ? "green" : undefined }}>{zonedPrimarySchool}</td>
-                      <td style={{ color: monthlyPayment != null && monthlyBudget != null && monthlyPayment > monthlyBudget ? "red" : undefined }}>{monthlyPayment != null ? `$${Number(monthlyPayment).toLocaleString()}` : ""}</td>
-                      <td style={{ color: cashToClose != null && amountSaved != null && cashToClose > amountSaved ? "red" : undefined }}>{cashToClose != null ? `$${Number(cashToClose).toLocaleString()}` : ""}</td>
+                      <td
+                        style={{
+                          color:
+                            zonedPrimarySchool === 130
+                              ? "red"
+                              : [10, 154].indexOf(zonedPrimarySchool) >= 0
+                                ? "green"
+                                : undefined,
+                        }}
+                      >
+                        {zonedPrimarySchool}
+                      </td>
+                      <td
+                        style={{
+                          color: differenceMode
+                            ? displayMonthly > 0
+                              ? "green"
+                              : "red"
+                            : monthlyPayment != null &&
+                                monthlyBudget != null &&
+                                monthlyPayment > monthlyBudget
+                              ? "red"
+                              : undefined,
+                        }}
+                      >
+                        {displayMonthly != null
+                          ? `${differenceMode ? (displayMonthly >= 0 ? "+" : "-") : ""}$${Number(Math.abs(displayMonthly)).toLocaleString()}`
+                          : ""}
+                      </td>
+                      <td
+                        style={{
+                          color: differenceMode
+                            ? displayClose > 0
+                              ? "green"
+                              : "red"
+                            : cashToClose != null &&
+                                amountSaved != null &&
+                                cashToClose > amountSaved
+                              ? "red"
+                              : undefined,
+                        }}
+                      >
+                        {displayClose != null
+                          ? `${differenceMode ? (displayClose >= 0 ? "+" : "-") : ""}$${Number(Math.abs(displayClose)).toLocaleString()}`
+                          : ""}
+                      </td>
                     </tr>
                   );
                 })}
@@ -157,6 +267,20 @@ export default function PropertiesIndex() {
             >
               Add New
             </div>
+            <DifferenceIcon
+              onClick={() => setDifferenceMode((prev) => {
+                localStorage.setItem("properties:differenceMode", String(!prev));
+                return !prev;
+              })}
+              style={{
+                position: "absolute",
+                bottom: 26,
+                right: 26,
+                cursor: "pointer",
+                fontSize: 28,
+                color: differenceMode ? "#6f42c1" : "black",
+              }}
+            />
             <GrayedOut visible={spinner} />
             <Spinner visible={spinner} />
           </div>

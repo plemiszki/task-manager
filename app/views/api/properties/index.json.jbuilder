@@ -7,6 +7,8 @@ json.properties @properties do |property|
   json.neighborhood property.neighborhood
   json.cashToClose property.cash_to_close
   json.monthlyPayment property.total_monthly_payment
+  json.monthlyRemainder property.monthly_remainder
+  json.closeRemainder property.close_remainder
   json.zonedPrimarySchool property.zoned_primary_school
   json.status property.status
   json.propertyType property.property_type_index_label
