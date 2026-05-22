@@ -128,6 +128,10 @@ class Property < ActiveRecord::Base
     price - max_loan - self.class.amount_saved
   end
 
+  def property_type_index_label
+    property_type&.gsub(/-?house\z/i, "")&.split("-")&.map(&:capitalize)&.join("-")
+  end
+
   def actual_monthly_payment
     return self.class.monthly_payment unless can_afford?
     monthly_rate = self.class.interest_rate / 12

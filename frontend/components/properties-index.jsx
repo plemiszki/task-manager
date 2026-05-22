@@ -3,15 +3,9 @@ import { GrayedOut, Spinner } from "handy-components";
 import Modal from "react-modal";
 import Moment from "moment";
 import PropertyNew from "./property-new.jsx";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 
-const PROPERTY_TYPE_LABELS = {
-  townhouse: "Townhouse",
-  condo: "Condo",
-  "co-op": "Co-op",
-  "single-family-house": "Single-Family House",
-  "double-family-house": "Double-Family House",
-  "multi-family-house": "Multi-Family House",
-};
 
 const ModalStyles = {
   overlay: {
@@ -91,17 +85,19 @@ export default function PropertiesIndex() {
             <table>
               <thead>
                 <tr>
+                  <th style={thStyle("status")} onClick={() => handleSort("status")}></th>
+                  <th style={thStyle("dateAdded")} onClick={() => handleSort("dateAdded")}>Date Added</th>
                   <th style={thStyle("label")} onClick={() => handleSort("label")}>Label</th>
                   <th style={thStyle("neighborhood")} onClick={() => handleSort("neighborhood")}>Neighborhood</th>
                   <th style={thStyle("propertyType")} onClick={() => handleSort("propertyType")}>Type</th>
                   <th style={thStyle("zonedPrimarySchool")} onClick={() => handleSort("zonedPrimarySchool")}>Zoned School</th>
                   <th style={thStyle("monthlyPayment")} onClick={() => handleSort("monthlyPayment")}>Monthly Payment</th>
                   <th style={thStyle("amountNeeded")} onClick={() => handleSort("amountNeeded")}>Amount Needed</th>
-                  <th style={thStyle("dateAdded")} onClick={() => handleSort("dateAdded")}>Date Added</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="below-header">
+                  <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
@@ -120,22 +116,28 @@ export default function PropertiesIndex() {
                     zonedPrimarySchool,
                     propertyType,
                     dateAdded,
+                    status,
                   } = property;
                   return (
                     <tr
                       key={id}
                       style={{ cursor: "pointer" }}
-                      onClick={() =>
-                        (window.location.href = `/properties/${id}`)
-                      }
+                      onClick={() => window.open(`/properties/${id}`, "_blank")}
                     >
+                      <td style={{ verticalAlign: "middle" }}>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          {status === "available"
+                            ? <CheckCircleIcon style={{ fontSize: 16, color: "green" }} />
+                            : <CancelIcon style={{ fontSize: 16, color: "red" }} />}
+                        </div>
+                      </td>
+                      <td>{Moment(dateAdded).format("l")}</td>
                       <td>{label}</td>
                       <td>{neighborhood}</td>
-                      <td>{PROPERTY_TYPE_LABELS[propertyType]}</td>
+                      <td>{propertyType}</td>
                       <td>{zonedPrimarySchool}</td>
                       <td>{monthlyPayment != null ? `$${Number(monthlyPayment).toLocaleString()}` : ""}</td>
                       <td style={{ color: amountNeeded > 0 ? "red" : undefined }}>{amountNeeded == null ? "" : amountNeeded <= 0 ? "-" : `$${Number(amountNeeded).toLocaleString()}`}</td>
-                      <td>{Moment(dateAdded).format("l")}</td>
                     </tr>
                   );
                 })}
