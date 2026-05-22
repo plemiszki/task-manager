@@ -110,38 +110,9 @@ class Property < ActiveRecord::Base
     pi_budget - pi_payment
   end
 
-  def adjusted_monthly_payment
-    (self.class.monthly_payment - total_carrying_costs).round
-  end
-
-  def max_loan
-    monthly_rate = self.class.interest_rate / 12
-    ((adjusted_monthly_payment * (((1 + monthly_rate)**LOAN_TERM_MONTHS) - 1)) /
-      (monthly_rate * ((1 + monthly_rate)**LOAN_TERM_MONTHS))).round
-  end
-
-  def can_afford?
-    price.present? && self.class.amount_saved >= price - max_loan
-  end
-
-  def actual_loan
-    price - self.class.amount_saved
-  end
-
-  def amount_needed
-    return nil unless price.present?
-    price - max_loan - self.class.amount_saved
-  end
-
   def property_type_index_label
     property_type&.gsub(/-?house\z/i, "")&.split("-")&.map(&:capitalize)&.join("-")
   end
 
-  def actual_monthly_payment
-    return self.class.monthly_payment unless can_afford?
-    monthly_rate = self.class.interest_rate / 12
-    (actual_loan * monthly_rate * ((1 + monthly_rate)**LOAN_TERM_MONTHS) /
-      (((1 + monthly_rate)**LOAN_TERM_MONTHS) - 1)).round
-  end
 
 end
