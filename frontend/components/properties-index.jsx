@@ -20,11 +20,13 @@ const ModalStyles = {
   },
 };
 
-const fetchProperties = (setProperties, setSpinner) => {
+const fetchProperties = (setProperties, setMonthlyBudget, setAmountSaved, setSpinner) => {
   fetch(`/api/properties`)
     .then((data) => data.json())
     .then((response) => {
       setProperties(response.properties);
+      setMonthlyBudget(response.monthlyBudget);
+      setAmountSaved(response.amountSaved);
       setSpinner(false);
     });
 };
@@ -36,12 +38,14 @@ const DEFAULT_SORT_DIR = {
 export default function PropertiesIndex() {
   const [spinner, setSpinner] = useState(true);
   const [properties, setProperties] = useState([]);
+  const [monthlyBudget, setMonthlyBudget] = useState(null);
+  const [amountSaved, setAmountSaved] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [sortColumn, setSortColumn] = useState("dateAdded");
   const [sortDirection, setSortDirection] = useState("desc");
 
   useEffect(() => {
-    fetchProperties(setProperties, setSpinner);
+    fetchProperties(setProperties, setMonthlyBudget, setAmountSaved, setSpinner);
   }, []);
 
   const handleSort = (column) => {
@@ -92,7 +96,7 @@ export default function PropertiesIndex() {
                   <th style={thStyle("propertyType")} onClick={() => handleSort("propertyType")}>Type</th>
                   <th style={thStyle("zonedPrimarySchool")} onClick={() => handleSort("zonedPrimarySchool")}>Zoned School</th>
                   <th style={thStyle("monthlyPayment")} onClick={() => handleSort("monthlyPayment")}>Monthly Payment</th>
-                  <th style={thStyle("amountNeeded")} onClick={() => handleSort("amountNeeded")}>Amount Needed</th>
+                  <th style={thStyle("cashToClose")} onClick={() => handleSort("cashToClose")}>Cash to Close</th>
                 </tr>
               </thead>
               <tbody>
@@ -111,7 +115,7 @@ export default function PropertiesIndex() {
                     id,
                     label,
                     neighborhood,
-                    amountNeeded,
+                    cashToClose,
                     monthlyPayment,
                     zonedPrimarySchool,
                     propertyType,
@@ -135,9 +139,9 @@ export default function PropertiesIndex() {
                       <td>{label}</td>
                       <td>{neighborhood}</td>
                       <td>{propertyType}</td>
-                      <td>{zonedPrimarySchool}</td>
-                      <td>{monthlyPayment != null ? `$${Number(monthlyPayment).toLocaleString()}` : ""}</td>
-                      <td style={{ color: amountNeeded > 0 ? "red" : undefined }}>{amountNeeded == null ? "" : amountNeeded <= 0 ? "-" : `$${Number(amountNeeded).toLocaleString()}`}</td>
+                      <td style={{ color: zonedPrimarySchool === 130 ? "red" : zonedPrimarySchool === 10 ? "green" : undefined }}>{zonedPrimarySchool}</td>
+                      <td style={{ color: monthlyPayment != null && monthlyBudget != null && monthlyPayment > monthlyBudget ? "red" : undefined }}>{monthlyPayment != null ? `$${Number(monthlyPayment).toLocaleString()}` : ""}</td>
+                      <td style={{ color: cashToClose != null && amountSaved != null && cashToClose > amountSaved ? "red" : undefined }}>{cashToClose != null ? `$${Number(cashToClose).toLocaleString()}` : ""}</td>
                     </tr>
                   );
                 })}

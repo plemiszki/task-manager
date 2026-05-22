@@ -95,6 +95,11 @@ class Property < ActiveRecord::Base
       (((1 + monthly_rate)**LOAN_TERM_MONTHS) - 1)).round
   end
 
+  def total_monthly_payment
+    return nil unless price.present?
+    total_carrying_costs + pi_payment
+  end
+
   def can_afford_pi?
     return false unless price.present?
     pi_payment <= pi_budget

@@ -1,9 +1,12 @@
+json.monthlyBudget Property.monthly_payment
+json.amountSaved Property.amount_saved
+
 json.properties @properties do |property|
   json.id property.id
   json.label property.label
   json.neighborhood property.neighborhood
-  json.amountNeeded property.amount_needed
-  json.monthlyPayment property.actual_monthly_payment
+  json.cashToClose property.cash_to_close
+  json.monthlyPayment property.total_monthly_payment
   json.zonedPrimarySchool property.zoned_primary_school
   json.status property.status
   json.propertyType property.property_type_index_label
