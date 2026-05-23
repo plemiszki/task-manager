@@ -207,7 +207,7 @@ export default function PropertiesIndex() {
                         </div>
                       </td>
                       <td>{Moment(dateAdded).format("l")}</td>
-                      <td>{label}</td>
+                      <td style={{ textDecoration: status !== "available" ? "line-through" : undefined }}>{label}</td>
                       <td>{neighborhood}</td>
                       <td>{propertyType}</td>
                       <td
