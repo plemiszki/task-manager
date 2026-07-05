@@ -1,6 +1,7 @@
 import React from "react";
 import Modal from "react-modal";
 import {
+  BottomButtons,
   Common,
   createEntity,
   deepCopy,
@@ -11,7 +12,6 @@ import {
   ListBoxReorderable,
   objectsAreEqual,
   rearrangeFields,
-  SaveButton,
   sendRequest,
   Spinner,
   updateEntity,
@@ -232,11 +232,17 @@ export default class ListDetails extends React.Component {
               </div>
             </div>
             <hr />
-            <SaveButton
+            <BottomButtons
+              entityName="list"
+              confirmDelete={Details.confirmDelete.bind(this, {
+                callback: () => {
+                  window.location.pathname = "/settings";
+                },
+              })}
               justSaved={justSaved}
               changesToSave={changesToSave}
               disabled={spinner}
-              onClick={() => {
+              clickSave={() => {
                 this.clickSave();
               }}
             />
