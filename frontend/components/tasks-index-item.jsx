@@ -242,13 +242,14 @@ export default class TaskIndexItem extends React.Component {
   formatTaskText() {
     const { debug, debugPositions } = this.props;
     const { task, subtasks, editing, editingText } = this.state;
-    const { id, text, duplicateId, position } = task;
+    const { id, text, duplicateId, position, parentPrefixText } = task;
     if (editing) {
       return editingText;
     }
-    let alteredText = text;
+    let baseText = parentPrefixText ? `${parentPrefixText} - ${text}` : text;
+    let alteredText = baseText;
     if (debug) {
-      alteredText = `${id} - ${text} - ${duplicateId}`;
+      alteredText = `${id} - ${baseText} - ${duplicateId}`;
       if (text.indexOf("$cc") > -1 || text.indexOf("$tc") > -1) {
         let completedChildren = subtasks.reduce((accum, current) => {
           return accum + (current.complete ? 1 : 0);
@@ -258,7 +259,7 @@ export default class TaskIndexItem extends React.Component {
       }
     }
     if (debugPositions) {
-      alteredText = `${text} - ${position}`;
+      alteredText = `${baseText} - ${position}`;
     }
     return alteredText;
   }

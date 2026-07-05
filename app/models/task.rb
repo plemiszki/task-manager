@@ -34,7 +34,31 @@ class Task < ActiveRecord::Base
   end
 
   def serialize
-    serializable_hash(include: { subtasks: { include: { subtasks: { include: { subtasks: { include: :subtasks } } } } } })
+    serializable_hash(
+      methods: [:parent_prefix_text],
+      include: {
+        subtasks: {
+          methods: [:parent_prefix_text],
+          include: {
+            subtasks: {
+              methods: [:parent_prefix_text],
+              include: {
+                subtasks: {
+                  methods: [:parent_prefix_text],
+                  include: :subtasks
+                }
+              }
+            }
+          }
+        }
+      }
+    )
+  end
+
+  def parent_prefix_text
+    return unless duplicate_id && show_parent_prefix
+
+    master&.parent&.text
   end
 
   def original?

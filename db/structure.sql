@@ -687,7 +687,8 @@ CREATE TABLE public.tasks (
     user_id integer NOT NULL,
     joint_id integer,
     template_date date,
-    recurring_task_id integer
+    recurring_task_id integer,
+    show_parent_prefix boolean DEFAULT false
 );
 
 
@@ -1246,6 +1247,7 @@ ALTER TABLE ONLY public.schedule_blocks
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260705000001'),
 ('20260404000001'),
 ('20260331000001'),
 ('20260329000002'),
