@@ -185,6 +185,23 @@ export default class TaskIndexItem extends React.Component {
     );
   }
 
+  toggleShowParentPrefix() {
+    let task = this.state.task;
+    task.showParentPrefix = !task.showParentPrefix;
+    this.setState(
+      {
+        task,
+        menuOpen: false,
+      },
+      () => {
+        this.props.updateTask({
+          id: task.id,
+          showParentPrefix: task.showParentPrefix,
+        });
+      }
+    );
+  }
+
   convertToFutureTask({ monday } = {}) {
     this.setState({
       menuOpen: false,
@@ -242,11 +259,14 @@ export default class TaskIndexItem extends React.Component {
   formatTaskText() {
     const { debug, debugPositions } = this.props;
     const { task, subtasks, editing, editingText } = this.state;
-    const { id, text, duplicateId, position, parentPrefixText } = task;
+    const { id, text, duplicateId, position, showParentPrefix, parentPrefixText } = task;
     if (editing) {
       return editingText;
     }
-    let baseText = parentPrefixText ? `${parentPrefixText} - ${text}` : text;
+    let baseText =
+      showParentPrefix && parentPrefixText
+        ? `${parentPrefixText} - ${text}`
+        : text;
     let alteredText = baseText;
     if (debug) {
       alteredText = `${id} - ${baseText} - ${duplicateId}`;
@@ -314,7 +334,7 @@ export default class TaskIndexItem extends React.Component {
   render() {
     const { openListsModal, setActiveTaskId } = this.props;
     const { task, editing, subtasks, showColorPicker } = this.state;
-    const { timeframe, duplicateId, parentId } = task;
+    const { timeframe, duplicateId, parentId, showParentPrefix, parentPrefixText } = task;
 
     let menuOptions = [];
     if (!duplicateId) {
@@ -385,6 +405,14 @@ export default class TaskIndexItem extends React.Component {
           this.setState({ menuOpen: false });
           setActiveTaskId(task.id);
           openListsModal();
+        },
+      });
+    }
+    if (duplicateId && parentPrefixText) {
+      menuOptions.push({
+        label: showParentPrefix ? "Hide Prefix" : "Show Prefix",
+        func: () => {
+          this.toggleShowParentPrefix();
         },
       });
     }

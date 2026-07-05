@@ -11,6 +11,7 @@ json.array! tasks do |hash|
   json.expanded hash['expanded']
   json.userId hash['user_id']
   json.jointId hash['joint_id']
+  json.showParentPrefix hash['show_parent_prefix']
   json.parentPrefixText hash['parent_prefix_text']
   json.set! 'subtasks' do
     (hash['subtasks'].present? ? (json.partial! 'api/tasks/tasks', tasks: hash['subtasks']) : [])

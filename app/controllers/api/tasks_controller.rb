@@ -92,20 +92,25 @@ class Api::TasksController < ActionController::Base
   end
 
   def update
-    if params[:task_ids] # used for completing multiple tasks at once
+    if params[:task_ids] # used for completing multiple tasks at once, or bulk-toggling a field like show_parent_prefix
       tasks = Task.find(params[:task_ids])
       tasks.each do |task|
         original_color = task.color
-        task.update_self_and_duplicates!(obj: task_params.slice(:complete))
-        if task.joint_id
-          joint_task = Task.find(task.joint_id)
-          joint_task.update!(
-            complete: params[:task][:complete]
-          )
+        task.update_self_and_duplicates!(
+          obj: task_params.slice(:complete, :show_parent_prefix),
+          duplicate_columns: [:complete]
+        )
+        if task_params.key?(:complete)
+          if task.joint_id
+            joint_task = Task.find(task.joint_id)
+            joint_task.update!(
+              complete: params[:task][:complete]
+            )
+          end
+          mark_master_complete(task.duplicate_id, params[:task][:complete]) if task.duplicate_id
+          check_if_all_siblings_complete(task)
         end
-        mark_master_complete(task.duplicate_id, params[:task][:complete]) if task.duplicate_id
         update_subtask_colors(task) if original_color != task.color
-        check_if_all_siblings_complete(task)
       end
       build_response(timeframe: tasks.all? { |task| task.original_day_task? } ? 'day' : nil)
     elsif params[:task]
@@ -460,7 +465,8 @@ class Api::TasksController < ActionController::Base
       :expanded,
       :timeframe,
       :position,
-      :duplicate_of
+      :duplicate_of,
+      :show_parent_prefix
     )
   end
 end

@@ -56,7 +56,7 @@ class Task < ActiveRecord::Base
   end
 
   def parent_prefix_text
-    return unless duplicate_id && show_parent_prefix
+    return unless duplicate_id
 
     master&.parent&.text
   end
