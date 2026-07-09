@@ -55,6 +55,10 @@ class Task < ActiveRecord::Base
     )
   end
 
+  def serialize_flat
+    serializable_hash(methods: [:parent_prefix_text])
+  end
+
   def parent_prefix_text
     return unless duplicate_id
 

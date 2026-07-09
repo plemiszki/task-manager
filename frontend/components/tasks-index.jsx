@@ -1,5 +1,6 @@
 import React from "react";
 import TasksTimeframe from "./tasks-timeframe.jsx";
+import { patchTaskTree } from "./task-tree-utils.js";
 import {
   fetchEntities,
   sendRequest,
@@ -31,6 +32,27 @@ export default class TasksIndex extends React.Component {
       selectedTasksParentId: null,
       selectedTasksTimeframe: null,
     };
+    this.createTask = this.createTask.bind(this);
+    this.updateTask = this.updateTask.bind(this);
+    this.copyIncompleteSubtasks = this.copyIncompleteSubtasks.bind(this);
+    this.selectTask = this.selectTask.bind(this);
+    this.unselectTask = this.unselectTask.bind(this);
+    this.copyTask = this.copyTask.bind(this);
+    this.moveTask = this.moveTask.bind(this);
+    this.rearrangeTasks = this.rearrangeTasks.bind(this);
+    this.convertToFutureTask = this.convertToFutureTask.bind(this);
+    this.deleteTask = this.deleteTask.bind(this);
+    this.addSubtasksFromList = this.addSubtasksFromList.bind(this);
+    this.openListsModal = this.openListsModal.bind(this);
+    this.setActiveTaskId = this.setActiveTaskId.bind(this);
+  }
+
+  openListsModal() {
+    this.setState({ listModalOpen: true });
+  }
+
+  setActiveTaskId(id) {
+    this.setState({ activeTaskId: id });
   }
 
   componentDidMount() {
@@ -80,8 +102,21 @@ export default class TasksIndex extends React.Component {
     });
   }
 
-  updateTask(newTask, ignoreSelected = false) {
+  updateTask(newTask, ignoreSelected = false, background = false) {
     const { selectedTasks } = this.state;
+    if (background) {
+      this.setState((prevState) => ({
+        tasks: patchTaskTree(prevState.tasks, [newTask]),
+      }));
+      updateEntity({
+        directory: "tasks",
+        entityName: "task",
+        entity: newTask,
+      }).catch((err) => {
+        console.warn("background task update failed", err);
+      });
+      return;
+    }
     this.setState({
       spinner: true,
     });
@@ -338,6 +373,13 @@ export default class TasksIndex extends React.Component {
   }
 
   updateComponentTasks(response) {
+    if (response.tasks.patch) {
+      this.setState((prevState) => ({
+        spinner: false,
+        tasks: patchTaskTree(prevState.tasks, response.tasks.patch),
+      }));
+      return;
+    }
     const timeframeKeys = Object.keys(response.tasks);
     if (timeframeKeys.length === 1) {
       // response from an update, etc.
@@ -388,21 +430,21 @@ export default class TasksIndex extends React.Component {
               timeframe={timeframe}
               scheduleToggle={timeframe === "weekend"}
               timeframeTasks={this.state.tasks[timeframe]}
-              createTask={this.createTask.bind(this)}
-              updateTask={this.updateTask.bind(this)}
-              convertToFutureTask={this.convertToFutureTask.bind(this)}
-              copyTask={this.copyTask.bind(this)}
-              copyIncompleteSubtasks={this.copyIncompleteSubtasks.bind(this)}
-              moveTask={this.moveTask.bind(this)}
-              deleteTask={this.deleteTask.bind(this)}
-              rearrangeTasks={this.rearrangeTasks.bind(this)}
-              openListsModal={(task) => this.setState({ listModalOpen: true })}
-              setActiveTaskId={(id) => this.setState({ activeTaskId: id })}
+              createTask={this.createTask}
+              updateTask={this.updateTask}
+              convertToFutureTask={this.convertToFutureTask}
+              copyTask={this.copyTask}
+              copyIncompleteSubtasks={this.copyIncompleteSubtasks}
+              moveTask={this.moveTask}
+              deleteTask={this.deleteTask}
+              rearrangeTasks={this.rearrangeTasks}
+              openListsModal={this.openListsModal}
+              setActiveTaskId={this.setActiveTaskId}
               debug={debug}
               debugPositions={debugPositions}
               selectedTasks={selectedTasks}
-              selectTask={this.selectTask.bind(this)}
-              unselectTask={this.unselectTask.bind(this)}
+              selectTask={this.selectTask}
+              unselectTask={this.unselectTask}
             />
           </div>
         );

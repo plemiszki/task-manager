@@ -5,7 +5,7 @@ import { Common as HandyComponentsCommon } from "handy-components";
 import { titleCase } from "title-case";
 import { DateTime } from "luxon";
 
-export default class TaskIndexItem extends React.Component {
+export default class TaskIndexItem extends React.PureComponent {
   constructor(props) {
     super(props);
     this.inputRef = React.createRef();
@@ -136,14 +136,17 @@ export default class TaskIndexItem extends React.Component {
   }
 
   clickExpand() {
-    let task = this.state.task;
-    task.expanded = !task.expanded;
+    const task = { ...this.state.task, expanded: !this.state.task.expanded };
     this.setState(
       {
         task,
       },
       () => {
-        this.props.updateTask(this.state.task, true);
+        this.props.updateTask(
+          { id: task.id, expanded: task.expanded, timeframe: task.timeframe },
+          true,
+          true
+        );
       }
     );
   }
@@ -155,8 +158,7 @@ export default class TaskIndexItem extends React.Component {
 
   finishedTask(e) {
     e.preventDefault();
-    let task = this.state.task;
-    task.complete = !task.complete;
+    const task = { ...this.state.task, complete: !this.state.task.complete };
     this.setState(
       {
         task,
@@ -176,11 +178,10 @@ export default class TaskIndexItem extends React.Component {
   }
 
   changeColor(color) {
-    let task = this.state.task;
-    task.color = color;
+    const task = { ...this.state.task, color };
     this.setState(
       {
-        task: task,
+        task,
         showColorPicker: false,
       },
       () => {
@@ -190,8 +191,7 @@ export default class TaskIndexItem extends React.Component {
   }
 
   toggleShowParentPrefix() {
-    let task = this.state.task;
-    task.showParentPrefix = !task.showParentPrefix;
+    const task = { ...this.state.task, showParentPrefix: !this.state.task.showParentPrefix };
     this.setState(
       {
         task,
@@ -297,6 +297,7 @@ export default class TaskIndexItem extends React.Component {
       this.props.moveTask({
         id: this.state.task.id,
         timeframe,
+        selectedTasks: this.props.selectedTasks,
       });
     }
   }
@@ -310,6 +311,7 @@ export default class TaskIndexItem extends React.Component {
       this.props.copyTask({
         duplicateOf: this.state.task.id,
         timeframe,
+        selectedTasks: this.props.selectedTasks,
       });
     }
   }
@@ -646,15 +648,13 @@ export default class TaskIndexItem extends React.Component {
                 index={index}
                 task={task}
                 parentId={this.createTaskId()}
-                createTask={this.props.createTask.bind(this)}
-                updateTask={this.props.updateTask.bind(this)}
-                copyTask={this.props.copyTask.bind(this)}
-                copyIncompleteSubtasks={this.props.copyIncompleteSubtasks.bind(
-                  this
-                )}
-                moveTask={this.props.moveTask.bind(this)}
-                deleteTask={this.props.deleteTask.bind(this)}
-                dropHandler={this.props.dropHandler.bind(this)}
+                createTask={this.props.createTask}
+                updateTask={this.props.updateTask}
+                copyTask={this.props.copyTask}
+                copyIncompleteSubtasks={this.props.copyIncompleteSubtasks}
+                moveTask={this.props.moveTask}
+                deleteTask={this.props.deleteTask}
+                dropHandler={this.props.dropHandler}
                 debug={debug}
                 debugPositions={debugPositions}
                 selected={selectedTasks.includes(task.id)}

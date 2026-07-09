@@ -49,6 +49,7 @@ export default class TasksTimeframe extends React.Component {
       activeDayVariants: {},
       now: new Date(),
     };
+    this.dropHandler = this.dropHandler.bind(this);
   }
 
   handleKeyDown = (event) => {
@@ -72,7 +73,7 @@ export default class TasksTimeframe extends React.Component {
       tolerance: "pointer",
       over: TasksCommon.dragOverHandler,
       out: TasksCommon.dragOutHandler,
-      drop: this.dropHandler.bind(this),
+      drop: this.dropHandler,
     });
     if (timeframe == "day") {
       sendRequest("/api/user").then((response) => {
@@ -501,20 +502,14 @@ export default class TasksTimeframe extends React.Component {
               index={index}
               task={task}
               level="0"
-              createTask={this.props.createTask.bind(this)}
-              updateTask={this.props.updateTask.bind(this)}
-              copyTask={(args) => {
-                this.props.copyTask.call(this, { ...args, selectedTasks });
-              }}
-              copyIncompleteSubtasks={this.props.copyIncompleteSubtasks.bind(
-                this,
-              )}
-              moveTask={(args) => {
-                this.props.moveTask.call(this, { ...args, selectedTasks });
-              }}
-              deleteTask={this.props.deleteTask.bind(this)}
-              convertToFutureTask={this.props.convertToFutureTask.bind(this)}
-              dropHandler={this.dropHandler.bind(this)}
+              createTask={this.props.createTask}
+              updateTask={this.props.updateTask}
+              copyTask={this.props.copyTask}
+              copyIncompleteSubtasks={this.props.copyIncompleteSubtasks}
+              moveTask={this.props.moveTask}
+              deleteTask={this.props.deleteTask}
+              convertToFutureTask={this.props.convertToFutureTask}
+              dropHandler={this.dropHandler}
               openListsModal={openListsModal}
               setActiveTaskId={setActiveTaskId}
               debug={debug}

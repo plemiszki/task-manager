@@ -1,6 +1,8 @@
 class Api::TasksController < ActionController::Base
   include Clearance::Controller
 
+  DUPLICATE_RELEVANT_FIELDS = [:complete, :text, :color].freeze
+
   def index
     build_response
   end
@@ -161,19 +163,29 @@ class Api::TasksController < ActionController::Base
           end
           additional_tasks = new_additional_tasks
         end
+        build_response(timeframe: task.original_day_task? ? 'day' : nil)
       else
-        task.update_self_and_duplicates!(obj: task_params, duplicate_columns: [:complete, :text, :color])
-        if task.joint_id
-          joint_task = Task.find(task.joint_id)
-          joint_task.update!(
-            complete: params[:task][:complete]
-          )
+        touched_tasks = [task]
+        duplicate_relevant = (task_params.keys.map(&:to_sym) & DUPLICATE_RELEVANT_FIELDS).any?
+        if duplicate_relevant
+          task.update_self_and_duplicates!(obj: task_params, duplicate_columns: DUPLICATE_RELEVANT_FIELDS)
+          touched_tasks.concat(task.duplicates)
+        else
+          task.update!(task_params)
         end
-        mark_master_complete(task.duplicate_id, params[:task][:complete]) if task.duplicate_id
-        update_subtask_colors(task) if original_color != task.color
-        check_if_all_siblings_complete(task)
+
+        complete_changed = task.saved_changes.key?('complete')
+        if complete_changed && task.joint_id
+          joint_task = Task.find(task.joint_id)
+          joint_task.update!(complete: task.complete)
+          touched_tasks << joint_task
+        end
+        touched_tasks.concat(mark_master_complete(task.duplicate_id, task.complete)) if complete_changed && task.duplicate_id
+        touched_tasks.concat(update_subtask_colors(task)) if original_color != task.color
+        touched_tasks.concat(check_if_all_siblings_complete(task)) if complete_changed
+
+        build_patch_response(touched_tasks.uniq(&:id))
       end
-      build_response(timeframe: task.original_day_task? ? 'day' : nil)
     end
   end
 
@@ -400,16 +412,22 @@ class Api::TasksController < ActionController::Base
     end
   end
 
-  def check_if_all_siblings_complete(task)
-    return unless task.parent_id
+  def build_patch_response(tasks)
+    @patch_tasks = tasks.map(&:serialize_flat)
+    render 'update'
+  end
 
-    tasks = Task.where(parent_id: task.parent_id)
-    tasks.each do |task|
-      return unless task.complete
+  def check_if_all_siblings_complete(task, touched: [])
+    return touched unless task.parent_id
+
+    siblings = Task.where(parent_id: task.parent_id)
+    siblings.each do |sibling|
+      return touched unless sibling.complete
     end
     parent_task = Task.find(task.parent_id)
     parent_task.update(complete: true, expanded: false)
-    check_if_all_siblings_complete(parent_task)
+    touched << parent_task
+    check_if_all_siblings_complete(parent_task, touched: touched)
   end
 
   def create_duplicate_subtasks(task)
@@ -434,25 +452,32 @@ class Api::TasksController < ActionController::Base
     end
   end
 
-  def mark_master_complete(id, complete)
+  def mark_master_complete(id, complete, touched: [])
     while id
       task = Task.find(id)
       task.update!(complete: complete)
-      check_if_all_siblings_complete(task)
+      touched << task
+      touched.concat(check_if_all_siblings_complete(task))
       id = task.duplicate_id
     end
+    touched
   end
 
   def update_subtask_colors(task)
     tasks_queue = task.subtasks.to_a
-    ids = []
+    touched = []
     until tasks_queue.empty?
-      ids << tasks_queue.first.id
-      tasks_queue += tasks_queue.first.subtasks.to_a
-      tasks_queue += tasks_queue.first.duplicates.to_a
+      current = tasks_queue.first
+      touched << current
+      tasks_queue += current.subtasks.to_a
+      tasks_queue += current.duplicates.to_a
       tasks_queue.shift
     end
-    Task.where(id: ids).update_all(color: task.color)
+    if touched.any?
+      Task.where(id: touched.map(&:id)).update_all(color: task.color)
+      touched.each { |t| t.color = task.color }
+    end
+    touched
   end
 
   def task_params
