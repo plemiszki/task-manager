@@ -73,6 +73,24 @@ RSpec.describe "PUT /api/tasks", type: :request do
     expect(patch_ids).to include(parent.id)
   end
 
+  it "reports the completed task's post-rearrange position, not its stale pre-update position" do
+    a = create_task(user, text: "A", position: 0, complete: false)
+    b = create_task(user, text: "B", position: 1, complete: false)
+    c = create_task(user, text: "C", position: 2, complete: false)
+
+    put "/api/tasks", params: { task: { id: c.id, complete: true } }
+
+    expect(response).to have_http_status(:ok)
+    expect(c.reload.position).to eq(0)
+    expect(a.reload.position).to eq(1)
+    expect(b.reload.position).to eq(2)
+
+    patch_by_id = JSON.parse(response.body)["tasks"]["patch"].index_by { |t| t["id"] }
+    expect(patch_by_id[c.id]["position"]).to eq(0)
+    expect(patch_by_id[a.id]["position"]).to eq(1)
+    expect(patch_by_id[b.id]["position"]).to eq(2)
+  end
+
   it "returns the full timeframe payload, not a patch, for the numbered-subtasks branch" do
     parent = create_task(user, text: "Parent")
     original = create_task(user, text: "Something", parent_id: parent.id)

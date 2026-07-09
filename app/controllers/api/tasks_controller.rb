@@ -167,24 +167,39 @@ class Api::TasksController < ActionController::Base
       else
         touched_tasks = [task]
         duplicate_relevant = (task_params.keys.map(&:to_sym) & DUPLICATE_RELEVANT_FIELDS).any?
+        duplicates = []
         if duplicate_relevant
           task.update_self_and_duplicates!(obj: task_params, duplicate_columns: DUPLICATE_RELEVANT_FIELDS)
-          touched_tasks.concat(task.duplicates)
+          duplicates = task.duplicates
+          touched_tasks.concat(duplicates)
         else
           task.update!(task_params)
         end
 
         complete_changed = task.saved_changes.key?('complete')
+        if complete_changed
+          # completing a task can trigger Task#auto_rearrange! (an after_commit
+          # callback) to reposition its siblings, so include the whole sibling
+          # sets that may have been reordered, not just the tasks we touched directly
+          touched_tasks.concat(task.siblings)
+          touched_tasks.concat(duplicates.flat_map(&:siblings))
+        end
         if complete_changed && task.joint_id
           joint_task = Task.find(task.joint_id)
           joint_task.update!(complete: task.complete)
           touched_tasks << joint_task
+          touched_tasks.concat(joint_task.siblings)
         end
         touched_tasks.concat(mark_master_complete(task.duplicate_id, task.complete)) if complete_changed && task.duplicate_id
         touched_tasks.concat(update_subtask_colors(task)) if original_color != task.color
         touched_tasks.concat(check_if_all_siblings_complete(task)) if complete_changed
 
-        build_patch_response(touched_tasks.uniq(&:id))
+        # keep the LAST occurrence per id: Task#auto_rearrange! (an after_commit
+        # callback) can reposition a task's own row via a separately-queried
+        # in-memory copy, leaving earlier references (e.g. the initial `task`)
+        # stale for their `position` attribute; fresher copies are always
+        # appended later via `.siblings` re-queries
+        build_patch_response(touched_tasks.index_by(&:id).values)
       end
     end
   end
@@ -427,6 +442,7 @@ class Api::TasksController < ActionController::Base
     parent_task = Task.find(task.parent_id)
     parent_task.update(complete: true, expanded: false)
     touched << parent_task
+    touched.concat(parent_task.siblings)
     check_if_all_siblings_complete(parent_task, touched: touched)
   end
 
@@ -457,6 +473,7 @@ class Api::TasksController < ActionController::Base
       task = Task.find(id)
       task.update!(complete: complete)
       touched << task
+      touched.concat(task.siblings)
       touched.concat(check_if_all_siblings_complete(task))
       id = task.duplicate_id
     end
