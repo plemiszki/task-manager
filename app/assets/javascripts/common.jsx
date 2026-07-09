@@ -1,27 +1,25 @@
-var React = require('react');
-
 $(document).ready(() => {
   Common.initialize();
 });
 
-Common = {
+const Common = {
 
   initialize: function() {
     $.fn.matchHeight._maintainScroll = true;
   },
 
   canIDrop: function($e) {
-    draggedId = $e[0].getAttribute('id');
-    draggedIdArray = draggedId.split('-');
-    draggedTimeFrame = draggedIdArray[0];
-    draggedParentId = draggedIdArray.length - 2 == 0 ? "" : draggedIdArray.slice(0, -1).join("-");
-    draggedIndex = +draggedIdArray[draggedIdArray.length - 1];
+    const draggedId = $e[0].getAttribute('id');
+    const draggedIdArray = draggedId.split('-');
+    const draggedTimeFrame = draggedIdArray[0];
+    const draggedParentId = draggedIdArray.length - 2 == 0 ? "" : draggedIdArray.slice(0, -1).join("-");
+    const draggedIndex = +draggedIdArray[draggedIdArray.length - 1];
 
-    dropZoneId = this.getAttribute('id');
-    dropZoneIdArray = dropZoneId.split('-');
-    dropZoneTimeFrame = dropZoneIdArray[0];
-    dropZoneParentId = dropZoneIdArray.length - 3 == 0 ? "" : dropZoneIdArray.slice(0, -2).join("-");
-    dropZoneIndex = dropZoneIdArray[dropZoneIdArray.length - 2] == "top" ? -1 : +dropZoneIdArray[dropZoneIdArray.length - 2];
+    const dropZoneId = this.getAttribute('id');
+    const dropZoneIdArray = dropZoneId.split('-');
+    const dropZoneTimeFrame = dropZoneIdArray[0];
+    const dropZoneParentId = dropZoneIdArray.length - 3 == 0 ? "" : dropZoneIdArray.slice(0, -2).join("-");
+    const dropZoneIndex = dropZoneIdArray[dropZoneIdArray.length - 2] == "top" ? -1 : +dropZoneIdArray[dropZoneIdArray.length - 2];
 
     if (draggedTimeFrame == dropZoneTimeFrame) {
       if (draggedParentId == dropZoneParentId) {
@@ -58,4 +56,4 @@ Common = {
   }
 }
 
-module.exports = Common;
+export default Common;

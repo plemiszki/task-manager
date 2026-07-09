@@ -4,6 +4,7 @@ import HandyTools from "handy-tools";
 import { Common as HandyComponentsCommon } from "handy-components";
 import { titleCase } from "title-case";
 import { DateTime } from "luxon";
+import TasksCommon from "../../app/assets/javascripts/common.jsx";
 
 export default class TaskIndexItem extends React.PureComponent {
   constructor(props) {
@@ -63,10 +64,10 @@ export default class TaskIndexItem extends React.PureComponent {
     $(
       "#" + this.createDropAreaId() + ", #" + this.createSubtaskTopDropAreaId()
     ).droppable({
-      accept: Common.canIDrop,
+      accept: TasksCommon.canIDrop,
       tolerance: "pointer",
-      over: Common.dragOverHandler,
-      out: Common.dragOutHandler,
+      over: TasksCommon.dragOverHandler,
+      out: TasksCommon.dragOutHandler,
       drop: this.props.dropHandler,
     });
   }

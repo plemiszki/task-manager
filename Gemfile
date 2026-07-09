@@ -20,6 +20,7 @@ gem 'sentry-ruby'
 gem 'sidekiq'
 gem 'timeliness'
 gem 'uglifier'
+gem 'vite_rails'
 
 group :test do
   gem 'rspec-rails'

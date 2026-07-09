@@ -4,8 +4,12 @@
 .DS_Store
 .env
 /.bundle
-/app/assets/javascripts/bundle.js
-/app/assets/javascripts/bundle.js.map
 /log/*
 /node_modules/*
 /tmp
+
+# Vite Ruby
+/public/vite*
+# Vite uses dotenv and suggests to ignore local-only env files. See
+# https://vitejs.dev/guide/env-and-mode.html#env-files
+*.local
