@@ -27,25 +27,27 @@ export default class TaskIndexItem extends React.PureComponent {
     this.attachDropZoneHandlers();
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState(
-      (prevState) => {
-        if (prevState.saving) {
+  componentDidUpdate(prevProps) {
+    if (prevProps.task !== this.props.task) {
+      this.setState(
+        (prevState) => {
+          if (prevState.saving) {
+            return {
+              task: { ...this.props.task, text: prevState.task.text },
+              subtasks: this.props.task.subtasks || [],
+            };
+          }
           return {
-            task: { ...nextProps.task, text: prevState.task.text },
-            subtasks: nextProps.task.subtasks || [],
+            task: this.props.task,
+            subtasks: this.props.task.subtasks || [],
           };
+        },
+        () => {
+          this.attachDragHandler();
+          this.attachDropZoneHandlers();
         }
-        return {
-          task: nextProps.task,
-          subtasks: nextProps.task.subtasks || [],
-        };
-      },
-      () => {
-        this.attachDragHandler();
-        this.attachDropZoneHandlers();
-      }
-    );
+      );
+    }
   }
 
   attachDragHandler() {
