@@ -125,6 +125,10 @@ export default class TaskIndexItem extends React.Component {
     if (e.key == "Enter") {
       e.target.parentElement.children[0].classList.add("handle");
       const text = this.state.editingText;
+      if (text === this.state.task.text) {
+        this.setState({ editing: false, editingText: null });
+        return;
+      }
       const task = { ...this.state.task, text };
       this.setState({ editing: false, editingText: null, task, saving: true, savedText: text });
       this.props.updateTask(task, true);
