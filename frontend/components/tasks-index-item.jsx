@@ -13,7 +13,6 @@ export default class TaskIndexItem extends React.PureComponent {
       editing: false,
       editingText: null,
       saving: false,
-      savedText: null,
       task: this.props.task,
       subtasks: this.props.task.subtasks || [],
       showColorPicker: false,
@@ -31,12 +30,9 @@ export default class TaskIndexItem extends React.PureComponent {
     this.setState(
       (prevState) => {
         if (prevState.saving) {
-          const confirmed = nextProps.task.text === prevState.savedText;
           return {
-            task: confirmed ? nextProps.task : { ...nextProps.task, text: prevState.task.text },
+            task: { ...nextProps.task, text: prevState.task.text },
             subtasks: nextProps.task.subtasks || [],
-            saving: !confirmed,
-            savedText: confirmed ? null : prevState.savedText,
           };
         }
         return {
@@ -130,8 +126,10 @@ export default class TaskIndexItem extends React.PureComponent {
         return;
       }
       const task = { ...this.state.task, text };
-      this.setState({ editing: false, editingText: null, task, saving: true, savedText: text });
-      this.props.updateTask(task, true);
+      this.setState({ editing: false, editingText: null, task, saving: true });
+      this.props.updateTask(task, true).then(() => {
+        this.setState({ saving: false });
+      });
     }
   }
 

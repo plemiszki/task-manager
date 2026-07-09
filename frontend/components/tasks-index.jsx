@@ -108,20 +108,19 @@ export default class TasksIndex extends React.Component {
       this.setState((prevState) => ({
         tasks: patchTaskTree(prevState.tasks, [newTask]),
       }));
-      updateEntity({
+      return updateEntity({
         directory: "tasks",
         entityName: "task",
         entity: newTask,
       }).catch((err) => {
         console.warn("background task update failed", err);
       });
-      return;
     }
     this.setState({
       spinner: true,
     });
     if (selectedTasks.length > 0 && ignoreSelected == false) {
-      sendRequest("/api/tasks", {
+      return sendRequest("/api/tasks", {
         method: "PUT",
         data: {
           taskIds: selectedTasks,
@@ -134,7 +133,7 @@ export default class TasksIndex extends React.Component {
         });
       });
     } else {
-      updateEntity({
+      return updateEntity({
         directory: "tasks",
         entityName: "task",
         entity: newTask,
