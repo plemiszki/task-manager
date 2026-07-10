@@ -1,7 +1,14 @@
 import React from 'react'
+import styled from '@emotion/styled'
 import { Details, setUpNiceSelect, resetNiceSelect } from 'handy-components'
 import HandyTools from 'handy-tools'
 import { titleCase } from 'title-case'
+
+const WhiteHoverButton = styled.a`
+  &.btn, &.btn:hover {
+    color: white;
+  }
+`;
 
 export default class Recurrence extends React.Component {
 
@@ -106,36 +113,29 @@ export default class Recurrence extends React.Component {
   render() {
     const { recurrence } = this.state;
     return (
-      <>
-        <div className="admin-modal recurrence-modal handy-component">
-          <div className="white-box">
-            <div className="row">
-              <div className="col-xs-12">
-                <h2>Type</h2>
-                <select onChange={ () => {} } value={ recurrence.type } data-entity="recurrence" data-field="type">
-                  <option value="Daily">Daily</option>
-                  <option value="Daily (Interval)">Daily (Interval)</option>
-                  <option value="Weekly">Weekly</option>
-                  <option value="Monthly">Monthly</option>
-                  <option value="Yearly">Yearly</option>
-                </select>
-                { Details.renderDropdownFieldError([], []) }
-              </div>
-            </div>
-            <div className="row">
-              { this.renderSecondRow() }
-            </div>
-            <div className="text-center">
-              <a className="btn btn-success standard-width update-recurrence-button" onClick={ this.updateRecurrence.bind(this) }>Update Recurrence</a>
+      <div className="admin-modal recurrence-modal handy-component">
+        <div className="white-box">
+          <div className="row">
+            <div className="col-xs-12">
+              <h2>Type</h2>
+              <select onChange={ () => {} } value={ recurrence.type } data-entity="recurrence" data-field="type">
+                <option value="Daily">Daily</option>
+                <option value="Daily (Interval)">Daily (Interval)</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Monthly">Monthly</option>
+                <option value="Yearly">Yearly</option>
+              </select>
+              { Details.renderDropdownFieldError([], []) }
             </div>
           </div>
+          <div className="row">
+            { this.renderSecondRow() }
+          </div>
+          <div className="text-center">
+            <WhiteHoverButton className="btn btn-success standard-width update-recurrence-button" onClick={ this.updateRecurrence.bind(this) }>Update Recurrence</WhiteHoverButton>
+          </div>
         </div>
-        <style jsx>{`
-          a.btn, a.btn:hover {
-            color: white;
-          }
-        `}</style>
-      </>
+      </div>
     );
   }
 

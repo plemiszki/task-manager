@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "@emotion/styled";
 import {
   Spinner,
   GrayedOut,
@@ -6,6 +7,33 @@ import {
   ModalSelect,
   Common,
 } from "handy-components";
+
+const Root = styled.div`
+  position: relative;
+  height: 100%;
+`;
+
+const ItemList = styled.div`
+  display: grid;
+  grid-auto-flow: column;
+  grid-template: repeat(15, 1fr) / repeat(4, 1fr);
+
+  p {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    user-select: none;
+  }
+`;
+
+const Buttons = styled.div`
+  width: 100%;
+  margin-bottom: 20px;
+
+  a:not(:last-of-type) {
+    margin-right: 10px;
+  }
+`;
 
 export default class GroceryList extends React.Component {
   constructor(props) {
@@ -129,9 +157,8 @@ export default class GroceryList extends React.Component {
     );
 
     return (
-      <>
-        <div className="root">
-          <div className="buttons">
+        <Root>
+          <Buttons>
             <a
               className="btn btn-primary"
               rel="nofollow"
@@ -168,8 +195,8 @@ export default class GroceryList extends React.Component {
             >
               Export
             </a>
-          </div>
-          <div className="list">
+          </Buttons>
+          <ItemList>
             {sortedItems.map((item) => {
               return (
                 <p key={item.id} onDoubleClick={() => this.removeItem(item.id)}>
@@ -177,7 +204,7 @@ export default class GroceryList extends React.Component {
                 </p>
               );
             })}
-          </div>
+          </ItemList>
           <ModalSelect
             isOpen={itemsModalOpen}
             onClose={Common.closeModals.bind(this)}
@@ -210,32 +237,7 @@ export default class GroceryList extends React.Component {
             }}
           />
           <Spinner visible={spinner} />
-        </div>
-        <style jsx>{`
-          .root {
-            position: relative;
-            height: 100%;
-          }
-          .list {
-            display: grid;
-            grid-auto-flow: column;
-            grid-template: repeat(15, 1fr) / repeat(4, 1fr);
-          }
-          .list p {
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            user-select: none;
-          }
-          .buttons {
-            width: 100%;
-            margin-bottom: 20px;
-          }
-          .buttons a:not(:last-of-type) {
-            margin-right: 10px;
-          }
-        `}</style>
-      </>
+        </Root>
     );
   }
 }

@@ -5,6 +5,6 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [
     RubyPlugin(),
-    react({ babel: { plugins: ['styled-jsx/babel'] } }),
+    react(),
   ],
 })

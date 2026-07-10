@@ -1,6 +1,13 @@
 import React from 'react'
+import styled from '@emotion/styled'
 import { Common, Details, GrayedOut, Spinner, setUpNiceSelect, createEntity, fetchEntities } from 'handy-components'
 import DetailsComponent from './_details.jsx'
+
+const WhiteHoverButton = styled.a`
+  &.btn, &.btn:hover {
+    color: white;
+  }
+`;
 
 export default class RecurringTaskNew extends DetailsComponent {
 
@@ -65,7 +72,6 @@ export default class RecurringTaskNew extends DetailsComponent {
   render() {
     const { spinner, recurringTask, users } = this.state;
     return (
-      <>
         <div id="recurring-task-new" className="handy-component admin-modal">
           <div className="white-box">
             <div className="row">
@@ -130,20 +136,14 @@ export default class RecurringTaskNew extends DetailsComponent {
               }) }
               { Details.renderField.bind(this)({ columnWidth: 3, entity: 'recurringTask', property: 'jointText', hidden: !recurringTask.jointUserId }) }
             </div>
-            <a className={ "btn btn-success" + Common.renderDisabledButtonClass(spinner) } onClick={ () => this.clickSave() }>
+            <WhiteHoverButton className={ "btn btn-success" + Common.renderDisabledButtonClass(spinner) } onClick={ () => this.clickSave() }>
               Add Recurring Task
-            </a>
+            </WhiteHoverButton>
             <GrayedOut visible={ spinner } />
             <Spinner visible={ spinner } />
           </div>
           { this.renderRecurrenceModal() }
         </div>
-        <style jsx>{`
-          a.btn, a.btn:hover {
-            color: white;
-          }
-        `}</style>
-      </>
     );
   }
 }

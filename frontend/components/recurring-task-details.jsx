@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "@emotion/styled";
 import {
   Common,
   Details,
@@ -11,6 +12,12 @@ import {
   Spinner,
 } from "handy-components";
 import DetailsComponent from "./_details.jsx";
+
+const WhiteHoverButton = styled.a`
+  &.btn, &.btn:hover {
+    color: white;
+  }
+`;
 
 export default class RecurringTaskDetails extends DetailsComponent {
   constructor(props) {
@@ -214,25 +221,17 @@ export default class RecurringTaskDetails extends DetailsComponent {
       var buttonText = justSaved ? "Saved" : "No Changes";
     }
     return (
-      <>
-        <div>
-          <a
-            className={
-              "standard-width btn btn-success save-button" +
-              Common.renderDisabledButtonClass(spinner || !changesToSave)
-            }
-            onClick={this.clickSave.bind(this)}
-          >
-            {buttonText}
-          </a>
-        </div>
-        <style jsx>{`
-          a.btn,
-          a.btn:hover {
-            color: white;
+      <div>
+        <WhiteHoverButton
+          className={
+            "standard-width btn btn-success save-button" +
+            Common.renderDisabledButtonClass(spinner || !changesToSave)
           }
-        `}</style>
-      </>
+          onClick={this.clickSave.bind(this)}
+        >
+          {buttonText}
+        </WhiteHoverButton>
+      </div>
     );
   }
 }
