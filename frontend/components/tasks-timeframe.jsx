@@ -195,7 +195,7 @@ export default class TasksTimeframe extends React.Component {
       let taskId = ui.draggable[0].dataset.taskid;
       let newTaskPosition = +dropZoneIndex + 1;
       this.props.copyTask({
-        timeframe: dropZoneTimeFrame,
+        timeframe: droppedTimeFrame,
         position: newTaskPosition,
         duplicateOf: taskId,
         selectedTasks: this.state.selectedTasks,
