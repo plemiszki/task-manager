@@ -1,3 +1,12 @@
+.tasks-timeframes-row {
+  display: flex;
+  flex-wrap: wrap;
+
+  > div {
+    display: flex;
+  }
+}
+
 .tasks-timeframe {
   background: #ffffff;
   position: relative;
@@ -7,6 +16,7 @@
   color: black;
   text-align: center;
   margin-bottom: 20px;
+  width: 100%;
 
   h1 {
     font-family: "Helvetica Neue";

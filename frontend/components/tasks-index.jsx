@@ -401,7 +401,7 @@ export default class TasksIndex extends React.Component {
     const { lists, listModalOpen } = this.state;
     return (
       <div className="container widened-container">
-        <div className="row">{this.renderTimeframes()}</div>
+        <div className="row tasks-timeframes-row">{this.renderTimeframes()}</div>
         <ModalSelect
           isOpen={listModalOpen}
           options={lists}
@@ -451,7 +451,4 @@ export default class TasksIndex extends React.Component {
     );
   }
 
-  componentDidUpdate() {
-    $(".match-height").matchHeight();
-  }
 }

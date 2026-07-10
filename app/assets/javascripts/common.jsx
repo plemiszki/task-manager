@@ -1,12 +1,4 @@
-$(document).ready(() => {
-  Common.initialize();
-});
-
 const Common = {
-
-  initialize: function() {
-    $.fn.matchHeight._maintainScroll = true;
-  },
 
   canIDrop: function($e) {
     const draggedId = $e[0].getAttribute('id');

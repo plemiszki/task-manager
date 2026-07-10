@@ -14,5 +14,4 @@
 //= require jquery_ujs
 //= require jquery-ui
 //= require images
-//= require library/jquery.matchHeight
 //= require library/jquery.nice-select

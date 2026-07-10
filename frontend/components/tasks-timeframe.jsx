@@ -318,7 +318,7 @@ export default class TasksTimeframe extends React.Component {
     const { timeframe, spinner: propsSpinner } = this.props;
     const { spinner, scheduleView } = this.state;
     return (
-      <div className="tasks-timeframe match-height" data-index={timeframe}>
+      <div className="tasks-timeframe" data-index={timeframe}>
         <div
           onMouseEnter={() => this.setState({ headerHovered: true })}
           onMouseLeave={() => this.setState({ headerHovered: false })}
