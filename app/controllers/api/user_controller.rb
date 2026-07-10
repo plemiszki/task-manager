@@ -6,7 +6,7 @@ class Api::UserController < ActionController::Base
 
   def show
     redis = Redis.new(url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
-    render json: { user: current_user, resetEarly: redis.smembers("daily-reset-early").include?(current_user.id.to_s) }
+    render json: { user: current_user, ranEarlyReset: redis.smembers("daily-reset-early").include?(current_user.id.to_s) }
   end
 
   def update

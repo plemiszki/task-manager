@@ -339,7 +339,7 @@ export default class TaskIndexItem extends React.PureComponent {
   }
 
   render() {
-    const { openListsModal, setActiveTaskId } = this.props;
+    const { openListsModal, setActiveTaskId, ranEarlyReset } = this.props;
     const { task, editing, subtasks, showColorPicker } = this.state;
     const { timeframe, duplicateId, parentId, showParentPrefix, parentPrefixText } = task;
 
@@ -373,7 +373,7 @@ export default class TaskIndexItem extends React.PureComponent {
         },
       });
     }
-    if (!duplicateId && !parentId && timeframe === "day") {
+    if (!duplicateId && !parentId && timeframe === "day" && !ranEarlyReset) {
       menuOptions.push({
         label: "Do Tomorrow",
         func: () => {
@@ -385,6 +385,7 @@ export default class TaskIndexItem extends React.PureComponent {
       !duplicateId &&
       !parentId &&
       timeframe === "day" &&
+      !ranEarlyReset &&
       DateTime.now().weekday === 5
     ) {
       menuOptions.push({

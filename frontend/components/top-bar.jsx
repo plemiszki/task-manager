@@ -40,7 +40,7 @@ export default class TopBar extends React.Component {
     super(props);
     this.state = {
       user: null,
-      resetEarly: false,
+      ranEarlyReset: false,
       groceryListModalOpen: false,
       confirmResetModalOpen: false,
       job: {
@@ -52,8 +52,8 @@ export default class TopBar extends React.Component {
 
   componentDidMount() {
     sendRequest("/api/user").then((response) => {
-      const { user, resetEarly } = response;
-      this.setState({ user, resetEarly });
+      const { user, ranEarlyReset } = response;
+      this.setState({ user, ranEarlyReset });
     });
   }
 
@@ -81,7 +81,7 @@ export default class TopBar extends React.Component {
     const {
       user,
       groceryListModalOpen,
-      resetEarly,
+      ranEarlyReset,
       confirmResetModalOpen,
       job,
     } = this.state;
@@ -256,11 +256,11 @@ export default class TopBar extends React.Component {
                     fontSize="large"
                     style={{
                       fontSize: 30,
-                      cursor: resetEarly ? "default" : "pointer",
-                      color: resetEarly ? "#ccc" : undefined,
+                      cursor: ranEarlyReset ? "default" : "pointer",
+                      color: ranEarlyReset ? "#ccc" : undefined,
                     }}
                     onClick={
-                      resetEarly
+                      ranEarlyReset
                         ? undefined
                         : () => this.setState({ confirmResetModalOpen: true })
                     }

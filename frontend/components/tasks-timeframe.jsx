@@ -78,7 +78,7 @@ export default class TasksTimeframe extends React.Component {
     if (timeframe == "day") {
       sendRequest("/api/user").then((response) => {
         this.setState({
-          resetEarly: response.resetEarly,
+          ranEarlyReset: response.ranEarlyReset,
         });
       });
     }
@@ -509,6 +509,7 @@ export default class TasksTimeframe extends React.Component {
               moveTask={this.props.moveTask}
               deleteTask={this.props.deleteTask}
               convertToFutureTask={this.props.convertToFutureTask}
+              ranEarlyReset={this.state.ranEarlyReset}
               dropHandler={this.dropHandler}
               openListsModal={openListsModal}
               setActiveTaskId={setActiveTaskId}
@@ -563,10 +564,10 @@ export default class TasksTimeframe extends React.Component {
 
   renderHeader() {
     const { timeframe } = this.props;
-    const { resetEarly, longWeekend } = this.state;
+    const { ranEarlyReset, longWeekend } = this.state;
     switch (timeframe) {
       case "day":
-        return <h1>{resetEarly ? "Tomorrow" : "Today"}</h1>;
+        return <h1>{ranEarlyReset ? "Tomorrow" : "Today"}</h1>;
       case "weekend":
         var text = longWeekend ? "Long Weekend" : "Weekend";
         return (
